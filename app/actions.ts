@@ -18,7 +18,10 @@ export async function getChats(userId?: string | null) {
   }
 }
 
-export async function getChat(id: string, userId: string) {
+export async function getChat(
+  id: string,
+  userId: string
+): Promise<Chat | null> {
   return null
 }
 

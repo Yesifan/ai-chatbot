@@ -9,8 +9,7 @@ declare module 'next-auth' {
 
 export const {
   handlers: { GET, POST },
-  auth,
-  CSRF_experimental // will be removed in future
+  auth
 } = NextAuth({
   providers: [
     CredentialsProvider({
@@ -19,28 +18,27 @@ export const {
         token: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        const code = process.env.CODE
-        if (code === credentials.token) {
-          return { id: credentials.token as string }
+        console.debug('[AUTH AUTHORIZE]', credentials)
+        try {
+          if (credentials.token === process.env.ACCESS_CODE) {
+            console.debug('[AUTH AUTHORIZE] SUCCESS')
+            return { id: credentials.token as string }
+          }
+          return null
+        } catch (e) {
+          console.error('[AUTH AUTHORIZE][ERROR] ', e)
+          return null
         }
-        // You need to provide your own logic here that takes the credentials
-        // submitted and returns either a object representing a user or value
-        // that is false/null if the credentials are invalid.
-        // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
-        // You can also use the `req` object to obtain additional parameters
-        // (i.e., the request IP address)
-
-        // Return null if user data could not be retrieved
-        return null
       }
     })
   ],
   callbacks: {
-    authorized({ request }) {
-      return true // this ensures there is a logged in user for -every- request
+    authorized({ auth }) {
+      console.debug('[AUTH AUTHORIZED]', !!auth.user)
+      return !!auth.user // this ensures there is a logged in user for -every- request
     }
   },
   pages: {
-    signIn: '/' // overrides the next-auth default signin page https://authjs.dev/guides/basics/pages
+    // signIn: '/' // overrides the next-auth default signin page https://authjs.dev/guides/basics/pages
   }
 })

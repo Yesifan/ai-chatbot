@@ -34,5 +34,5 @@ export default async function ChatPage({ params }: ChatPageProps) {
 
   const chat = await getChat(params.id, session.user.id)
 
-  return <Chat id={chat.id} initialMessages={chat.messages} />
+  return <Chat id={chat?.id} initialMessages={chat?.messages} />
 }
