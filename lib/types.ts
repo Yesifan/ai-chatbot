@@ -7,6 +7,10 @@ import {
   Updateable
 } from 'kysely'
 
+export const enum Credential {
+  AccessToken = 'access-token'
+}
+
 export const enum GPT_MODEL {
   GPT_4 = 'gpt-4',
   GPT_4_0314 = 'gpt-4-0314',
@@ -64,10 +68,11 @@ export interface ChatTable extends Omit<RobotTable, 'id' | 'name'> {
   sharePath?: string
 }
 
-export interface MessageTable extends AiMessage {
+export interface MessageTable extends Omit<AiMessage, 'role'> {
   isPin: boolean
   isFavourite: boolean
   chatId: string
+  role: AiMessage['role'] | 'helper'
 }
 
 export type User = Selectable<UserTable>

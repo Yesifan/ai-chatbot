@@ -8,6 +8,8 @@ import { cn } from '@/lib/utils'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
 import { Providers } from '@/components/providers'
 import { Header } from '@/components/header'
+import { SessionProvider } from 'next-auth/react'
+import { auth } from '@/auth'
 
 export const metadata: Metadata = {
   title: {
@@ -30,7 +32,9 @@ interface RootLayoutProps {
   children: React.ReactNode
 }
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
+  const session = await auth()
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
@@ -43,11 +47,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
       >
         <Toaster />
         <Providers attribute="class" defaultTheme="system" enableSystem>
-          <div className="flex flex-col min-h-screen">
-            {/* @ts-ignore */}
-            <Header />
-            <main className="flex flex-col flex-1 bg-muted/50">{children}</main>
-          </div>
+          <SessionProvider session={session} refetchOnWindowFocus={true}>
+            <div className="flex min-h-screen flex-col">
+              {/* @ts-ignore */}
+              <Header user={session?.user} />
+              <main className="flex flex-1 flex-col bg-muted/50">
+                {children}
+              </main>
+            </div>
+          </SessionProvider>
           <TailwindIndicator />
         </Providers>
       </body>

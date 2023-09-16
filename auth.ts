@@ -1,8 +1,8 @@
-import NextAuth, { type DefaultSession } from 'next-auth'
+import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import db from './lib/database'
 import { up } from './lib/database/migrations'
-import { User } from './lib/types'
+import { Credential, User } from './lib/types'
 
 declare module 'next-auth' {
   interface Session {
@@ -17,7 +17,9 @@ const getLoginUser = async (token: string) => {
     .selectAll()
     .where('accessToken', '=', token)
     .execute()
-
+  if (user.length === 0) {
+    throw new Error('The access token uploaded is not match.')
+  }
   return user[0]
 }
 
@@ -27,7 +29,8 @@ export const {
 } = NextAuth({
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      id: Credential.AccessToken,
+      name: 'AccessToken',
       credentials: {
         token: { label: 'Password', type: 'password' }
       },
@@ -36,14 +39,20 @@ export const {
           const user = await getLoginUser(credentials.token as string)
           return user
         } catch (e: any) {
-          if ((e.message as string).includes('does not exist')) {
+          console.error('[SIGNIN]ERROR', e)
+          if (
+            (e.message as string).includes(
+              'The access token uploaded is not match'
+            )
+          ) {
+            return null
+          } else if ((e.message as string).includes('does not exist')) {
             console.debug(
               '[DATABASE] Table does not exist, creating and seeding it with dummy data now...'
             )
             // Table is not created yet
             await up(db)
             console.debug('[DATABASE] success create database')
-
             return getLoginUser(credentials.token as string)
           } else {
             throw e
@@ -59,6 +68,6 @@ export const {
     }
   },
   pages: {
-    // signIn: '/' // overrides the next-auth default signin page https://authjs.dev/guides/basics/pages
+    signIn: '/' // overrides the next-auth default signin page https://authjs.dev/guides/basics/pages
   }
 })

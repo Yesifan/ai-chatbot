@@ -1,18 +1,11 @@
 import * as React from 'react'
-import Link from 'next/link'
 
 import { cn } from '@/lib/utils'
-import { auth } from '@/auth'
 import { clearChats } from '@/app/actions'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 import { Sidebar } from '@/components/sidebar'
 import { SidebarList } from '@/components/sidebar-list'
-import {
-  IconGitHub,
-  IconNextChat,
-  IconSeparator,
-  IconVercel
-} from '@/components/ui/icons'
+import { IconGitHub, IconSeparator } from '@/components/ui/icons'
 import { SidebarFooter } from '@/components/sidebar-footer'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { ClearHistory } from '@/components/clear-history'
@@ -33,27 +26,18 @@ export async function Header() {
         </Sidebar>
         <div className="flex items-center">
           <IconSeparator className="h-6 w-6 text-muted-foreground/50" />
-          {/* <UserMenu user={session.user} /> */}
+          <UserMenu />
         </div>
       </div>
       <div className="flex items-center justify-end space-x-2">
         <a
           target="_blank"
-          href="https://github.com/vercel/nextjs-ai-chatbot/"
+          href="https://github.com/Yesifan/ai-chatbot"
           rel="noopener noreferrer"
           className={cn(buttonVariants({ variant: 'outline' }))}
         >
           <IconGitHub />
           <span className="ml-2 hidden md:flex">GitHub</span>
-        </a>
-        <a
-          href="https://github.com/vercel/nextjs-ai-chatbot/"
-          target="_blank"
-          className={cn(buttonVariants())}
-        >
-          <IconVercel className="mr-2" />
-          <span className="hidden sm:block">Deploy to Vercel</span>
-          <span className="sm:hidden">Deploy</span>
         </a>
       </div>
     </header>
