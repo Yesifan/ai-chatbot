@@ -24,8 +24,7 @@ export async function Header() {
       <div className="flex items-center">
         <Sidebar>
           <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
-            {/* @ts-ignore */}
-            {/* <SidebarList /> */}
+            <SidebarList />
           </React.Suspense>
           <SidebarFooter>
             <ThemeToggle />

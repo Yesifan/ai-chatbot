@@ -1,10 +1,24 @@
 import NextAuth, { type DefaultSession } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import db from './lib/database'
+import { up } from './lib/database/migrations'
+import { User } from './lib/types'
 
 declare module 'next-auth' {
   interface Session {
-    user: { id: string }
+    user: User
   }
+}
+
+// TODO: 要不要 hash 后对比
+const getLoginUser = async (token: string) => {
+  const user = await db
+    .selectFrom('user')
+    .selectAll()
+    .where('accessToken', '=', token)
+    .execute()
+
+  return user[0]
 }
 
 export const {
@@ -18,16 +32,22 @@ export const {
         token: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        console.debug('[AUTH AUTHORIZE]', credentials)
         try {
-          if (credentials.token === process.env.ACCESS_CODE) {
-            console.debug('[AUTH AUTHORIZE] SUCCESS')
-            return { id: credentials.token as string }
+          const user = await getLoginUser(credentials.token as string)
+          return user
+        } catch (e: any) {
+          if ((e.message as string).includes('does not exist')) {
+            console.debug(
+              '[DATABASE] Table does not exist, creating and seeding it with dummy data now...'
+            )
+            // Table is not created yet
+            await up(db)
+            console.debug('[DATABASE] success create database')
+
+            return getLoginUser(credentials.token as string)
+          } else {
+            throw e
           }
-          return null
-        } catch (e) {
-          console.error('[AUTH AUTHORIZE][ERROR] ', e)
-          return null
         }
       }
     })

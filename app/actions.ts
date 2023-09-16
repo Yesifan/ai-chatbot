@@ -57,7 +57,7 @@ export async function clearChats() {
   return redirect('/')
 }
 
-export async function getSharedChat(id: string) {
+export async function getSharedChat(id: string): Promise<Chat | null> {
   return null
 }
 
