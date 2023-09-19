@@ -1,8 +1,14 @@
-import { OpenAIApi, Configuration } from 'openai-edge'
+import {
+  OpenAIApi,
+  Configuration,
+  ChatCompletionRequestMessage
+} from 'openai-edge'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 
 import { auth } from '@/auth'
 import { nanoid } from '@/lib/utils'
+import { NextRequest } from 'next/server'
+import { Chat, Message } from '@/lib/types'
 
 export const runtime = 'edge'
 
@@ -11,26 +17,40 @@ const config = new Configuration({
   basePath: process.env.OPENAI_BASEPATH
 })
 
+console.debug('[OPENAI BASEPATH]', config.basePath)
+
 const openai = new OpenAIApi(config)
 
-export async function POST(req: Request) {
-  const json = await req.json()
-  const { messages } = json
+export interface ChatBody extends Chat {
+  messages: Message[]
+}
+
+export async function POST(req: NextRequest) {
   const session = await auth()
-
-  console.debug('[CHAT API SESSION]', session)
-
-  console.debug('[OPENAI BASEPATH]', config.basePath)
 
   if (!session) {
     return new Response('Unauthorized', {
       status: 401
     })
   }
+
+  const json = (await req.json()) as ChatBody
+  const { messages } = json
+
+  const chatMessages = messages.filter(
+    item => item.role !== 'helper'
+  ) as ChatCompletionRequestMessage[]
+
+  if (chatMessages.length === 0) {
+    return new Response('Empty', {
+      status: 400
+    })
+  }
+
   try {
     const res = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo',
-      messages,
+      messages: chatMessages,
       temperature: 0.7,
       stream: true
     })
