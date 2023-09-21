@@ -6,6 +6,7 @@ import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { signIn, useSession } from 'next-auth/react'
 import { Credential } from '@/lib/types'
+import { nanoid } from 'nanoid'
 
 export interface ChatPanelProps
   extends Pick<
@@ -17,6 +18,7 @@ export interface ChatPanelProps
     | 'stop'
     | 'input'
     | 'setInput'
+    | 'setMessages'
   > {
   id?: string
 }
@@ -31,17 +33,33 @@ export function ChatPanel({ id, messages, ...props }: ChatPanelProps) {
         token: value
       })
       if (res?.error) {
-        throw new Error(res.error)
+        return 'Login failed, Wrong access token!'
       } else {
         await update()
+        return true
       }
-    } catch (error) {
-      console.error('[LOGININ]error', error)
+    } catch (error: any) {
+      console.error('[LOGININ]', error)
+      return error.message || 'Login failed, please try again!'
     }
   }
   const chat = async (value: string) => {
+    console.debug('session', session)
     if (!session?.user) {
-      await login(value)
+      const result = await login(value)
+      if (result !== true) {
+        props.setMessages([
+          ...messages,
+          {
+            id: nanoid(),
+            content: result,
+            role: 'system' as any
+          }
+        ])
+      } else {
+        // TODO: 获取服务器数据，展示侧边栏。
+        props.setMessages([])
+      }
     } else {
       await props.append({
         id,
@@ -54,29 +72,32 @@ export function ChatPanel({ id, messages, ...props }: ChatPanelProps) {
     <div className="fixed inset-x-0 bottom-0 bg-gradient-to-b from-muted/10 from-10% to-muted/30 to-50%">
       <ButtonScrollToBottom />
       <div className="mx-auto sm:max-w-2xl sm:px-4">
-        <div className="flex h-10 items-center justify-center">
-          {props.isLoading ? (
-            <Button
-              variant="outline"
-              onClick={() => stop()}
-              className="bg-background"
-            >
-              <IconStop className="mr-2" />
-              Stop generating
-            </Button>
-          ) : (
-            messages?.length > 0 && (
+        {/* TODO： add isLoging state. */}
+        {session?.user && (
+          <div className="flex h-10 items-center justify-center">
+            {props.isLoading ? (
               <Button
                 variant="outline"
-                onClick={() => props.reload()}
+                onClick={() => stop()}
                 className="bg-background"
               >
-                <IconRefresh className="mr-2" />
-                Regenerate response
+                <IconStop className="mr-2" />
+                Stop generating
               </Button>
-            )
-          )}
-        </div>
+            ) : (
+              messages?.length > 0 && (
+                <Button
+                  variant="outline"
+                  onClick={() => props.reload()}
+                  className="bg-background"
+                >
+                  <IconRefresh className="mr-2" />
+                  Regenerate response
+                </Button>
+              )
+            )}
+          </div>
+        )}
         <div className="space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
           <PromptForm onSubmit={chat} {...props} />
         </div>

@@ -7,6 +7,13 @@ import {
   Updateable
 } from 'kysely'
 
+declare module 'ai' {
+  interface Message {
+    role: 'system' | 'user' | 'assistant' | 'function' | 'helper'
+    content: string
+  }
+}
+
 export const enum Credential {
   AccessToken = 'access-token'
 }
@@ -68,11 +75,10 @@ export interface ChatTable extends Omit<RobotTable, 'id' | 'name'> {
   sharePath?: string
 }
 
-export interface MessageTable extends Omit<AiMessage, 'role'> {
+export interface MessageTable extends AiMessage {
   isPin: boolean
   isFavourite: boolean
   chatId: string
-  role: AiMessage['role'] | 'helper'
 }
 
 export type User = Selectable<UserTable>

@@ -56,7 +56,8 @@ export async function POST(req: NextRequest) {
     })
     const stream = OpenAIStream(res, {
       async onCompletion(completion) {
-        const title = json.messages[0].content.substring(0, 100)
+        const content = chatMessages[0].content ?? 'Robot Chat'
+        const title = content.substring(0, 100)
         console.log(`[Assistant][${title}] ${completion}`)
       }
     })

@@ -2,7 +2,6 @@
 
 import { useChat, type Message } from 'ai/react'
 import { toast } from 'react-hot-toast'
-import type { Session } from 'next-auth/types'
 
 import { cn } from '@/lib/utils'
 import { ChatList } from '@/components/chat-list'
@@ -31,20 +30,20 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       }
     }
   })
+
   return (
     <>
       <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
-        {session?.user ? (
-          messages.length ? (
-            <>
-              <ChatList messages={messages} />
-              <ChatScrollAnchor trackVisibility={props.isLoading} />
-            </>
-          ) : (
-            <EmptyScreen setInput={props.setInput} />
-          )
-        ) : (
+        {!session?.user ? (
           <NotLogin />
+        ) : (
+          messages.length === 0 && <EmptyScreen setInput={props.setInput} />
+        )}
+        {messages.length > 0 && (
+          <>
+            <ChatList messages={messages} />
+            <ChatScrollAnchor trackVisibility={props.isLoading} />
+          </>
         )}
       </div>
       <ChatPanel id={id} messages={messages} {...props} />
