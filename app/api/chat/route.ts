@@ -6,9 +6,9 @@ import {
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 
 import { auth } from '@/auth'
-import { nanoid } from '@/lib/utils'
 import { NextRequest } from 'next/server'
-import { Chat, Message } from '@/lib/types'
+import database from '@/lib/database'
+import { GPT_MODEL, NewChat, NewMessage } from '@/lib/types'
 
 export const runtime = 'edge'
 
@@ -21,44 +21,78 @@ console.debug('[OPENAI BASEPATH]', config.basePath)
 
 const openai = new OpenAIApi(config)
 
-export interface ChatBody extends Chat {
-  messages: Message[]
+export interface ChatBody {
+  id: string
+  model: GPT_MODEL
+  messages: ChatCompletionRequestMessage[]
+}
+
+const getOrCreateChat = async (id: string, userId: string, title: string) => {
+  const chat = await database
+    .selectFrom('chat')
+    .selectAll()
+    .where('id', '=', id)
+    .where('userId', '=', userId)
+    .executeTakeFirst()
+  if (chat === undefined) {
+    const chat: NewChat = {
+      id,
+      userId,
+      title,
+      createdAt: new Date()
+    }
+    await database.insertInto('chat').values(chat).executeTakeFirstOrThrow()
+    return chat
+  } else {
+    return chat
+  }
 }
 
 export async function POST(req: NextRequest) {
   const session = await auth()
 
-  if (!session) {
+  if (!session.user) {
     return new Response('Unauthorized', {
       status: 401
     })
   }
 
   const json = (await req.json()) as ChatBody
-  const { messages } = json
+  const { id, model, messages } = json
+  const userId = session.user.id
 
-  const chatMessages = messages.filter(
-    item => item.role !== 'helper'
-  ) as ChatCompletionRequestMessage[]
+  const content = messages[0].content ?? 'Robot Chat'
+  const title = content.substring(0, 100)
 
-  if (chatMessages.length === 0) {
-    return new Response('Empty', {
-      status: 400
-    })
-  }
+  const chat = await getOrCreateChat(id, userId, title)
 
   try {
+    const question: NewMessage = {
+      chatId: chat.id,
+      content: messages[messages.length - 1].content!,
+      role: 'user',
+      createdAt: new Date()
+    }
     const res = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
-      messages: chatMessages,
+      model: model ?? GPT_MODEL.GPT_3_5_TURBO,
+      messages: messages,
       temperature: 0.7,
       stream: true
     })
     const stream = OpenAIStream(res, {
       async onCompletion(completion) {
-        const content = chatMessages[0].content ?? 'Robot Chat'
-        const title = content.substring(0, 100)
-        console.log(`[Assistant][${title}] ${completion}`)
+        await database
+          .insertInto('message')
+          .values([
+            question,
+            {
+              chatId: chat.id,
+              content: completion,
+              role: 'assistant',
+              createdAt: new Date()
+            }
+          ])
+          .execute()
       }
     })
     return new StreamingTextResponse(stream)

@@ -6,7 +6,7 @@ import { Credential, User } from './lib/types'
 
 declare module 'next-auth' {
   interface Session {
-    user: User
+    user: { id: string }
   }
 }
 
@@ -65,6 +65,10 @@ export const {
     authorized({ auth }) {
       console.debug('[AUTH AUTHORIZED]', !!auth.user)
       return !!auth.user // this ensures there is a logged in user for -every- request
+    },
+    jwt({ token }) {
+      token.id = token.sub
+      return token
     }
   },
   pages: {

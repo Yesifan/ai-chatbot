@@ -44,7 +44,6 @@ export function ChatPanel({ id, messages, ...props }: ChatPanelProps) {
     }
   }
   const chat = async (value: string) => {
-    console.debug('session', session)
     if (!session?.user) {
       const result = await login(value)
       if (result !== true) {
@@ -62,7 +61,7 @@ export function ChatPanel({ id, messages, ...props }: ChatPanelProps) {
       }
     } else {
       await props.append({
-        id,
+        id, // chatId
         content: value,
         role: 'user'
       })

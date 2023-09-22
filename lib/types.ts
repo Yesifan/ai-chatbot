@@ -1,11 +1,5 @@
 import { type Message as AiMessage } from 'ai'
-import {
-  ColumnType,
-  Generated,
-  Insertable,
-  Selectable,
-  Updateable
-} from 'kysely'
+import { Generated, Insertable, Selectable, Updateable } from 'kysely'
 
 declare module 'ai' {
   interface Message {
@@ -82,6 +76,7 @@ export interface MessageTable extends AiMessage {
   model?: GPT_MODEL
   isPin: Generated<boolean>
   isFavourite: Generated<boolean>
+  createdAt: Date
 }
 
 export type User = Selectable<UserTable>
