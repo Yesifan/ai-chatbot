@@ -10,30 +10,55 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('lastLogin', 'timestamp')
     .execute()
 
-  // //TODO: 修改模型
-  // await db.schema
-  //   .createTable('robot')
-  //   .ifNotExists()
-  //   .addColumn('id', 'uuid', col => col.primaryKey())
-  //   .addColumn('access_token', 'varchar(50)', col => col.notNull())
-  //   .addColumn('last_login', 'timestamp')
-  //   .execute()
+  //TODO: 修改模型
+  await db.schema
+    .createTable('robot')
+    .ifNotExists()
+    .addColumn('id', 'char(21)', col => col.primaryKey())
+    .addColumn('userId', 'char(21)', col => col.notNull())
+    .addColumn('name', 'varchar(120)', col => col.notNull())
+    .addColumn('createdAt', 'timestamp')
+    .addColumn('model', 'varchar(20)')
+    .addColumn('pinPrompt', 'text')
+    .addColumn('maxToken', 'integer')
+    .addColumn('temperature', 'double precision')
+    .addColumn('topP', 'double precision')
+    .addColumn('presencePenalty', 'double precision')
+    .addColumn('frequencyPenalty', 'double precision')
+    .addColumn('input_template', 'varchar(120)')
+    .addColumn('attachedMessagesCount', 'integer')
+    .execute()
 
-  // await db.schema
-  //   .createTable('chat')
-  //   .ifNotExists()
-  //   .addColumn('id', 'uuid', col => col.primaryKey())
-  //   .addColumn('access_token', 'varchar(50)', col => col.notNull())
-  //   .addColumn('last_login', 'timestamp')
-  //   .execute()
+  await db.schema
+    .createTable('chat')
+    .ifNotExists()
+    .addColumn('id', 'char(21)', col => col.primaryKey())
+    .addColumn('userId', 'char(21)', col => col.notNull())
+    .addColumn('title', 'varchar(120)', col => col.notNull())
+    .addColumn('createdAt', 'timestamp')
+    .addColumn('model', 'varchar(20)')
+    .addColumn('pinPrompt', 'text')
+    .addColumn('maxToken', 'integer')
+    .addColumn('temperature', 'double precision')
+    .addColumn('topP', 'double precision')
+    .addColumn('presencePenalty', 'double precision')
+    .addColumn('frequencyPenalty', 'double precision')
+    .addColumn('input_template', 'varchar(120)')
+    .addColumn('attachedMessagesCount', 'integer')
+    .execute()
 
-  // await db.schema
-  //   .createTable('message')
-  //   .ifNotExists()
-  //   .addColumn('id', 'uuid', col => col.primaryKey())
-  //   .addColumn('access_token', 'varchar(50)', col => col.notNull())
-  //   .addColumn('last_login', 'timestamp')
-  //   .execute()
+  await db.schema
+    .createTable('message')
+    .ifNotExists()
+    .addColumn('id', 'serial', col => col.primaryKey())
+    .addColumn('chatId', 'char(21)', col => col.notNull())
+    .addColumn('content', 'text', col => col.notNull())
+    .addColumn('role', 'char(18)', col => col.notNull())
+    .addColumn('createdAt', 'timestamp')
+    .addColumn('model', 'varchar(20)')
+    .addColumn('isPin', 'boolean', col => col.defaultTo(false))
+    .addColumn('isFavourite', 'boolean', col => col.defaultTo(false))
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {

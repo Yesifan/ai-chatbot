@@ -53,32 +53,35 @@ export interface RobotTable {
   id: Generated<string>
   userId: string
   name: string
-  model: GPT_MODEL
+  model?: GPT_MODEL
   // json string
   pinPrompt?: string
-  maxToken: number
+  // chat gpt 参数
+  maxToken?: number
   temperature?: number
   topP?: number
-  frequencyPenalty?: number
   presencePenalty?: number
+  frequencyPenalty?: number
+  // How many chat completion choices to generate for each input message.
+  attachedMessagesCount?: number
   // {{input}}
   input_template?: string
-  attachedMessagesCount: number
 }
 
-export interface ChatTable extends Omit<RobotTable, 'id' | 'name'> {
+export interface ChatTable
+  extends Omit<RobotTable, 'id' | 'name' | 'pinPrompt'> {
   id: string
-  robotId: string
+  userId: string
   title: string
   createdAt: Date
-  userId: string
-  sharePath?: string
 }
 
 export interface MessageTable extends AiMessage {
-  isPin: boolean
-  isFavourite: boolean
+  id: Generated<number>
   chatId: string
+  model?: GPT_MODEL
+  isPin: Generated<boolean>
+  isFavourite: Generated<boolean>
 }
 
 export type User = Selectable<UserTable>
