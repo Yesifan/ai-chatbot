@@ -68,7 +68,7 @@ export function ChatPanel({ id, messages, ...props }: ChatPanelProps) {
     }
   }
   return (
-    <div className="fixed inset-x-0 bottom-0 bg-gradient-to-b from-muted/10 from-10% to-muted/30 to-50%">
+    <div className="mt-auto bg-gradient-to-b from-muted/10 from-10% to-muted/30 to-50%">
       <ButtonScrollToBottom />
       <div className="mx-auto sm:max-w-2xl sm:px-4">
         {/* TODO： add isLoging state. */}

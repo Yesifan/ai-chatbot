@@ -1,14 +1,8 @@
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
-import { clearChats } from '@/app/actions'
-import { buttonVariants } from '@/components/ui/button'
-import { Sidebar } from '@/components/sidebar'
-import { SidebarList } from '@/components/sidebar-list'
-import { IconGitHub, IconSeparator } from '@/components/ui/icons'
-import { SidebarFooter } from '@/components/sidebar-footer'
-import { ThemeToggle } from '@/components/theme-toggle'
-import { ClearHistory } from '@/components/clear-history'
+import { Button, buttonVariants } from '@/components/ui/button'
+import { IconGitHub, IconSeparator, IconSidebar } from '@/components/ui/icons'
 import { UserMenu } from '@/components/user-menu'
 
 const GITHUB_REPO = 'https://github.com/Yesifan/ai-chatbot'
@@ -17,15 +11,10 @@ export async function Header() {
   return (
     <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-gradient-to-b from-background/10 via-background/50 to-background/80 px-4 backdrop-blur-xl">
       <div className="flex items-center">
-        <Sidebar>
-          <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
-            <SidebarList />
-          </React.Suspense>
-          <SidebarFooter>
-            <ThemeToggle />
-            <ClearHistory clearChats={clearChats} />
-          </SidebarFooter>
-        </Sidebar>
+        <Button variant="ghost" className="-ml-2 h-9 w-9 p-0">
+          <IconSidebar className="h-6 w-6" />
+          <span className="sr-only">Toggle Sidebar</span>
+        </Button>
         <div className="flex items-center">
           <IconSeparator className="h-6 w-6 text-muted-foreground/50" />
           <UserMenu />

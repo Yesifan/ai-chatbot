@@ -1,12 +1,12 @@
 import { getChats, removeChat, shareChat } from '@/app/actions'
-import { SidebarActions } from '@/components/sidebar-actions'
-import { SidebarItem } from '@/components/sidebar-item'
+import { ChatItemActions } from '@/components/history-chat-actions'
+import { ChatItem } from '@/components/history-chat-item'
 
-export interface SidebarListProps {
+export interface HistoryChatListProps {
   userId?: string
 }
 
-export async function SidebarList({ userId }: SidebarListProps) {
+export async function HistoryChatList({ userId }: HistoryChatListProps) {
   const chats = await getChats(userId)
 
   return (
@@ -16,13 +16,13 @@ export async function SidebarList({ userId }: SidebarListProps) {
           {chats.map(
             chat =>
               chat && (
-                <SidebarItem key={chat?.id} chat={chat}>
-                  <SidebarActions
+                <ChatItem key={chat?.id} chat={chat}>
+                  <ChatItemActions
                     chat={chat}
                     removeChat={removeChat}
                     shareChat={shareChat}
                   />
-                </SidebarItem>
+                </ChatItem>
               )
           )}
         </div>

@@ -10,6 +10,7 @@ import { Providers } from '@/components/providers'
 import { Header } from '@/components/header'
 import { SessionProvider } from 'next-auth/react'
 import { auth } from '@/auth'
+import { Sidebar } from '@/components/sidebar'
 
 export const metadata: Metadata = {
   title: {
@@ -51,9 +52,12 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             <div className="flex min-h-screen flex-col">
               {/* @ts-ignore */}
               <Header user={session?.user} />
-              <main className="flex flex-1 flex-col bg-muted/50">
-                {children}
-              </main>
+              <div className="flex flex-1">
+                <Sidebar />
+                <main className="flex flex-1 flex-col bg-muted/50">
+                  {children}
+                </main>
+              </div>
             </div>
           </SessionProvider>
           <TailwindIndicator />

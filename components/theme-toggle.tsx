@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
 import { IconMoon, IconSun } from '@/components/ui/icons'
 
+// TODO: theme 图标导致服务器渲染与客户端渲染不一致
 export function ThemeToggle() {
   const { setTheme, theme } = useTheme()
   const [_, startTransition] = React.useTransition()

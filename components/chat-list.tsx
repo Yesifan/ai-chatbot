@@ -7,6 +7,10 @@ export interface ChatList {
   messages: Message[]
 }
 
+/**
+ * show chat messages
+ * @param messages
+ */
 export function ChatList({ messages }: ChatList) {
   if (!messages.length) {
     return null

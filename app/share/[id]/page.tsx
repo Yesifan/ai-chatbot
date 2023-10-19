@@ -1,9 +1,7 @@
 import { type Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import { formatDate } from '@/lib/utils'
 import { getSharedChat } from '@/app/actions'
-import { ChatList } from '@/components/chat-list'
 
 export const runtime = 'edge'
 export const preferredRegion = 'home'
@@ -27,7 +25,7 @@ export async function generateMetadata({
 export default async function SharePage({ params }: SharePageProps) {
   const chat = await getSharedChat(params.id)
 
-  if (!chat || !chat?.sharePath) {
+  if (!chat) {
     notFound()
   }
 
