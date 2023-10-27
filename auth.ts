@@ -2,7 +2,7 @@ import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import db from './lib/database'
 import { up } from './lib/database/migrations'
-import { Credential, User } from './lib/types'
+import { Credential } from './lib/types'
 
 declare module 'next-auth' {
   interface Session {
@@ -12,6 +12,7 @@ declare module 'next-auth' {
 
 // TODO: 要不要 hash 后对比
 const getLoginUser = async (token: string) => {
+  console.debug(`[getLoginUser] TOKEN:${token}`)
   const user = await db
     .selectFrom('user')
     .selectAll()

@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import { signOut, useSession } from 'next-auth/react'
 
 import { Button } from '@/components/ui/button'

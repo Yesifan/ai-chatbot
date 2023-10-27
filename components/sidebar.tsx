@@ -1,11 +1,15 @@
 import * as React from 'react'
+import dynamic from 'next/dynamic'
 
 import { clearChats } from '@/app/actions'
 import { HistoryChatList } from '@/components/history-chat-list'
 
-import { ThemeToggle } from '@/components/theme-toggle'
 import { ClearHistory } from '@/components/clear-history'
 import { cn } from '@/lib/utils'
+
+const ThemeToggle = dynamic(() => import('@/components/theme-toggle'), {
+  ssr: false
+})
 
 // TODO:Display different contents according to whether user log in or not.
 export async function Sidebar() {

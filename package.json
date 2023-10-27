@@ -31,7 +31,6 @@
     "ai": "^2.2.12",
     "class-variance-authority": "^0.7.0",
     "clsx": "^1.2.1",
-    "dayjs": "^1.11.10",
     "focus-trap-react": "^10.2.1",
     "kysely": "^0.26.3",
     "nanoid": "^4.0.2",
