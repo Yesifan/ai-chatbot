@@ -4,16 +4,29 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
+import db from '@/lib/database'
 import { type Chat } from '@/lib/types'
 
-export async function getChats(userId?: string | null) {
-  if (!userId) {
+export async function getChats() {
+  const session = await auth()
+  if (!session) {
     return []
   }
 
+  const user = session.user
+
   try {
-    return [] as Chat[]
+    const chatList = await db
+      .selectFrom('chat')
+      .selectAll()
+      .where('chat.userId', '=', user.id)
+      .execute()
+
+    console.debug(`[getChats] chat list: ${chatList}`)
+
+    return chatList
   } catch (error) {
+    console.error(`[ERROR][getChats] ${error}`)
     return []
   }
 }

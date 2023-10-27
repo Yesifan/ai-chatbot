@@ -2,12 +2,8 @@ import { getChats, removeChat, shareChat } from '@/app/actions'
 import { ChatItemActions } from '@/components/history-chat-actions'
 import { ChatItem } from '@/components/history-chat-item'
 
-export interface HistoryChatListProps {
-  userId?: string
-}
-
-export async function HistoryChatList({ userId }: HistoryChatListProps) {
-  const chats = await getChats(userId)
+export async function HistoryChatList() {
+  const chats = await getChats()
 
   return (
     <div className="flex-1 overflow-auto">
