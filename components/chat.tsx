@@ -1,6 +1,6 @@
 'use client'
 
-import { useChat, type Message } from 'ai/react'
+import { useChat } from 'ai/react'
 import { toast } from 'react-hot-toast'
 
 import { cn } from '@/lib/utils'
@@ -10,6 +10,7 @@ import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { NotLogin } from './not-login'
 import { useSession } from 'next-auth/react'
+import { type Message } from '@/lib/types'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
@@ -20,7 +21,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
   const { data: session } = useSession()
   const { messages, ...props } = useChat({
     id,
-    initialMessages,
+    initialMessages: initialMessages as any,
     body: {
       id
     },

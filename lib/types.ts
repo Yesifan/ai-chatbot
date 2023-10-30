@@ -1,13 +1,6 @@
 import { type Message as AiMessage } from 'ai'
 import { Generated, Insertable, Selectable, Updateable } from 'kysely'
 
-declare module 'ai' {
-  interface Message {
-    role: 'system' | 'user' | 'assistant' | 'function' | 'helper'
-    content: string
-  }
-}
-
 export const enum Credential {
   AccessToken = 'access-token'
 }
@@ -70,7 +63,7 @@ export interface ChatTable
   createdAt: Date
 }
 
-export interface MessageTable extends AiMessage {
+export interface MessageTable extends Omit<AiMessage, 'id'> {
   id: Generated<number>
   chatId: string
   model?: GPT_MODEL

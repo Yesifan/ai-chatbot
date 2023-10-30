@@ -27,7 +27,11 @@ export interface ChatBody {
   messages: ChatCompletionRequestMessage[]
 }
 
-const getOrCreateChat = async (id: string, userId: string, title: string) => {
+const getOrCreateChat = async (
+  id: string,
+  userId: string,
+  title: string
+): Promise<NewChat> => {
   const chat = await database
     .selectFrom('chat')
     .selectAll()
@@ -46,6 +50,30 @@ const getOrCreateChat = async (id: string, userId: string, title: string) => {
   } else {
     return chat
   }
+}
+
+const recordConversation = async (
+  chat: NewChat,
+  question: string,
+  answer: string
+) => {
+  await database
+    .insertInto('message')
+    .values([
+      {
+        chatId: chat.id,
+        content: question,
+        role: 'user',
+        createdAt: new Date()
+      },
+      {
+        chatId: chat.id,
+        content: answer,
+        role: 'assistant',
+        createdAt: new Date()
+      }
+    ])
+    .execute()
 }
 
 export async function POST(req: NextRequest) {
@@ -80,19 +108,9 @@ export async function POST(req: NextRequest) {
       stream: true
     })
     const stream = OpenAIStream(res, {
-      async onCompletion(completion) {
-        await database
-          .insertInto('message')
-          .values([
-            question,
-            {
-              chatId: chat.id,
-              content: completion,
-              role: 'assistant',
-              createdAt: new Date()
-            }
-          ])
-          .execute()
+      async onCompletion(answer) {
+        const question = messages[messages.length - 1].content!
+        await recordConversation(chat, question, answer)
       }
     })
     return new StreamingTextResponse(stream)

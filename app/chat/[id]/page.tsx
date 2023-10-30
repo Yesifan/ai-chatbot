@@ -5,6 +5,7 @@ import { auth } from '@/auth'
 import { getChat } from '@/app/actions'
 import { Chat } from '@/components/chat'
 
+
 export const runtime = 'edge'
 export const preferredRegion = 'home'
 
@@ -23,11 +24,12 @@ export async function generateMetadata({
     redirect(`/?next=/chat/${params.id}`)
   }
 
-  const chat = await getChat(params.id, session.user.id)
+  const chatAndMessage = await getChat(params.id)
 
-  if (!chat || chat?.userId !== session?.user?.id) {
+  if (!chatAndMessage) {
     notFound()
   }
+  const [chat] = chatAndMessage
 
   return {
     title: chat?.title.toString().slice(0, 50) ?? 'Chat'
@@ -38,7 +40,8 @@ export default async function ChatPage({ params }: ChatPageProps) {
   const id = params.id
 
   // const session = await auth()
-  // const chat = await getChat(params.id, session.user.id)
+  const chatAndMessage = await getChat(params.id)
+  const [_chat, messages] = chatAndMessage!
 
-  return <Chat id={id} initialMessages={[]} />
+  return <Chat id={id} initialMessages={messages} />
 }
