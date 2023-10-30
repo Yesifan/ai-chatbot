@@ -5,24 +5,22 @@ import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import db from '@/lib/database'
-import { type Chat } from '@/lib/types'
+import { Message, type Chat } from '@/lib/types'
 
 export async function getChats() {
   const session = await auth()
-  if (!session) {
+  const userId = session?.user?.id
+
+  if (!userId) {
     return []
   }
-
-  const user = session.user
 
   try {
     const chatList = await db
       .selectFrom('chat')
       .selectAll()
-      .where('chat.userId', '=', user.id)
+      .where('chat.userId', '=', userId)
       .execute()
-
-    console.debug(`[getChats] chat list: ${chatList}`)
 
     return chatList
   } catch (error) {
@@ -31,11 +29,38 @@ export async function getChats() {
   }
 }
 
-export async function getChat(
-  id: string,
-  userId: string
-): Promise<Chat | null> {
-  return null
+export async function getChat(id: string): Promise<[Chat, Message[]] | null> {
+  const session = await auth()
+  if (!session) {
+    return null
+  }
+
+  const user = session.user
+
+  try {
+    const chats = await db
+      .selectFrom('chat')
+      .selectAll()
+      .where('chat.id', '=', id)
+      .where('chat.userId', '=', user.id)
+      .execute()
+
+    if (chats.length === 0) {
+      return null
+    }
+    const chat = chats[0]
+
+    const messageList = await db
+      .selectFrom('message')
+      .selectAll()
+      .where('message.chatId', '=', id)
+      .execute()
+
+    return [chat, messageList]
+  } catch (error) {
+    console.error(`[ERROR][getChats] ${error}`)
+    return null
+  }
 }
 
 export async function removeChat({ id, path }: { id: string; path: string }) {

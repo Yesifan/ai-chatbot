@@ -16,6 +16,7 @@ export function UserMenu() {
   if (!session?.user) {
     return null
   }
+
   return (
     <div className="flex items-center justify-between">
       <DropdownMenu>

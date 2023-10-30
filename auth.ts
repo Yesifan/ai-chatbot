@@ -1,4 +1,4 @@
-import NextAuth from 'next-auth'
+import NextAuth, { type DefaultSession } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import db from './lib/database'
 import { up } from './lib/database/migrations'
@@ -6,13 +6,15 @@ import { Credential } from './lib/types'
 
 declare module 'next-auth' {
   interface Session {
-    user: { id: string }
+    user: {
+      /** The user's id. */
+      id: string
+    } & DefaultSession['user']
   }
 }
 
 // TODO: 要不要 hash 后对比
 const getLoginUser = async (token: string) => {
-  console.debug(`[getLoginUser] TOKEN:${token}`)
   const user = await db
     .selectFrom('user')
     .selectAll()
@@ -64,12 +66,13 @@ export const {
   ],
   callbacks: {
     authorized({ auth }) {
-      console.debug('[AUTH AUTHORIZED]', !!auth.user)
       return !!auth.user // this ensures there is a logged in user for -every- request
     },
-    jwt({ token }) {
-      token.id = token.sub
-      return token
+    session({ session, token }) {
+      return {
+        user: { id: token.sub } as any,
+        expires: session.expires
+      }
     }
   },
   pages: {

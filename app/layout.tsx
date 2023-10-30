@@ -13,6 +13,7 @@ import { auth } from '@/auth'
 import { Sidebar } from '@/components/sidebar'
 
 export const metadata: Metadata = {
+  metadataBase: new URL(`http://localhost:${process.env.PORT || 3000}`),
   title: {
     default: 'Next.js AI Chatbot',
     template: `%s - Next.js AI Chatbot`
@@ -48,10 +49,10 @@ export default async function RootLayout({ children }: RootLayoutProps) {
       >
         <Toaster />
         <Providers attribute="class" defaultTheme="system" enableSystem>
-          <SessionProvider session={session} refetchOnWindowFocus={true}>
+          <SessionProvider session={session}>
             <div className="flex min-h-screen flex-col">
               {/* @ts-ignore */}
-              <Header user={session?.user} />
+              <Header />
               <div className="flex flex-1">
                 <Sidebar />
                 <main className="flex flex-1 flex-col bg-muted/50">
