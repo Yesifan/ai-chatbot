@@ -1,16 +1,16 @@
 import { Metadata } from 'next'
-
 import { Toaster } from 'react-hot-toast'
+import { SessionProvider } from 'next-auth/react'
+
+import { auth } from '@/auth'
+
+import { cn } from '@/lib/utils'
+import { fontMono, fontSans } from '@/lib/fonts'
+import { Sidebar } from '@/components/sidebar'
+import { Providers } from '@/components/providers'
+import { TailwindIndicator } from '@/components/tailwind-indicator'
 
 import '@/app/globals.css'
-import { fontMono, fontSans } from '@/lib/fonts'
-import { cn } from '@/lib/utils'
-import { TailwindIndicator } from '@/components/tailwind-indicator'
-import { Providers } from '@/components/providers'
-import { Header } from '@/components/header'
-import { SessionProvider } from 'next-auth/react'
-import { auth } from '@/auth'
-import { Sidebar } from '@/components/sidebar'
 
 export const metadata: Metadata = {
   metadataBase: new URL(`http://localhost:${process.env.PORT || 3000}`),
@@ -50,15 +50,11 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <Toaster />
         <Providers attribute="class" defaultTheme="system" enableSystem>
           <SessionProvider session={session}>
-            <div className="flex min-h-screen flex-col">
-              {/* @ts-ignore */}
-              <Header />
-              <div className="flex flex-1">
-                <Sidebar />
-                <main className="flex flex-1 flex-col bg-muted/50">
-                  {children}
-                </main>
-              </div>
+            <div className="flex h-screen">
+              <Sidebar />
+              <main className="flex flex-1 flex-col bg-muted/50">
+                {children}
+              </main>
             </div>
           </SessionProvider>
           <TailwindIndicator />

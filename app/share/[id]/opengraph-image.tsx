@@ -30,7 +30,7 @@ interface ImageProps {
 export default async function Image({ params }: ImageProps) {
   const chat = await getSharedChat(params.id)
 
-  if (!chat || !chat?.sharePath) {
+  if (!chat) {
     return null
   }
 

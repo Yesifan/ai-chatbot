@@ -5,7 +5,7 @@ import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { signIn, useSession } from 'next-auth/react'
-import { Credential } from '@/lib/types'
+import { Credential } from '@/lib/constants'
 import { nanoid } from 'nanoid'
 
 export interface ChatPanelProps

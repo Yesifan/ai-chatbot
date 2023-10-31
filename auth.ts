@@ -2,7 +2,7 @@ import NextAuth, { type DefaultSession } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import db from './lib/database'
 import { up } from './lib/database/migrations'
-import { Credential } from './lib/types'
+import { Credential } from './lib/constants'
 
 declare module 'next-auth' {
   interface Session {

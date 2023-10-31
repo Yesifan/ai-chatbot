@@ -21,4 +21,12 @@ const Avatar = ({ src, fallback }: AvatarProps) => (
   </RadixAvatar.Root>
 )
 
+export const UserAvatar = () => {
+  return <Avatar fallback="👩🏼‍🚀" />
+}
+
+export const RobotAvatar = () => {
+  return <Avatar fallback="🤖" />
+}
+
 export default Avatar

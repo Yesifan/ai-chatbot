@@ -8,7 +8,8 @@ import { OpenAIStream, StreamingTextResponse } from 'ai'
 import { auth } from '@/auth'
 import { NextRequest } from 'next/server'
 import database from '@/lib/database'
-import { GPT_MODEL, NewChat, NewMessage } from '@/lib/types'
+import { NewChat } from '@/lib/types'
+import { GPT_Model, Role } from '@/lib/constants'
 
 export const runtime = 'edge'
 
@@ -23,7 +24,7 @@ const openai = new OpenAIApi(config)
 
 export interface ChatBody {
   id: string
-  model: GPT_MODEL
+  model: GPT_Model
   messages: ChatCompletionRequestMessage[]
 }
 
@@ -63,13 +64,13 @@ const recordConversation = async (
       {
         chatId: chat.id,
         content: question,
-        role: 'user',
+        role: Role.User,
         createdAt: new Date()
       },
       {
         chatId: chat.id,
         content: answer,
-        role: 'assistant',
+        role: Role.Assistant,
         createdAt: new Date()
       }
     ])
@@ -95,15 +96,16 @@ export async function POST(req: NextRequest) {
   const chat = await getOrCreateChat(id, userId, title)
 
   try {
-    const question: NewMessage = {
-      chatId: chat.id,
-      content: messages[messages.length - 1].content!,
-      role: 'user',
-      createdAt: new Date()
-    }
+    const formatMessage = messages.map(({ role, content, name }) => {
+      return {
+        role,
+        content,
+        name
+      }
+    })
     const res = await openai.createChatCompletion({
-      model: model ?? GPT_MODEL.GPT_3_5_TURBO,
-      messages: messages,
+      model: model ?? GPT_Model.GPT_3_5_TURBO,
+      messages: formatMessage,
       temperature: 0.7,
       stream: true
     })

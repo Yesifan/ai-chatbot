@@ -6,6 +6,7 @@ import { HistoryChatList } from '@/components/history-chat-list'
 
 import { ClearHistory } from '@/components/clear-history'
 import { cn } from '@/lib/utils'
+import { Header } from './header'
 
 const ThemeToggle = dynamic(() => import('@/components/theme-toggle'), {
   ssr: false
@@ -15,6 +16,7 @@ const ThemeToggle = dynamic(() => import('@/components/theme-toggle'), {
 export async function Sidebar() {
   return (
     <section className="inset-y-0 flex h-auto w-[300px] flex-col p-0">
+      <Header />
       <HistoryChatList />
       <div className={cn('flex items-center justify-between p-4')}>
         <ThemeToggle />

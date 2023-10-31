@@ -10,7 +10,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('lastLogin', 'timestamp')
     .execute()
 
-  //TODO: 修改模型
   await db.schema
     .createTable('robot')
     .ifNotExists()
@@ -47,6 +46,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('attachedMessagesCount', 'integer')
     .execute()
 
+  // TODO: add name to message
+  // chatgpt api 包含了 name 和 fucntion_call 后续要加上
   await db.schema
     .createTable('message')
     .ifNotExists()

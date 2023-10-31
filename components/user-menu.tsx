@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import Avatar from './ui/avatar'
+import { UserAvatar } from './ui/avatar'
 
 export function UserMenu() {
   const { data: session } = useSession()
@@ -22,7 +22,7 @@ export function UserMenu() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="px-0">
-            <Avatar fallback="👩🏼‍🚀" />
+            <UserAvatar />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent sideOffset={8} align="start" className="w-[180px]">

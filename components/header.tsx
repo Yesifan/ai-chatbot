@@ -32,7 +32,6 @@ export async function Header() {
           className={cn(buttonVariants({ variant: 'outline' }))}
         >
           <IconGitHub />
-          <span className="ml-2 hidden md:flex">GitHub</span>
         </a>
       </div>
     </header>
