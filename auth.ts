@@ -9,6 +9,7 @@ declare module 'next-auth' {
     user: {
       /** The user's id. */
       id: string
+      lastLogin?: Date
     } & DefaultSession['user']
   }
 }
@@ -68,17 +69,15 @@ export const {
     authorized({ auth }) {
       return !!auth.user // this ensures there is a logged in user for -every- request
     },
-    // TODO: 使用用户 ID 来储存和获取聊天记录
     jwt({ token, user }) {
       if (user) {
-        token.sub = user.id
+        token.id = user.id
       }
       return token
     },
-
     session({ session, token }) {
       return {
-        user: { id: token.sub } as any,
+        user: { id: token.id } as any,
         expires: session.expires
       }
     }
