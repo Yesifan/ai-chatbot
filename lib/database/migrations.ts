@@ -28,6 +28,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('attachedMessagesCount', 'integer')
     .execute()
 
+  // TODO: 添加隐式删除
   await db.schema
     .createTable('chat')
     .ifNotExists()

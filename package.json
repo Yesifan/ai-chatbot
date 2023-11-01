@@ -45,7 +45,8 @@
     "react-syntax-highlighter": "^15.5.0",
     "react-textarea-autosize": "^8.5.3",
     "remark-gfm": "^3.0.1",
-    "remark-math": "^5.1.1"
+    "remark-math": "^5.1.1",
+    "ua-parser-js": "^1.0.37"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.10",
@@ -54,6 +55,7 @@
     "@types/react": "^18.2.33",
     "@types/react-dom": "^18.2.14",
     "@types/react-syntax-highlighter": "^15.5.9",
+    "@types/ua-parser-js": "^0.7.38",
     "@typescript-eslint/parser": "^5.62.0",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.52.0",
