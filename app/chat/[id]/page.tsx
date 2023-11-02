@@ -5,7 +5,6 @@ import { auth } from '@/auth'
 import { getChat } from '@/app/actions'
 import { Chat } from '@/components/chat'
 
-
 export const runtime = 'edge'
 export const preferredRegion = 'home'
 
@@ -41,6 +40,9 @@ export default async function ChatPage({ params }: ChatPageProps) {
 
   // const session = await auth()
   const chatAndMessage = await getChat(params.id)
+  if (!chatAndMessage) {
+    return null
+  }
   const [_chat, messages] = chatAndMessage!
 
   return <Chat id={id} initialMessages={messages} />

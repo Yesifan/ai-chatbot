@@ -71,9 +71,6 @@ dependencies:
   openai:
     specifier: ^4.14.2
     version: registry.npmmirror.com/openai@4.14.2
-  openai-edge:
-    specifier: ^1.2.2
-    version: registry.npmmirror.com/openai-edge@1.2.2
   react:
     specifier: ^18.2.0
     version: registry.npmmirror.com/react@18.2.0
@@ -5008,13 +5005,6 @@ packages:
     dependencies:
       wrappy: registry.npmmirror.com/wrappy@1.0.2
     dev: true
-
-  registry.npmmirror.com/openai-edge@1.2.2:
-    resolution: {integrity: sha512-C3/Ao9Hkx5uBPv9YFBpX/x59XMPgPUU4dyGg/0J2sOJ7O9D98kD+lfdOc7v/60oYo5xzMGct80uFkYLH+X2qgw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/openai-edge/-/openai-edge-1.2.2.tgz}
-    name: openai-edge
-    version: 1.2.2
-    engines: {node: '>=18'}
-    dev: false
 
   registry.npmmirror.com/openai@4.14.2:
     resolution: {integrity: sha512-JGlm7mMC7J+cyQZnQMOH7daD9cBqqWqLtlBsejElEkgoehPrYfdyxSxIGICz5xk4YimbwI5FlLATSVojLtCKXQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/openai/-/openai-4.14.2.tgz}

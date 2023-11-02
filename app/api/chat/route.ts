@@ -1,31 +1,18 @@
-import {
-  OpenAIApi,
-  Configuration,
-  ChatCompletionRequestMessage
-} from 'openai-edge'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 
 import { auth } from '@/auth'
 import { NextRequest } from 'next/server'
 import database from '@/lib/database'
-import { NewChat } from '@/lib/types'
+import { Message, NewChat } from '@/types/chat'
 import { GPT_Model, Role } from '@/lib/constants'
+import { createOpenai } from './openai'
 
 export const runtime = 'edge'
-
-const config = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-  basePath: process.env.OPENAI_BASEPATH
-})
-
-console.debug('[OPENAI BASEPATH]', config.basePath)
-
-const openai = new OpenAIApi(config)
 
 export interface ChatBody {
   id: string
   model: GPT_Model
-  messages: ChatCompletionRequestMessage[]
+  messages: Message[]
 }
 
 const getOrCreateChat = async (
@@ -80,6 +67,8 @@ const recordConversation = async (
 export async function POST(req: NextRequest) {
   const session = await auth()
 
+  const openai = createOpenai()
+
   if (!session.user) {
     return new Response('Unauthorized', {
       status: 401
@@ -96,16 +85,8 @@ export async function POST(req: NextRequest) {
   const chat = await getOrCreateChat(id, userId, title)
 
   try {
-    const formatMessage = messages.map(({ role, content, name }) => {
-      return {
-        role,
-        content,
-        name
-      }
-    })
-    const res = await openai.createChatCompletion({
+    const res = await openai.createChatCompletion(messages, {
       model: model ?? GPT_Model.GPT_3_5_TURBO,
-      messages: formatMessage,
       temperature: 0.7,
       stream: true
     })
@@ -117,7 +98,6 @@ export async function POST(req: NextRequest) {
     })
     return new StreamingTextResponse(stream)
   } catch (e: any) {
-    console.error('[CHAT API ERROR]', e)
     return new Response('Error', {
       status: 500
     })

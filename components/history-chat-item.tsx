@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-import { type Chat } from '@/lib/types'
+import { type Chat } from '@/types/chat'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { IconMessage } from '@/components/ui/icons'

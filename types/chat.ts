@@ -1,6 +1,6 @@
 import { type Message as AiMessage } from 'ai'
 import { Generated, Insertable, Selectable, Updateable } from 'kysely'
-import { GPT_Model } from './constants'
+import { GPT_Model, Role } from '../lib/constants'
 
 export interface Database {
   user: UserTable
@@ -50,6 +50,7 @@ export interface MessageTable extends Omit<AiMessage, 'id'> {
   id: Generated<number>
   chatId: string
   model?: GPT_Model
+  role: Role
   isPin: Generated<boolean>
   isFavourite: Generated<boolean>
   createdAt: Date
@@ -65,7 +66,9 @@ export type Chat = Selectable<ChatTable>
 export type NewChat = Insertable<ChatTable>
 export type PutChat = Updateable<ChatTable>
 
-export type Message = Selectable<MessageTable>
+export type Message = Omit<Selectable<MessageTable>, 'role'> & {
+  role: Role
+}
 export type NewMessage = Insertable<MessageTable>
 export type PutMessage = Updateable<MessageTable>
 

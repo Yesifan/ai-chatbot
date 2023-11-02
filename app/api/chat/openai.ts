@@ -1,0 +1,64 @@
+import OpenAI from 'openai'
+import { config } from '@/config/server'
+import { OpenAIChatMessage, OpenAIChatStreamPayload } from '@/types/openai'
+
+declare module 'openai' {
+  interface OpenAI {
+    createChatCompletion: (
+      messages: OpenAIChatMessage[],
+      payload: OpenAIChatStreamPayload
+    ) => Promise<any>
+  }
+}
+
+// 创建 OpenAI 实例
+export const createOpenai = (userApiKey?: string, endpoint?: string) => {
+  const { OPENAI_API_KEY, OPENAI_BASEPATH } = config
+
+  const baseURL = endpoint ?? OPENAI_BASEPATH ?? undefined
+
+  const apiKey = !userApiKey ? OPENAI_API_KEY : userApiKey
+
+  console.debug('[OPENAI BASEPATH]', baseURL)
+
+  if (!apiKey) throw new Error('OPENAI_API_KEY is empty')
+
+  const openai = new OpenAI({ apiKey, baseURL })
+  openai.completions.create
+  openai.createChatCompletion = (
+    messages: OpenAIChatMessage[],
+    payload: OpenAIChatStreamPayload
+  ) => createChatCompletion(openai, messages, payload)
+
+  return openai
+}
+
+export const createChatCompletion = async (
+  openai: OpenAI,
+  messages: OpenAIChatMessage[],
+  payload: OpenAIChatStreamPayload
+) => {
+  const { ...params } = payload
+
+  const formatMessages = messages.map(m => ({
+    content: m.content,
+    name: m.name,
+    role: m.role
+  }))
+
+  // ============  2. send api   ============ //
+
+  try {
+    return await openai.chat.completions.create(
+      {
+        messages: formatMessages,
+        ...params,
+        stream: true
+      },
+      { headers: { Accept: '*/*' } }
+    )
+  } catch (error) {
+    console.error('[CHAT API ERROR]', error)
+    return error
+  }
+}

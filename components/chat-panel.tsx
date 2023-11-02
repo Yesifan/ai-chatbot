@@ -5,7 +5,7 @@ import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { signIn, useSession } from 'next-auth/react'
-import { Credential } from '@/lib/constants'
+import { Credential, Role } from '@/lib/constants'
 import { nanoid } from 'nanoid'
 
 export interface ChatPanelProps
@@ -52,7 +52,7 @@ export function ChatPanel({ id, messages, ...props }: ChatPanelProps) {
           {
             id: nanoid(),
             content: result,
-            role: 'system' as any
+            role: Role.System
           }
         ])
       } else {
@@ -63,7 +63,7 @@ export function ChatPanel({ id, messages, ...props }: ChatPanelProps) {
       await props.append({
         id, // chatId
         content: value,
-        role: 'user'
+        role: Role.User
       })
     }
   }

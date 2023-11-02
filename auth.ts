@@ -66,9 +66,6 @@ export const {
     })
   ],
   callbacks: {
-    authorized({ auth }) {
-      return !!auth.user // this ensures there is a logged in user for -every- request
-    },
     jwt({ token, user }) {
       if (user) {
         token.id = user.id

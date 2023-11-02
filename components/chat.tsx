@@ -10,7 +10,7 @@ import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { NotLogin } from './not-login'
 import { useSession } from 'next-auth/react'
-import { type Message } from '@/lib/types'
+import { type Message } from '@/types/chat'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]

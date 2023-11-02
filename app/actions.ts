@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import db from '@/lib/database'
-import { Message, type Chat } from '@/lib/types'
+import { Message, type Chat } from '@/types/chat'
 
 export async function getChats() {
   const session = await auth()
@@ -31,6 +31,7 @@ export async function getChats() {
 
 export async function getChat(id: string): Promise<[Chat, Message[]] | null> {
   const session = await auth()
+
   if (!session) {
     return null
   }

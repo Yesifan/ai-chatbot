@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react'
 import { getChats, removeChat, shareChat } from '@/app/actions'
 import { ChatItemActions } from '@/components/history-chat-actions'
 import { ChatItem } from '@/components/history-chat-item'
-import type { Chat } from '@/lib/types'
+import type { Chat } from '@/types/chat'
 
 export function HistoryChatList() {
   const { data: session, status } = useSession()
