@@ -39,17 +39,16 @@ export async function getChat(id: string): Promise<[Chat, Message[]] | null> {
   const user = session.user
 
   try {
-    const chats = await db
+    const chat = await db
       .selectFrom('chat')
       .selectAll()
       .where('chat.id', '=', id)
       .where('chat.userId', '=', user.id)
-      .execute()
+      .executeTakeFirst()
 
-    if (chats.length === 0) {
+    if (!chat) {
       return null
     }
-    const chat = chats[0]
 
     const messageList = await db
       .selectFrom('message')
@@ -91,6 +90,19 @@ export async function clearChats() {
       error: 'Unauthorized'
     }
   }
+
+  const chats = await db
+    .selectFrom('chat')
+    .select('chat.id')
+    .where('userId', '=', session.user.id)
+    .execute()
+  chats.forEach(async chat => {
+    await db
+      .deleteFrom('message')
+      .where('chatId', '=', chat.id)
+      .executeTakeFirst()
+    await db.deleteFrom('chat').where('id', '=', chat.id).executeTakeFirst()
+  })
 
   revalidatePath('/')
   return redirect('/')
