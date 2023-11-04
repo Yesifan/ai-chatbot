@@ -47,12 +47,12 @@ export interface ChatTable
 }
 
 export interface MessageTable extends Omit<AiMessage, 'id'> {
-  id: Generated<number>
+  id: Generated<string>
   chatId: string
   model?: GPT_Model
   role: Role
-  isPin: Generated<boolean>
-  isFavourite: Generated<boolean>
+  isPin?: Generated<boolean>
+  isFavourite?: Generated<boolean>
   createdAt: Date
 }
 
@@ -66,9 +66,7 @@ export type Chat = Selectable<ChatTable>
 export type NewChat = Insertable<ChatTable>
 export type PutChat = Updateable<ChatTable>
 
-export type Message = Omit<Selectable<MessageTable>, 'role'> & {
-  role: Role
-}
+export type Message = Selectable<MessageTable>
 export type NewMessage = Insertable<MessageTable>
 export type PutMessage = Updateable<MessageTable>
 

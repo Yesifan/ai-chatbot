@@ -13,7 +13,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('robot')
     .ifNotExists()
-    .addColumn('id', 'char(21)', col => col.primaryKey())
+    .addColumn('id', 'varchar(8)', col => col.primaryKey())
     .addColumn('userId', 'char(21)', col => col.notNull())
     .addColumn('name', 'varchar(120)', col => col.notNull())
     .addColumn('createdAt', 'timestamp')
@@ -32,7 +32,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('chat')
     .ifNotExists()
-    .addColumn('id', 'char(21)', col => col.primaryKey())
+    .addColumn('id', 'varchar(8)', col => col.primaryKey())
     .addColumn('userId', 'char(21)', col => col.notNull())
     .addColumn('title', 'varchar(120)', col => col.notNull())
     .addColumn('createdAt', 'timestamp')
@@ -52,10 +52,10 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('message')
     .ifNotExists()
-    .addColumn('id', 'serial', col => col.primaryKey())
-    .addColumn('chatId', 'char(21)', col => col.notNull())
+    .addColumn('id', 'varchar(8)', col => col.primaryKey())
+    .addColumn('chatId', 'varchar(8)', col => col.notNull())
     .addColumn('content', 'text', col => col.notNull())
-    .addColumn('role', 'char(18)', col => col.notNull())
+    .addColumn('role', 'varchar(10)', col => col.notNull())
     .addColumn('createdAt', 'timestamp')
     .addColumn('model', 'varchar(20)')
     .addColumn('isPin', 'boolean', col => col.defaultTo(false))
