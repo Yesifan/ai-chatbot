@@ -3,18 +3,17 @@ import { OpenAIStream, StreamingTextResponse } from 'ai'
 import { auth } from '@/auth'
 import { NextRequest } from 'next/server'
 import database from '@/lib/database'
-import { NewChat } from '@/types/chat'
+import { Message, NewChat } from '@/types/chat'
 import { GPT_Model, Role } from '@/lib/constants'
 import { createOpenai } from './openai'
-import { nanoid } from '@/lib/utils'
-import { ChatCompletionMessageParam } from 'openai/resources'
 
 export const runtime = 'edge'
 
 export interface ChatBody {
   id: string
   model: GPT_Model
-  messages: ChatCompletionMessageParam[]
+  messages: Message[]
+  replyId: string
 }
 
 const getOrCreateChat = async (
@@ -44,23 +43,23 @@ const getOrCreateChat = async (
 
 const recordConversation = async (
   chat: NewChat,
-  question: string,
-  answer: string
+  question: Message,
+  answer: Message
 ) => {
   await database
     .insertInto('message')
     .values([
       {
-        id: nanoid(),
+        id: question.id,
         chatId: chat.id,
-        content: question,
+        content: question.content,
         role: Role.User,
         createdAt: new Date()
       },
       {
-        id: nanoid(),
+        id: answer.id,
         chatId: chat.id,
-        content: answer,
+        content: answer.content,
         role: Role.Assistant,
         createdAt: new Date()
       }
@@ -80,7 +79,7 @@ export async function POST(req: NextRequest) {
   }
 
   const json = (await req.json()) as ChatBody
-  const { id, model, messages } = json
+  const { id, model, messages, replyId } = json
 
   if (!messages || messages.length === 0) {
     return new Response('Empty messages', {
@@ -96,15 +95,20 @@ export async function POST(req: NextRequest) {
   const chat = await getOrCreateChat(id, userId, title)
 
   try {
-    const res = await openai.createChatCompletion(messages, {
+    const res = await openai.createChatCompletion(messages as any, {
       model: model ?? GPT_Model.GPT_3_5_TURBO,
       temperature: 0.7,
       stream: true
     })
     const stream = OpenAIStream(res, {
       async onCompletion(answer) {
-        const question = messages[messages.length - 1].content!
-        await recordConversation(chat, question, answer)
+        const question = messages[messages.length - 1]
+        const answerMessage = {
+          id: replyId,
+          content: answer,
+          role: Role.Assistant
+        }
+        await recordConversation(chat, question, answerMessage)
       }
     })
     return new StreamingTextResponse(stream)
