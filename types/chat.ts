@@ -1,4 +1,4 @@
-import { type Message as AiMessage } from 'ai'
+import { type Message as AIMessage } from 'ai'
 import { Generated, Insertable, Selectable, Updateable } from 'kysely'
 import { GPT_Model, Role } from '../lib/constants'
 
@@ -46,7 +46,7 @@ export interface ChatTable
   createdAt: Date
 }
 
-export interface MessageTable extends Omit<AiMessage, 'id'> {
+export interface MessageTable extends Omit<AIMessage, 'id'> {
   id: Generated<string>
   chatId: string
   model?: GPT_Model
@@ -66,7 +66,11 @@ export type Chat = Selectable<ChatTable>
 export type NewChat = Insertable<ChatTable>
 export type PutChat = Updateable<ChatTable>
 
-export type Message = Selectable<MessageTable>
+export type Message = Partial<Selectable<MessageTable>> & {
+  id: string
+  role: Role
+  content: string
+}
 export type NewMessage = Insertable<MessageTable>
 export type PutMessage = Updateable<MessageTable>
 

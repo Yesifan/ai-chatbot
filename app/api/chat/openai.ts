@@ -1,11 +1,12 @@
 import OpenAI from 'openai'
 import { config } from '@/config/server'
-import { OpenAIChatMessage, OpenAIChatStreamPayload } from '@/types/openai'
+import { OpenAIChatStreamPayload } from '@/types/openai'
+import { ChatCompletionMessageParam } from 'openai/resources'
 
 declare module 'openai' {
   interface OpenAI {
     createChatCompletion: (
-      messages: OpenAIChatMessage[],
+      messages: ChatCompletionMessageParam[],
       payload: OpenAIChatStreamPayload
     ) => Promise<any>
   }
@@ -26,7 +27,7 @@ export const createOpenai = (userApiKey?: string, endpoint?: string) => {
   const openai = new OpenAI({ apiKey, baseURL })
   openai.completions.create
   openai.createChatCompletion = (
-    messages: OpenAIChatMessage[],
+    messages: ChatCompletionMessageParam[],
     payload: OpenAIChatStreamPayload
   ) => createChatCompletion(openai, messages, payload)
 
@@ -35,23 +36,17 @@ export const createOpenai = (userApiKey?: string, endpoint?: string) => {
 
 export const createChatCompletion = async (
   openai: OpenAI,
-  messages: OpenAIChatMessage[],
+  messages: ChatCompletionMessageParam[],
   payload: OpenAIChatStreamPayload
 ) => {
   const { ...params } = payload
-
-  const formatMessages = messages.map(m => ({
-    content: m.content,
-    name: m.name,
-    role: m.role
-  }))
 
   // ============  2. send api   ============ //
 
   try {
     return await openai.chat.completions.create(
       {
-        messages: formatMessages,
+        messages,
         ...params,
         stream: true
       },

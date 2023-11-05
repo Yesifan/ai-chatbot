@@ -3,16 +3,18 @@ import { OpenAIStream, StreamingTextResponse } from 'ai'
 import { auth } from '@/auth'
 import { NextRequest } from 'next/server'
 import database from '@/lib/database'
-import { Message, NewChat } from '@/types/chat'
+import { NewChat } from '@/types/chat'
 import { GPT_Model, Role } from '@/lib/constants'
 import { createOpenai } from './openai'
+import { nanoid } from '@/lib/utils'
+import { ChatCompletionMessageParam } from 'openai/resources'
 
 export const runtime = 'edge'
 
 export interface ChatBody {
   id: string
   model: GPT_Model
-  messages: Message[]
+  messages: ChatCompletionMessageParam[]
 }
 
 const getOrCreateChat = async (
@@ -49,12 +51,14 @@ const recordConversation = async (
     .insertInto('message')
     .values([
       {
+        id: nanoid(),
         chatId: chat.id,
         content: question,
         role: Role.User,
         createdAt: new Date()
       },
       {
+        id: nanoid(),
         chatId: chat.id,
         content: answer,
         role: Role.Assistant,
@@ -77,9 +81,16 @@ export async function POST(req: NextRequest) {
 
   const json = (await req.json()) as ChatBody
   const { id, model, messages } = json
+
+  if (!messages || messages.length === 0) {
+    return new Response('Empty messages', {
+      status: 400
+    })
+  }
+
   const userId = session.user.id
 
-  const content = messages[0].content ?? 'Robot Chat'
+  const content = messages[0].content!
   const title = content.substring(0, 100)
 
   const chat = await getOrCreateChat(id, userId, title)

@@ -1,6 +1,5 @@
 'use client'
 
-import { useChat } from 'ai/react'
 import { toast } from 'react-hot-toast'
 
 import { cn } from '@/lib/utils'
@@ -11,6 +10,7 @@ import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { NotLogin } from './not-login'
 import { useSession } from 'next-auth/react'
 import { type Message } from '@/types/chat'
+import { useChat } from '@/lib/hooks/use-chat'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
@@ -20,7 +20,6 @@ export interface ChatProps extends React.ComponentProps<'div'> {
 export function Chat({ id, initialMessages, className }: ChatProps) {
   const { data: session } = useSession()
   const { messages, ...props } = useChat({
-    id,
     initialMessages: initialMessages as any,
     body: {
       id
@@ -44,7 +43,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         )}
         {messages.length > 0 && (
           <>
-            <ChatList messages={messages} />
+            <ChatList messages={messages} {...props} />
             <ChatScrollAnchor trackVisibility={props.isLoading} />
           </>
         )}
