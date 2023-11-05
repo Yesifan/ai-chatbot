@@ -49,7 +49,7 @@ export const enum Platform {
 }
 
 export function getPlatform() {
-  if (typeof process === 'undefined') {
+  if (typeof window !== 'undefined') {
     // use client
     const userAgent = navigator?.userAgent
 
