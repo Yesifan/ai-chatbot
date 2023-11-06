@@ -5,6 +5,7 @@ import { useTheme } from 'next-themes'
 
 import { Button } from '@/components/ui/button'
 import { IconMoon, IconSun } from '@/components/ui/icons'
+import { Theme } from '@/lib/constants'
 
 // TODO: theme 图标导致服务器渲染与客户端渲染不一致
 export function ThemeToggle() {
@@ -17,11 +18,11 @@ export function ThemeToggle() {
       size="icon"
       onClick={() => {
         startTransition(() => {
-          setTheme(theme === 'light' ? 'dark' : 'light')
+          setTheme(theme === Theme.Light ? Theme.Dark : Theme.Light)
         })
       }}
     >
-      {!theme ? null : theme === 'dark' ? (
+      {!theme ? null : theme === Theme.Dark ? (
         <IconMoon className="transition-all" />
       ) : (
         <IconSun className="transition-all" />

@@ -1,5 +1,3 @@
-import { type Message } from 'ai'
-
 import { Separator } from '@/components/ui/separator'
 import { ChatMessage } from '@/components/chat-message'
 import { Role } from '@/lib/constants'
@@ -21,19 +19,17 @@ export function ChatList({ messages, streamData, isLoading }: ChatList) {
       {messages.map((message, index) => (
         <div key={index}>
           <ChatMessage {...message} />
-          {index < messages.length - 1 && (
-            <Separator className="my-4 md:my-8" />
-          )}
+          {index < messages.length - 1 && <Separator />}
         </div>
       ))}
       {isLoading && (
         <>
           <Separator className="my-4 md:my-8" />
-          {streamData ? (
-            <ChatMessage role={Role.Assistant} content={streamData} />
-          ) : (
-            <div>Loading...</div>
-          )}
+          <ChatMessage
+            role={Role.Assistant}
+            content={streamData}
+            isLoading={isLoading}
+          />
         </>
       )}
     </div>

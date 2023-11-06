@@ -15,3 +15,9 @@ export const enum Role {
   Function = 'function',
   Assistant = 'assistant'
 }
+
+export const enum Theme {
+  Light = 'light',
+  Dark = 'dark',
+  System = 'system'
+}
