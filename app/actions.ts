@@ -63,7 +63,7 @@ export async function getChat(id: string): Promise<[Chat, Message[]] | null> {
   }
 }
 
-export async function removeChat({ id, path }: { id: string; path: string }) {
+export async function removeMessage(id: string) {
   const session = await auth()
 
   if (!session) {
@@ -72,7 +72,27 @@ export async function removeChat({ id, path }: { id: string; path: string }) {
     }
   }
 
-  if (!!session?.user?.id) {
+  const message = await db
+    .deleteFrom('message')
+    .where('message.id', '=', id)
+    .executeTakeFirst()
+
+  if (!message) {
+    return {
+      ok: false,
+      error: 'Not found'
+    }
+  }
+
+  return {
+    ok: true
+  }
+}
+
+export async function removeChat({ id, path }: { id: string; path: string }) {
+  const session = await auth()
+
+  if (!session) {
     return {
       error: 'Unauthorized'
     }

@@ -263,6 +263,15 @@ export function useChat({
     [messages, triggerRequest]
   )
 
+  const remove = useCallback(
+    (id: string) => {
+      const messages = messagesRef.current
+      mutateMessages(messages => messages.filter(message => message.id !== id))
+      return messages
+    },
+    [mutateMessages]
+  )
+
   const stop = useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
@@ -280,6 +289,7 @@ export function useChat({
     pin,
     append,
     reload,
+    remove,
     stop,
     setMessages,
     input,

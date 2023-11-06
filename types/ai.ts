@@ -85,6 +85,7 @@ export type UseChatHelpers = {
   reload: (
     chatRequestOptions?: ChatRequestOptions
   ) => Promise<Message | null | undefined>
+  remove: (id: string) => Message[] | null | undefined
   /**
    * Abort the current request immediately, keep the generated tokens if any.
    */

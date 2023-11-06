@@ -12,6 +12,7 @@ import BubblesLoading from './ui/loading'
 export interface ChatMessageProps extends Omit<Message, 'id'> {
   id?: string
   isLoading?: boolean
+  onDelete?: (id: string) => void
 }
 
 const ChatAvatar = ({ role }: { role: Message['role'] }) => {
@@ -31,6 +32,7 @@ export function ChatMessage({
   id,
   role,
   content,
+  onDelete,
   isLoading
 }: ChatMessageProps) {
   return (
@@ -43,6 +45,7 @@ export function ChatMessage({
           id={id}
           role={role}
           content={content}
+          onDelete={onDelete}
         />
       )}
       <div className="flex">
