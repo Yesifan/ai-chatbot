@@ -1,3 +1,4 @@
+import { APIError } from 'openai'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 
 import { auth } from '@/auth'
@@ -112,9 +113,17 @@ export async function POST(req: NextRequest) {
       }
     })
     return new StreamingTextResponse(stream)
-  } catch (e: any) {
-    return new Response('Error', {
-      status: 500
-    })
+  } catch (e) {
+    if (e instanceof APIError) {
+      console.error('[OPENAI CHAT ERROR]', e)
+      return new Response(e.message, {
+        status: 500
+      })
+    } else {
+      console.error('[OPENAI CHAT ERROR] unknown error', e)
+      return new Response('Internal Server Error', {
+        status: 500
+      })
+    }
   }
 }

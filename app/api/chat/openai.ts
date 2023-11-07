@@ -24,11 +24,12 @@ export const createOpenai = (userApiKey?: string, endpoint?: string) => {
 
   const apiKey = !userApiKey ? OPENAI_API_KEY : userApiKey
 
-  console.debug('[OPENAI BASEPATH]', baseURL)
-
   if (!apiKey) throw new Error('OPENAI_API_KEY is empty')
 
   const openai = new OpenAI({ apiKey, baseURL })
+
+  console.debug('[OPENAI BASEPATH]', openai.baseURL)
+
   openai.completions.create
   openai.createChatCompletion = (
     messages: MessageParam[],
@@ -47,17 +48,12 @@ export const createChatCompletion = async (
 
   // ============  2. send api   ============ //
 
-  try {
-    return await openai.chat.completions.create(
-      {
-        messages,
-        ...params,
-        stream: true
-      },
-      { headers: { Accept: '*/*' } }
-    )
-  } catch (error) {
-    console.error('[CHAT API ERROR]', error)
-    return error
-  }
+  return await openai.chat.completions.create(
+    {
+      messages,
+      ...params,
+      stream: true
+    },
+    { headers: { Accept: '*/*' } }
+  )
 }
