@@ -294,6 +294,7 @@ export function useChat({
     setMessages,
     input,
     setInput,
-    isLoading
+    isLoading,
+    setLoading
   }
 }

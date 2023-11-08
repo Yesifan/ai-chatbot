@@ -2,8 +2,8 @@ import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { signIn, useSession } from 'next-auth/react'
 import { Credential, Role } from '@/lib/constants'
-import { nanoid } from 'nanoid'
 import { UseChatHelpers } from '@/types/ai'
+import { nanoid } from '@/lib/utils'
 
 export interface ChatPanelProps
   extends Pick<
@@ -16,6 +16,7 @@ export interface ChatPanelProps
     | 'input'
     | 'setInput'
     | 'setMessages'
+    | 'setLoading'
   > {
   id?: string
 }
@@ -44,16 +45,24 @@ const useLogin = () => {
   return login
 }
 
-export function ChatPanel({ id, ...props }: ChatPanelProps) {
-  const { data: session } = useSession()
+export function ChatPanel({ id, setLoading, ...props }: ChatPanelProps) {
+  const { status } = useSession()
 
   const login = useLogin()
 
+  const placeholder =
+    status === 'authenticated'
+      ? 'Send a message.'
+      : 'Please enter access token here.'
+
   const chat = async (value: string) => {
-    if (session?.user) {
+    if (status === 'authenticated') {
       await props.append(value)
     } else {
+      console.log('login')
+      setLoading(true)
       const result = await login(value)
+      setLoading(false)
       if (result !== true) {
         props.setMessages(messages => [
           ...messages,
@@ -73,7 +82,7 @@ export function ChatPanel({ id, ...props }: ChatPanelProps) {
       <ButtonScrollToBottom />
       <div className="mx-auto sm:max-w-2xl sm:px-4">
         <div className="space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
-          <PromptForm onSubmit={chat} {...props} />
+          <PromptForm onSubmit={chat} placeholder={placeholder} {...props} />
         </div>
       </div>
     </div>

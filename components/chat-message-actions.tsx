@@ -9,7 +9,9 @@ import { cn } from '@/lib/utils'
 
 type MessageComponentProps = React.ComponentProps<'div'> & Message
 
-export interface ChatMessageActionsProps extends MessageComponentProps {
+export interface ChatMessageActionsProps
+  extends Omit<MessageComponentProps, 'id'> {
+  id?: string
   onDelete?: (id: string) => void
 }
 
@@ -39,10 +41,12 @@ export function ChatMessageActions({
         {isCopied ? <IconCheck /> : <IconCopy />}
         <span className="sr-only">Copy message</span>
       </Button>
-      <Button variant="ghost" size="icon" onClick={() => onDelete?.(id)}>
-        <IconTrash />
-        <span className="sr-only">Delete the message</span>
-      </Button>
+      {id && onDelete && (
+        <Button variant="ghost" size="icon" onClick={() => onDelete(id)}>
+          <IconTrash />
+          <span className="sr-only">Delete the message</span>
+        </Button>
+      )}
     </div>
   )
 }

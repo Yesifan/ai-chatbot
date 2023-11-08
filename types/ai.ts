@@ -97,6 +97,7 @@ export type UseChatHelpers = {
   setInput: React.Dispatch<React.SetStateAction<string>>
   /** Whether the API request is in progress */
   isLoading: boolean
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>
   /** Additional data added on the server via StreamData */
   streamData?: any
   /** The error object of the API request */

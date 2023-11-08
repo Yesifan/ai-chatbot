@@ -15,16 +15,27 @@ export interface PromptProps
   extends Pick<UseChatHelpers, 'input' | 'setInput'> {
   onSubmit: (value: string) => Promise<void>
   isLoading: boolean
+  placeholder?: string
 }
 
 export function PromptForm({
   onSubmit,
   input,
   setInput,
-  isLoading
+  isLoading,
+  placeholder
 }: PromptProps) {
   const { formRef, onKeyDown } = useEnterSubmit(setInput)
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
+
+  const onKeyDown2 = React.useCallback(
+    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (!isLoading) {
+        onKeyDown(event)
+      }
+    },
+    [isLoading, onKeyDown]
+  )
 
   const submit = React.useCallback<React.FormEventHandler<HTMLFormElement>>(
     async e => {
@@ -50,11 +61,11 @@ export function PromptForm({
         <Textarea
           ref={inputRef}
           tabIndex={0}
-          onKeyDown={onKeyDown}
+          onKeyDown={onKeyDown2}
           rows={1}
           value={input}
           onChange={e => setInput(e.target.value)}
-          placeholder="Send a message."
+          placeholder={placeholder ?? 'Send a message.'}
           spellCheck={false}
           className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
         />

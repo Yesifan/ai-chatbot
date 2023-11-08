@@ -39,15 +39,13 @@ export function ChatMessage({
     <div
       className={cn('group relative mb-8 flex flex-col items-start md:-ml-12')}
     >
-      {id && (
-        <ChatMessageActions
-          className="w-full"
-          id={id}
-          role={role}
-          content={content}
-          onDelete={onDelete}
-        />
-      )}
+      <ChatMessageActions
+        className="w-full"
+        id={id}
+        role={role}
+        content={content}
+        onDelete={onDelete}
+      />
       <div className="flex">
         <ChatAvatar role={role} />
         <div className="ml-4 flex-1 space-y-2 overflow-hidden px-1">

@@ -20,7 +20,7 @@ export interface UserTable {
 
 // 设置 chatgpt 模型参数
 export interface RobotTable {
-  id: Generated<string>
+  id: string
   userId: string
   name: string
   model?: GPT_Model
@@ -46,8 +46,8 @@ export interface ChatTable
   createdAt: Date
 }
 
-export interface MessageTable extends Omit<AIMessage, 'id'> {
-  id: Generated<string>
+export interface MessageTable extends AIMessage {
+  id: string
   chatId: string
   model?: GPT_Model
   role: Role

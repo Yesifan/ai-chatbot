@@ -17,6 +17,13 @@ export function UserMenu() {
     return null
   }
 
+  const signOutHandler = async () => {
+    await signOut({
+      callbackUrl: '/',
+      redirect: false
+    })
+  }
+
   return (
     <div className="flex items-center justify-between">
       <DropdownMenu>
@@ -26,14 +33,7 @@ export function UserMenu() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent sideOffset={8} align="start" className="w-[180px]">
-          <DropdownMenuItem
-            onClick={() =>
-              signOut({
-                callbackUrl: '/'
-              })
-            }
-            className="text-xs"
-          >
+          <DropdownMenuItem onClick={signOutHandler} className="text-xs">
             Log Out
           </DropdownMenuItem>
         </DropdownMenuContent>

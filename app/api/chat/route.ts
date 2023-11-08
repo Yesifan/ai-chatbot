@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
 
   const openai = createOpenai()
 
-  if (!session.user) {
+  if (!session?.user) {
     return new Response('Unauthorized', {
       status: 401
     })
