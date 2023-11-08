@@ -2,7 +2,7 @@ import { type Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
-import { getChat } from '@/app/actions'
+import { getChat, getChatTitle } from '@/app/actions'
 import { Chat } from '@/components/chat'
 
 export const runtime = 'edge'
@@ -23,15 +23,14 @@ export async function generateMetadata({
     redirect(`/?next=/chat/${params.id}`)
   }
 
-  const chatAndMessage = await getChat(params.id)
+  const title = await getChatTitle(params.id)
 
-  if (!chatAndMessage) {
+  if (typeof title === 'object' && 'error' in title) {
     notFound()
   }
-  const [chat] = chatAndMessage
 
   return {
-    title: chat?.title.toString().slice(0, 50) ?? 'Chat'
+    title: title
   }
 }
 

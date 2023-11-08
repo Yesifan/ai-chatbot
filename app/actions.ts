@@ -64,6 +64,29 @@ export async function getChat(id: string): Promise<[Chat, Message[]] | null> {
   }
 }
 
+export async function getChatTitle(id: string) {
+  const session = await auth()
+
+  if (!session) {
+    return { error: ErrorCode.Unauthorized }
+  }
+
+  const user = session.user
+
+  const chat = await db
+    .selectFrom('chat')
+    .select('chat.title')
+    .where('chat.id', '=', id)
+    .where('chat.userId', '=', user.id)
+    .executeTakeFirst()
+
+  if (!chat) {
+    return { error: ErrorCode.NotFound }
+  }
+
+  return chat.title
+}
+
 export async function removeMessage(id: string) {
   const session = await auth()
 
