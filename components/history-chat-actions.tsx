@@ -1,9 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 
-import { type Chat, ServerActionResult } from '@/types/chat'
+import { ServerActionResult } from '@/types/chat'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,46 +16,47 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 
-import { IconShare, IconSpinner, IconTrash } from '@/components/ui/icons'
+import { IconSpinner, IconTrash } from '@/components/ui/icons'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip'
+import toast from 'react-hot-toast'
 
 interface ChatItemActionsProps {
-  chat: Chat
-  removeChat: (args: { id: string; path: string }) => ServerActionResult<void>
-  shareChat: (chat: Chat) => ServerActionResult<Chat>
+  id: string
+  removeChat: (id: string) => ServerActionResult<bigint>
 }
 
-export function ChatItemActions({
-  chat,
-  removeChat,
-  shareChat
-}: ChatItemActionsProps) {
+export function ChatItemActions({ id, removeChat }: ChatItemActionsProps) {
+  const params = useParams()
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
-  const [shareDialogOpen, setShareDialogOpen] = React.useState(false)
   const [isRemovePending, startRemoveTransition] = React.useTransition()
-  const [isSharePending, startShareTransition] = React.useTransition()
   const router = useRouter()
+
+  const removeChatHandler: React.MouseEventHandler<
+    HTMLButtonElement
+  > = event => {
+    event.preventDefault()
+    startRemoveTransition(async () => {
+      const result = await removeChat(id)
+      if (typeof result === 'bigint') {
+        setDeleteDialogOpen(false)
+        if (params?.id === id) {
+          router.push('/')
+        }
+        toast.success(`Chat and ${result} messages deleted `)
+      } else {
+        toast.error(result.error)
+        return
+      }
+    })
+  }
 
   return (
     <>
       <div className="space-x-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              className="h-6 w-6 p-0 hover:bg-background"
-              onClick={() => setShareDialogOpen(true)}
-            >
-              <IconShare />
-              <span className="sr-only">Share</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Share chat</TooltipContent>
-        </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -87,23 +88,7 @@ export function ChatItemActions({
             </AlertDialogCancel>
             <AlertDialogAction
               disabled={isRemovePending}
-              onClick={event => {
-                event.preventDefault()
-                startRemoveTransition(async () => {
-                  // const result = await removeChat({
-                  //   id: chat.id,
-                  //   path: chat.path
-                  // })
-                  // if (result && 'error' in result) {
-                  //   toast.error(result.error)
-                  //   return
-                  // }
-                  // setDeleteDialogOpen(false)
-                  // router.refresh()
-                  // router.push('/')
-                  // toast.success('Chat deleted')
-                })
-              }}
+              onClick={removeChatHandler}
             >
               {isRemovePending && <IconSpinner className="mr-2 animate-spin" />}
               Delete

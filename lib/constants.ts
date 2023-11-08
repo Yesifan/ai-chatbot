@@ -21,3 +21,8 @@ export const enum Theme {
   Dark = 'dark',
   System = 'system'
 }
+
+export const enum ErrorCode {
+  NotFound = 'NotFound',
+  Unauthorized = 'Unauthorized'
+}

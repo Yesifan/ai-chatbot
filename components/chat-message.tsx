@@ -40,7 +40,7 @@ export function ChatMessage({
       className={cn('group relative mb-8 flex flex-col items-start md:-ml-12')}
     >
       <ChatMessageActions
-        className="w-full"
+        className="w-full group-hover:opacity-100 md:opacity-0"
         id={id}
         role={role}
         content={content}

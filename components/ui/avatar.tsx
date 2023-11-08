@@ -1,13 +1,20 @@
 import React from 'react'
 import * as RadixAvatar from '@radix-ui/react-avatar'
+import { cn } from '@/lib/utils'
 
 export interface AvatarProps {
   src?: string
+  className?: string
   fallback: string
 }
 
-const Avatar = ({ src, fallback }: AvatarProps) => (
-  <RadixAvatar.Root className="flex h-10 w-10 items-center justify-center">
+const Avatar = ({ src, fallback, className }: AvatarProps) => (
+  <RadixAvatar.Root
+    className={cn(
+      `flex h-10 w-10 items-center justify-center text-xl`,
+      className
+    )}
+  >
     {src && (
       <RadixAvatar.Image
         className="h-full w-full rounded-full"
@@ -15,18 +22,18 @@ const Avatar = ({ src, fallback }: AvatarProps) => (
         alt={fallback}
       />
     )}
-    <RadixAvatar.Fallback className="h-auto text-xl" delayMs={600}>
+    <RadixAvatar.Fallback className="h-auto" delayMs={600}>
       {fallback}
     </RadixAvatar.Fallback>
   </RadixAvatar.Root>
 )
 
-export const UserAvatar = () => {
-  return <Avatar fallback="👩🏼‍🚀" />
+export const UserAvatar: React.FC<{ className?: string }> = props => {
+  return <Avatar fallback="👩🏼‍🚀" className={props.className} />
 }
 
-export const RobotAvatar = () => {
-  return <Avatar fallback="🤖" />
+export const RobotAvatar: React.FC<{ className?: string }> = props => {
+  return <Avatar fallback="🤖" className={props.className} />
 }
 
 export default Avatar

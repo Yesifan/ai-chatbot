@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 
-import { getChats, removeChat, shareChat } from '@/app/actions'
+import { getChats, removeChat } from '@/app/actions'
 import { ChatItemActions } from '@/components/history-chat-actions'
 import { ChatItem } from '@/components/history-chat-item'
 import type { Chat } from '@/types/chat'
@@ -24,6 +24,14 @@ export function HistoryChatList() {
       setChats([])
     }
   }, [status, session?.user.id])
+
+  const removeChatHandler = async (id: string) => {
+    const result = await removeChat(id)
+    if (typeof result === 'bigint') {
+      setChats(chats => chats.filter(chat => chat.id !== id))
+    }
+    return result
+  }
 
   if (status !== 'authenticated') {
     return (
@@ -57,14 +65,10 @@ export function HistoryChatList() {
 
   return (
     <div className="flex-1 overflow-auto">
-      <div className="space-y-2 px-2">
+      <div className="space-y-2 px-2 pt-2">
         {chats.map(chat => (
           <ChatItem key={chat?.id} chat={chat}>
-            <ChatItemActions
-              chat={chat}
-              removeChat={removeChat}
-              shareChat={shareChat}
-            />
+            <ChatItemActions id={chat.id} removeChat={removeChatHandler} />
           </ChatItem>
         ))}
       </div>

@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import db from '@/lib/database'
 import { Message, type Chat } from '@/types/chat'
+import { ErrorCode } from '@/lib/constants'
 
 export async function getChats() {
   const session = await auth()
@@ -68,6 +69,7 @@ export async function removeMessage(id: string) {
 
   if (!session) {
     return {
+      ok: false,
       error: 'Unauthorized'
     }
   }
@@ -89,17 +91,41 @@ export async function removeMessage(id: string) {
   }
 }
 
-export async function removeChat({ id, path }: { id: string; path: string }) {
+export async function removeChat(id: string) {
   const session = await auth()
 
   if (!session) {
     return {
-      error: 'Unauthorized'
+      error: ErrorCode.Unauthorized
     }
   }
 
-  revalidatePath('/')
-  return revalidatePath(path)
+  const user = session.user
+  try {
+    const chat = await db
+      .deleteFrom('chat')
+      .where('chat.id', '=', id)
+      .where('chat.userId', '=', user.id)
+      .executeTakeFirstOrThrow()
+
+    if (chat.numDeletedRows === BigInt(0)) {
+      return {
+        error: ErrorCode.NotFound
+      }
+    }
+
+    const messages = await db
+      .deleteFrom('message')
+      .where('message.chatId', '=', id)
+      .executeTakeFirstOrThrow()
+
+    return messages.numDeletedRows
+  } catch (e) {
+    console.error('[REMOVE CHAT]', e)
+    return {
+      error: 'InternetError'
+    }
+  }
 }
 
 export async function clearChats() {
