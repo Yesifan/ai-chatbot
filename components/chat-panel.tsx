@@ -72,18 +72,14 @@ export function ChatPanel({ id, setLoading, ...props }: ChatPanelProps) {
             role: Role.System
           }
         ])
-      } else {
-        // TODO: 如果 URL 中有跳转链接，登录后跳转
       }
     }
   }
   return (
-    <div className="mt-auto bg-gradient-to-b from-muted/10 from-10% to-muted/30 to-50%">
+    <div className="mt-auto border bg-background pt-4 shadow-lg">
       <ButtonScrollToBottom />
-      <div className="mx-auto sm:max-w-2xl sm:px-4">
-        <div className="space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
-          <PromptForm onSubmit={chat} placeholder={placeholder} {...props} />
-        </div>
+      <div className="space-y-2">
+        <PromptForm onSubmit={chat} placeholder={placeholder} {...props} />
       </div>
     </div>
   )

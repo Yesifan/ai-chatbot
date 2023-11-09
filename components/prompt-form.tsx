@@ -57,19 +57,22 @@ export function PromptForm({
 
   return (
     <form ref={formRef} onSubmit={submit}>
-      <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden bg-background px-8 sm:rounded-md sm:border sm:px-12">
-        <Textarea
-          ref={inputRef}
-          tabIndex={0}
-          onKeyDown={onKeyDown2}
-          rows={1}
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          placeholder={placeholder ?? 'Send a message.'}
-          spellCheck={false}
-          className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
-        />
-        <div className="absolute right-0 top-4 sm:right-4">
+      <div className="relative flex w-full flex-col bg-background">
+        <div className="h-24 overflow-y-scroll px-4">
+          <Textarea
+            ref={inputRef}
+            tabIndex={0}
+            onKeyDown={onKeyDown2}
+            minRows={4}
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder={placeholder ?? 'Send a message.'}
+            spellCheck={false}
+            className="w-full resize-none bg-transparent focus-within:outline-none sm:text-sm"
+          />
+        </div>
+
+        <div className="flex flex-row-reverse p-4">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button

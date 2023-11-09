@@ -9,10 +9,14 @@ import { ChatItem } from '@/components/history-chat-item'
 import type { Chat } from '@/types/chat'
 import BubblesLoading from './ui/loading'
 
-export function HistoryChatList() {
+interface HistoryChatListProps {
+  initalChats?: Chat[]
+}
+
+export function HistoryChatList({initalChats}: HistoryChatListProps) {
   const { data: session, status } = useSession()
   const [loading, setLoading] = useState(false)
-  const [chats, setChats] = useState<Chat[]>([])
+  const [chats, setChats] = useState<Chat[]>(initalChats ?? [])
 
   useEffect(() => {
     if (status === 'authenticated' && session.user.id) {
