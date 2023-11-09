@@ -73,21 +73,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         ) : (
           messages.length === 0 && <EmptyScreen setInput={props.setInput} />
         )}
-        <div className="relative mx-auto max-w-2xl px-4">
-          <ChatList messages={messages} remove={props.remove} />
-          {props.isLoading && (
-            <>
-              {messages.length > 0 && <Separator className="my-1" />}
-              <div>
-                <ChatMessage
-                  role={Role.Assistant}
-                  content={props.streamData}
-                  isLoading={true}
-                />
-              </div>
-            </>
-          )}
-        </div>
+        <ChatList messages={messages} {...props} />
         <ChatScrollAnchor trackVisibility={props.isLoading} />
       </div>
       <ChatPanel id={id} messages={messages} {...props} />

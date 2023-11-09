@@ -23,7 +23,7 @@ export function ChatItem({ chat, children }: ChatItemProps) {
     <div
       className={cn(
         buttonVariants({ variant: 'ghost' }),
-        'w-ful group relative flex h-auto px-2',
+        'w-ful group relative flex h-auto overflow-hidden px-2',
         isActive && 'bg-accent'
       )}
     >

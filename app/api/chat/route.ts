@@ -7,6 +7,7 @@ import database from '@/lib/database'
 import { Message, NewChat } from '@/types/chat'
 import { GPT_Model, Role } from '@/lib/constants'
 import { createOpenai } from './openai'
+import { headers } from 'next/headers'
 
 export const runtime = 'edge'
 
@@ -20,8 +21,11 @@ export interface ChatBody {
 const getOrCreateChat = async (
   id: string,
   userId: string,
-  title: string
+  messages: Message[]
 ): Promise<NewChat> => {
+  const content = messages[0].content!
+  const title = content.substring(0, 100)
+
   const chat = await database
     .selectFrom('chat')
     .selectAll()
@@ -90,11 +94,6 @@ export async function POST(req: NextRequest) {
 
   const userId = session.user.id
 
-  const content = messages[0].content!
-  const title = content.substring(0, 100)
-
-  const chat = await getOrCreateChat(id, userId, title)
-
   try {
     const res = await openai.createChatCompletion(messages as any, {
       model: model ?? GPT_Model.GPT_3_5_TURBO,
@@ -109,6 +108,7 @@ export async function POST(req: NextRequest) {
           content: answer,
           role: Role.Assistant
         }
+        const chat = await getOrCreateChat(id, userId, messages)
         await recordConversation(chat, question, answerMessage)
       }
     })
@@ -116,8 +116,9 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     if (e instanceof APIError) {
       console.error('[OPENAI CHAT ERROR]', e)
+      const status = typeof e.status === 'number' ? e.status : 500
       return new Response(e.message, {
-        status: 500
+        status
       })
     } else {
       console.error('[OPENAI CHAT ERROR] unknown error', e)
