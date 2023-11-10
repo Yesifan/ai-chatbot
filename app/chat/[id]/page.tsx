@@ -4,6 +4,7 @@ import { notFound, redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { getChat, getChatTitle } from '@/app/actions'
 import { Chat } from '@/components/chat'
+import { ChatStoreProvider } from '@/lib/store/chat'
 
 export const runtime = 'edge'
 export const preferredRegion = 'home'
@@ -38,11 +39,15 @@ export default async function ChatPage({ params }: ChatPageProps) {
   const id = params.id
 
   // const session = await auth()
-  const chatAndMessage = await getChat(params.id)
+  const chatAndMessage = await getChat(id)
   if (!chatAndMessage) {
     return null
   }
-  const [_chat, messages] = chatAndMessage!
+  const [chat, messages] = chatAndMessage!
 
-  return <Chat id={id} initialMessages={messages} />
+  return (
+    <ChatStoreProvider {...chat}>
+      <Chat id={id} initialMessages={messages} />
+    </ChatStoreProvider>
+  )
 }

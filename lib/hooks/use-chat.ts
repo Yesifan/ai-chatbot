@@ -2,14 +2,19 @@ import { createChunkDecoder, FunctionCall } from 'ai'
 import React, { useCallback, useRef, useState } from 'react'
 
 import { nanoid } from '../utils'
-import { Role } from '../constants'
-import { Message } from '@/types/chat'
+import {
+  ATTACHED_MESSAGES_COUNT,
+  INFINITE_ATTACHED_MESSAGES_COUNT,
+  Role
+} from '../constants'
+import type { Message } from '@/types/chat'
 import {
   UseChatOptions,
   ChatRequest,
   ChatRequestOptions,
   UseChatHelpers
 } from '@/types/ai'
+import { useChatStore } from '../store/chat'
 
 const CHAT_URL = '/api/chat'
 
@@ -121,6 +126,8 @@ export function useChat({
   onError,
   onResponse
 }: UseChatOptions): UseChatHelpers {
+  const chatStore = useChatStore()
+
   const [streamData, setStreamData] = useState<string>()
   const [messages, setMessages] = useState(initialMessages ?? [])
   const messagesRef = useRef<Message[]>(messages)
@@ -159,6 +166,9 @@ export function useChat({
 
         chatRequest.options = chatRequest.options ?? {}
         chatRequest.options.body = {
+          id: chatStore.id,
+          model: chatStore.model,
+          temperature: chatStore.temperature,
           ...(chatRequest.options.body ?? {}),
           ...(body ?? {})
         }
@@ -194,14 +204,22 @@ export function useChat({
         setStreamData(undefined)
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [
+      body,
+      chatStore.id,
+      chatStore.model,
+      chatStore.temperature,
+      headers,
+      mutateMessages,
+      onError,
+      onResponse
+    ]
   )
 
   const append = useCallback(
     async (
       content: string,
-      historyCount = 5,
+      messagesCount = ATTACHED_MESSAGES_COUNT,
       { options, functions, function_call }: ChatRequestOptions = {}
     ) => {
       const message = {
@@ -212,9 +230,9 @@ export function useChat({
       mutateMessages([...messagesRef.current, message])
 
       const historyMessages =
-        historyCount === -1
+        messagesCount === INFINITE_ATTACHED_MESSAGES_COUNT
           ? messagesRef.current
-          : messagesRef.current.slice(-historyCount)
+          : messagesRef.current.slice(-(messagesCount + 1))
 
       const chatRequest: ChatRequest = {
         messages: historyMessages,

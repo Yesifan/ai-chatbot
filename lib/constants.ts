@@ -1,12 +1,25 @@
+// [openai chat docs](https://platform.openai.com/docs/api-reference/chat)
+/**
+ * What sampling [temperature](https://platform.openai.com/docs/api-reference/chat/create#chat-create-temperature) to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.
+ * We generally recommend altering this or top_p but not both.
+ */
+export const TEMPERATURE = 0.9
+export const ATTACHED_MESSAGES_COUNT = 6
+export const INFINITE_ATTACHED_MESSAGES_COUNT = 31
+
 export const enum Credential {
   AccessToken = 'access-token'
 }
 
+// [openai models](https://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbo)
+/**
+ * ID of the model to use. See the [model endpoint](https://platform.openai.com/docs/models/model-endpoint-compatibility)
+ * compatibility table for details on which models work with the Chat API.
+ */
 export const enum GPT_Model {
   GPT_4 = 'gpt-4',
-  GPT_4_32K = 'gpt-4-32k',
-  GPT_3_5_TURBO = 'gpt-3.5-turbo',
-  GPT_3_5_TURBO_16K = 'gpt-3.5-turbo-16k'
+  GPT_4_PREVIEW = 'gpt-4-1106-preview',
+  GPT_3_5_TURBO = 'gpt-3.5-turbo'
 }
 
 export const enum Role {
@@ -24,5 +37,7 @@ export const enum Theme {
 
 export const enum ErrorCode {
   NotFound = 'NotFound',
-  Unauthorized = 'Unauthorized'
+  Unauthorized = 'Unauthorized',
+  BadRequest = 'BadRequest',
+  InternetError = 'InternetError'
 }

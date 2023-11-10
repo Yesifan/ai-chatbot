@@ -8,6 +8,33 @@ import db from '@/lib/database'
 import { Message, type Chat } from '@/types/chat'
 import { ErrorCode } from '@/lib/constants'
 
+export async function removeMessage(id: string) {
+  const session = await auth()
+
+  if (!session) {
+    return {
+      ok: false,
+      error: 'Unauthorized'
+    }
+  }
+
+  const message = await db
+    .deleteFrom('message')
+    .where('message.id', '=', id)
+    .executeTakeFirst()
+
+  if (!message) {
+    return {
+      ok: false,
+      error: 'Not found'
+    }
+  }
+
+  return {
+    ok: true
+  }
+}
+
 export async function getChats() {
   const session = await auth()
   const userId = session?.user?.id
@@ -87,30 +114,42 @@ export async function getChatTitle(id: string) {
   return chat.title
 }
 
-export async function removeMessage(id: string) {
+export async function updateChat(id: string, chat: Partial<Chat>) {
   const session = await auth()
 
   if (!session) {
     return {
-      ok: false,
-      error: 'Unauthorized'
+      error: ErrorCode.Unauthorized
     }
   }
 
-  const message = await db
-    .deleteFrom('message')
-    .where('message.id', '=', id)
-    .executeTakeFirst()
-
-  if (!message) {
+  if (chat.id && chat.id !== id) {
     return {
-      ok: false,
-      error: 'Not found'
+      error: ErrorCode.BadRequest
     }
   }
 
-  return {
-    ok: true
+  const user = session.user
+
+  try {
+    const updatedChat = await db
+      .updateTable('chat')
+      .set(chat)
+      .where('chat.id', '=', id)
+      .where('chat.userId', '=', user.id)
+      .executeTakeFirstOrThrow()
+
+    if (updatedChat.numUpdatedRows === BigInt(0)) {
+      return {
+        error: ErrorCode.NotFound
+      }
+    }
+    return updatedChat.numUpdatedRows
+  } catch (e) {
+    console.error('[UPDATE CHAT]', e)
+    return {
+      error: ErrorCode.InternetError
+    }
   }
 }
 
@@ -175,25 +214,4 @@ export async function clearChats() {
 
   revalidatePath('/')
   return redirect('/')
-}
-
-export async function getSharedChat(id: string): Promise<Chat | null> {
-  return null
-}
-
-export async function shareChat(chat: Chat) {
-  const session = await auth()
-
-  if (!session?.user?.id || session.user.id !== chat.userId) {
-    return {
-      error: 'Unauthorized'
-    }
-  }
-
-  const payload = {
-    ...chat,
-    sharePath: `/share/${chat.id}`
-  }
-
-  return payload
 }

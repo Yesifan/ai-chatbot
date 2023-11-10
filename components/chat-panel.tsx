@@ -1,9 +1,16 @@
+'use client'
+
+import { signIn, useSession } from 'next-auth/react'
+
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
-import { signIn, useSession } from 'next-auth/react'
-import { Credential, Role } from '@/lib/constants'
-import { UseChatHelpers } from '@/types/ai'
 import { nanoid } from '@/lib/utils'
+import { useChatStore } from '@/lib/store/chat'
+import { Credential, Role } from '@/lib/constants'
+import { SelectModel } from './select-model'
+import { MessagesCount } from './chat-panel/messages-count'
+
+import type { UseChatHelpers } from '@/types/ai'
 
 export interface ChatPanelProps
   extends Pick<
@@ -22,7 +29,7 @@ export interface ChatPanelProps
 }
 
 const useLogin = () => {
-  const { data: session, update } = useSession()
+  const { update } = useSession()
 
   const login = async (value: string) => {
     try {
@@ -47,6 +54,7 @@ const useLogin = () => {
 
 export function ChatPanel({ id, setLoading, ...props }: ChatPanelProps) {
   const { status } = useSession()
+  const chatStore = useChatStore()
 
   const login = useLogin()
 
@@ -57,9 +65,8 @@ export function ChatPanel({ id, setLoading, ...props }: ChatPanelProps) {
 
   const chat = async (value: string) => {
     if (status === 'authenticated') {
-      await props.append(value)
+      await props.append(value, chatStore.attachedMessagesCount)
     } else {
-      console.log('login')
       setLoading(true)
       const result = await login(value)
       setLoading(false)
@@ -75,12 +82,15 @@ export function ChatPanel({ id, setLoading, ...props }: ChatPanelProps) {
       }
     }
   }
+
   return (
-    <div className="mt-auto border bg-background pt-4 shadow-lg">
+    <div className="mt-auto border bg-background pt-2 shadow-lg">
       <ButtonScrollToBottom />
-      <div className="space-y-2">
-        <PromptForm onSubmit={chat} placeholder={placeholder} {...props} />
+      <div className="flex space-x-6 px-4 pb-2">
+        <SelectModel className="h-6 w-6" />
+        <MessagesCount className="h-6 w-6" />
       </div>
+      <PromptForm onSubmit={chat} placeholder={placeholder} {...props} />
     </div>
   )
 }

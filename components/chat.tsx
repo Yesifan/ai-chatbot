@@ -11,16 +11,13 @@ import { ChatPanel } from '@/components/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { useChat } from '@/lib/hooks/use-chat'
-import { Role } from '@/lib/constants'
-import { Separator } from '@/components/ui/separator'
 import { NotLogin } from './not-login'
-import { ChatMessage } from './chat-message'
 
-import { type Message } from '@/types/chat'
+import type { Message } from '@/types/chat'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
+  id: string
   initialMessages?: Message[]
-  id?: string
 }
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
@@ -33,9 +30,6 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
 
   const { messages, ...props } = useChat({
     initialMessages: initialMessages,
-    body: {
-      id
-    },
     onResponse(response) {
       if (response.status === 401) {
         toast.error(response.statusText)
@@ -43,6 +37,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
     }
   })
 
+  // Handle user login status change
   useEffect(() => {
     if (sessionStatusRef.current !== status) {
       sessionStatusRef.current = status

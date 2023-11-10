@@ -5,9 +5,8 @@ import { auth } from '@/auth'
 import { NextRequest } from 'next/server'
 import database from '@/lib/database'
 import { Message, NewChat } from '@/types/chat'
-import { GPT_Model, Role } from '@/lib/constants'
+import { GPT_Model, Role, TEMPERATURE } from '@/lib/constants'
 import { createOpenai } from './openai'
-import { headers } from 'next/headers'
 
 export const runtime = 'edge'
 
@@ -16,6 +15,7 @@ export interface ChatBody {
   model: GPT_Model
   messages: Message[]
   replyId: string
+  temperature: number
 }
 
 const getOrCreateChat = async (
@@ -48,6 +48,7 @@ const getOrCreateChat = async (
 
 const recordConversation = async (
   chat: NewChat,
+  model: GPT_Model,
   question: Message,
   answer: Message
 ) => {
@@ -59,6 +60,7 @@ const recordConversation = async (
         chatId: chat.id,
         content: question.content,
         role: Role.User,
+        model: model,
         createdAt: new Date()
       },
       {
@@ -66,6 +68,7 @@ const recordConversation = async (
         chatId: chat.id,
         content: answer.content,
         role: Role.Assistant,
+        model: model,
         createdAt: new Date()
       }
     ])
@@ -84,7 +87,7 @@ export async function POST(req: NextRequest) {
   }
 
   const json = (await req.json()) as ChatBody
-  const { id, model, messages, replyId } = json
+  const { id, model, messages, replyId, temperature } = json
 
   if (!messages || messages.length === 0) {
     return new Response('Empty messages', {
@@ -97,7 +100,7 @@ export async function POST(req: NextRequest) {
   try {
     const res = await openai.createChatCompletion(messages as any, {
       model: model ?? GPT_Model.GPT_3_5_TURBO,
-      temperature: 0.7,
+      temperature: temperature ?? TEMPERATURE,
       stream: true
     })
     const stream = OpenAIStream(res, {
@@ -109,7 +112,7 @@ export async function POST(req: NextRequest) {
           role: Role.Assistant
         }
         const chat = await getOrCreateChat(id, userId, messages)
-        await recordConversation(chat, question, answerMessage)
+        await recordConversation(chat, model, question, answerMessage)
       }
     })
     return new StreamingTextResponse(stream)
