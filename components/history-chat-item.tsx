@@ -37,7 +37,7 @@ export function ChatItem({ chat, children }: ChatItemProps) {
             <span className="whitespace-nowrap text-lg">{chat.title}</span>
           </h4>
           <div className="relative max-h-5 flex-1 select-none overflow-hidden text-ellipsis break-all">
-            <span className="whitespace-nowrap text-gray-400">
+            <span className="whitespace-nowrap text-xs text-gray-400">
               {chat.title}
             </span>
           </div>

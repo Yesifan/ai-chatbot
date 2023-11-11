@@ -85,7 +85,7 @@ export function ChatPanel({ id, setLoading, ...props }: ChatPanelProps) {
   }
 
   return (
-    <div className="mt-auto border bg-background pt-2 shadow-lg">
+    <div className="mt-auto bg-background pt-2 shadow-lg">
       <ButtonScrollToBottom />
       <div className="flex space-x-6 px-4 pb-2">
         <SelectModel className="h-6 w-6" />

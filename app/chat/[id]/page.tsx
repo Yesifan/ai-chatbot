@@ -5,6 +5,7 @@ import { auth } from '@/auth'
 import { getChat, getChatTitle } from '@/app/actions'
 import { Chat } from '@/components/chat'
 import { ChatStoreProvider } from '@/lib/store/chat'
+import { ChatHeader } from '@/components/chat-header'
 
 export const runtime = 'edge'
 export const preferredRegion = 'home'
@@ -47,6 +48,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
 
   return (
     <ChatStoreProvider {...chat}>
+      <ChatHeader className="absolute top-0 z-50" />
       <Chat id={id} initialMessages={messages} />
     </ChatStoreProvider>
   )
