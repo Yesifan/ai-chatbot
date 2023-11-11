@@ -8,10 +8,10 @@ import { nanoid } from '@/lib/utils'
 import { useChatStore } from '@/lib/store/chat'
 import { Credential, Role } from '@/lib/constants'
 import { SelectModel } from './select-model'
-import { MessagesCount } from './chat-panel/messages-count'
+import { MessagesCount } from './messages-count'
 
 import type { UseChatHelpers } from '@/types/ai'
-import { Temperature } from './chat-panel/temperature'
+import { Temperature } from './temperature'
 
 export interface ChatPanelProps
   extends Pick<

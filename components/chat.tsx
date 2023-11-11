@@ -7,7 +7,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
 import { cn } from '@/lib/utils'
 import { ChatList } from '@/components/chat-list'
-import { ChatPanel } from '@/components/chat-panel'
+import { ChatPanel } from '@/components/chat-panel/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { useChat } from '@/lib/hooks/use-chat'
