@@ -9,7 +9,7 @@ import {
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip'
-import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
+import { useMateEnterSubmit } from '@/lib/hooks/use-enter-submit'
 
 export interface PromptProps
   extends Pick<UseChatHelpers, 'input' | 'setInput'> {
@@ -18,6 +18,8 @@ export interface PromptProps
   placeholder?: string
 }
 
+// TODO: 换行要根据光标，而不是直接插到尾部。
+// TODO: 在使用输入法回车时会输入两次一样的内容。
 export function PromptForm({
   onSubmit,
   input,
@@ -25,7 +27,7 @@ export function PromptForm({
   isLoading,
   placeholder
 }: PromptProps) {
-  const { formRef, onKeyDown } = useEnterSubmit(setInput)
+  const { formRef, onKeyDown } = useMateEnterSubmit(setInput)
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
 
   const onKeyDown2 = React.useCallback(

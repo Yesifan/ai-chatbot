@@ -55,7 +55,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
           <SessionProvider session={session}>
             <div className="flex h-screen">
               <Sidebar />
-              <main className="flex flex-1 flex-col bg-muted/50">
+              <main className="relative flex flex-1 flex-col bg-muted/50">
                 {children}
               </main>
             </div>
