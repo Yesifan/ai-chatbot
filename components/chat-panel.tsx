@@ -11,6 +11,7 @@ import { SelectModel } from './select-model'
 import { MessagesCount } from './chat-panel/messages-count'
 
 import type { UseChatHelpers } from '@/types/ai'
+import { Temperature } from './chat-panel/temperature'
 
 export interface ChatPanelProps
   extends Pick<
@@ -89,6 +90,7 @@ export function ChatPanel({ id, setLoading, ...props }: ChatPanelProps) {
       <div className="flex space-x-6 px-4 pb-2">
         <SelectModel className="h-6 w-6" />
         <MessagesCount className="h-6 w-6" />
+        <Temperature className="h-6 w-6" />
       </div>
       <PromptForm onSubmit={chat} placeholder={placeholder} {...props} />
     </div>

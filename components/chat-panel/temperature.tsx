@@ -11,7 +11,7 @@ import { useChatStore } from '@/lib/store/chat'
 import { ATTACHED_MESSAGES_COUNT } from '@/lib/constants'
 
 import { Slider } from '../ui/slider'
-import { IconMessageaText } from '../ui/icons'
+import { IconThermometer } from '../ui/icons'
 import {
   Tooltip,
   TooltipTrigger,
@@ -25,16 +25,24 @@ const TooltipIcon = (props: TooltipProps) => {
     <Tooltip>
       <TooltipTrigger asChild {...props}>
         <span>
-          <IconMessageaText className="h-[1.2rem] w-[1.2rem]" />
+          <IconThermometer />
         </span>
       </TooltipTrigger>
       <TooltipContent className="w-80 text-start">
         <p className="a text-xs">
-          Upper limit of attached historical conversation.
+          What sampling
+          <a
+            className="mx-1 underline opacity-80 transition hover:opacity-100"
+            href="https://platform.openai.com/docs/api-reference/chat/create#chat-create-temperature"
+            target="_blank"
+          >
+            temperature
+          </a>
+          to use, between 0 and 2.
         </p>
         <p className="a text-xs">
-          If it is 0, only the current message will be sent without attaching
-          any conversation.
+          Higher values like 0.8 will make the output more random, while lower
+          values like 0.2 will make it more focused and deterministic.
         </p>
       </TooltipContent>
     </Tooltip>
@@ -43,11 +51,11 @@ const TooltipIcon = (props: TooltipProps) => {
 
 export interface MessageCountProps extends TriggerProps {}
 
-export const MessagesCount = ({ className, ...props }: MessageCountProps) => {
-  const { id, attachedMessagesCount, setAttachedMessagesCount } = useChatStore()
-  const value = attachedMessagesCount ?? ATTACHED_MESSAGES_COUNT
+export const Temperature = ({ className, ...props }: MessageCountProps) => {
+  const { id, temperature, setTemperature } = useChatStore()
+  const value = temperature ?? ATTACHED_MESSAGES_COUNT
   const onValueChange = (values: number[]) => {
-    setAttachedMessagesCount?.(values[0])
+    setTemperature?.(values[0])
   }
 
   const onValueCommit = (values: number[]) => {
@@ -65,12 +73,12 @@ export const MessagesCount = ({ className, ...props }: MessageCountProps) => {
       >
         <TooltipIcon />
       </PopoverTrigger>
-      <PopoverContent className="flex w-48">
+      <PopoverContent className="flex w-56">
         <Slider
           className="mr-2"
           min={0}
-          max={31}
-          step={1}
+          max={2}
+          step={0.1}
           value={[value]}
           onValueChange={onValueChange}
           onValueCommit={onValueCommit}
