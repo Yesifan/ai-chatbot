@@ -46,7 +46,7 @@ export function ChatMessage({
         content={content}
         onDelete={onDelete}
       />
-      <div className="flex">
+      <div className="flex w-full">
         <ChatAvatar role={role} />
         <div className="ml-4 flex-1 space-y-2 overflow-hidden px-1">
           {content ? (

@@ -17,10 +17,7 @@ export function useMateEnterSubmit(setInput?: UseChatHelpers['setInput']): {
       platform === Platform.Mac ? event.metaKey : event.ctrlKey
 
     if (event.key === 'Enter') {
-      if (!isHelperDown) {
-        event.preventDefault()
-        setInput?.(event => event + '\n')
-      } else if (!event.nativeEvent.isComposing) {
+      if (isHelperDown && !event.nativeEvent.isComposing) {
         event.preventDefault()
         formRef.current?.requestSubmit()
       }

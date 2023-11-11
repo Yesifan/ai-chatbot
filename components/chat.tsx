@@ -14,6 +14,9 @@ import { useChat } from '@/lib/hooks/use-chat'
 import { NotLogin } from './not-login'
 
 import type { Message } from '@/types/chat'
+import { Separator } from './ui/separator'
+import { ChatMessage } from './chat-message'
+import { Role } from '@/lib/constants'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   id: string
@@ -66,7 +69,15 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         ) : (
           messages.length === 0 && <EmptyScreen setInput={props.setInput} />
         )}
-        <ChatList messages={messages} {...props} />
+        <div className="relative mx-auto max-w-2xl px-4">
+          <ChatList messages={messages} {...props} />
+          {props.input.trim().length > 0 && (
+            <>
+              <Separator className="my-1"></Separator>
+              <ChatMessage role={Role.User} content={props.input} />
+            </>
+          )}
+        </div>
         <ChatScrollAnchor trackVisibility={props.isLoading} />
       </div>
       <ChatPanel id={id} messages={messages} {...props} />
