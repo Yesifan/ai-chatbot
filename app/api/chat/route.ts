@@ -7,7 +7,7 @@ import database from '@/lib/database'
 import { Message, NewChat } from '@/types/chat'
 import { ErrorCode, GPT_Model, Role, TEMPERATURE } from '@/lib/constants'
 import { createOpenai } from './openai'
-import { getOrCreateChat } from '@/app/actions'
+import { createChat } from '@/app/actions'
 
 export const runtime = 'edge'
 
@@ -17,6 +17,34 @@ export interface ChatBody {
   messages: Message[]
   replyId: string
   temperature: number
+}
+
+const getOrCreateChat = async (
+  id: string,
+  userId: string,
+  messages: Message[]
+): Promise<NewChat | null> => {
+  const content = messages[0].content!
+  const title = content.substring(0, 100)
+
+  const chat = await database
+    .selectFrom('chat')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+
+  if (chat?.userId != userId) {
+    return null
+  }
+  if (chat === undefined) {
+    const newChat = await createChat(id)
+    if ('error' in newChat) {
+      return null
+    }
+    return newChat
+  } else {
+    return chat
+  }
 }
 
 const recordConversation = async (

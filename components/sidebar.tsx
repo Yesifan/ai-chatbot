@@ -14,6 +14,7 @@ const ThemeToggle = dynamic(() => import('@/components/theme-toggle'), {
 
 export async function Sidebar() {
   const chats = await getChats()
+
   return (
     <section className="inset-y-0 flex h-auto w-[300px] flex-col border-r p-0">
       <Header className="shadow-md shadow-ring" />

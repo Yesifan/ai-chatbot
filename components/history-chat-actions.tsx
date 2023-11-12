@@ -73,6 +73,7 @@ export function ChatItemActions({ id, removeChat }: ChatItemActionsProps) {
         </Tooltip>
       </div>
 
+      {/* TODO: 修改为按钮二次确认，而不是弹窗二次确认。 */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
