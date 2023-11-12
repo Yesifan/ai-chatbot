@@ -8,7 +8,10 @@ import { cn } from '@/lib/utils'
 
 import { updateChat } from '@/app/actions'
 import { useChatStore } from '@/lib/store/chat'
-import { ATTACHED_MESSAGES_COUNT } from '@/lib/constants'
+import {
+  ATTACHED_MESSAGES_COUNT,
+  INFINITE_ATTACHED_MESSAGES_COUNT
+} from '@/lib/constants'
 
 import { Slider } from '../ui/slider'
 import { IconMessageaText } from '../ui/icons'
@@ -20,12 +23,26 @@ import {
 } from '../ui/tooltip'
 
 // use <span> for asChild instead use forwaredRef
-const TooltipIcon = (props: TooltipProps) => {
+const TooltipIcon = ({
+  count,
+  ...props
+}: TooltipProps & { count?: number }) => {
   return (
     <Tooltip>
       <TooltipTrigger asChild {...props}>
-        <span>
+        <span className="relative overflow-hidden">
           <IconMessageaText className="h-[1.2rem] w-[1.2rem]" />
+
+          <span
+            className={cn(
+              'absolute bottom-[-5px] right-[-3px] scale-75 rounded-full bg-background px-0.5 text-xs',
+              count === INFINITE_ATTACHED_MESSAGES_COUNT
+                ? 'scale-110'
+                : 'scale-75'
+            )}
+          >
+            {count === INFINITE_ATTACHED_MESSAGES_COUNT ? '∞' : count}
+          </span>
         </span>
       </TooltipTrigger>
       <TooltipContent className="w-80 text-start">
@@ -63,7 +80,7 @@ export const MessagesCount = ({ className, ...props }: MessageCountProps) => {
         )}
         {...props}
       >
-        <TooltipIcon />
+        <TooltipIcon count={value} />
       </PopoverTrigger>
       <PopoverContent className="flex w-48">
         <Slider
@@ -76,7 +93,7 @@ export const MessagesCount = ({ className, ...props }: MessageCountProps) => {
           onValueCommit={onValueCommit}
         />
         <p className="h-6 w-6 shrink-0 rounded bg-secondary py-1 text-center text-xs">
-          {value}
+          {value === INFINITE_ATTACHED_MESSAGES_COUNT ? '♾️' : value}
         </p>
       </PopoverContent>
     </Popover>

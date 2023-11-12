@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 const timestampVariants = cva('inline-flex items-center text-xs transition', {
   variants: {
     variant: {
-      default: 'shadow hover:bg-primary/80',
+      default: 'hover:bg-primary/80',
       secondary:
         'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80',
       destructive:
