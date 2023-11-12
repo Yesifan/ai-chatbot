@@ -1,4 +1,5 @@
-import React from 'react'
+'use client'
+
 import * as RadixAvatar from '@radix-ui/react-avatar'
 import { cn } from '@/lib/utils'
 
@@ -34,6 +35,10 @@ export const UserAvatar: React.FC<{ className?: string }> = props => {
 
 export const RobotAvatar: React.FC<{ className?: string }> = props => {
   return <Avatar fallback="🤖" className={props.className} />
+}
+
+export const InboxAvatar: React.FC<{ className?: string }> = props => {
+  return <Avatar fallback="☕" className={props.className} />
 }
 
 export default Avatar

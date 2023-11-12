@@ -6,9 +6,10 @@ import { useChatStore } from '@/lib/store/chat'
 import { Badge } from './ui/badge'
 import { Input, InputProps } from './ui/input'
 import { Button } from './ui/button'
-import { RobotAvatar } from './ui/avatar'
+import { InboxAvatar, RobotAvatar } from './ui/avatar'
 import { updateChat } from '@/app/actions'
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
+import { usePathname } from 'next/navigation'
 
 interface ChatHeaderItemProps {
   className?: string
@@ -16,7 +17,10 @@ interface ChatHeaderItemProps {
 
 const DEFAULT_TITLE = 'AI Assistant'
 
-const TitleInput = ({ className }: Pick<InputProps, 'className'>) => {
+const TitleInput = ({
+  className,
+  disabled
+}: Pick<InputProps, 'className' | 'disabled'>) => {
   const chat = useChatStore()
   const titleRef = useRef(chat.title)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -67,7 +71,10 @@ const TitleInput = ({ className }: Pick<InputProps, 'className'>) => {
       </Button>
     </div>
   ) : (
-    <span className="whitespace-nowrap text-lg" onClick={() => setEdit(true)}>
+    <span
+      className="whitespace-nowrap text-lg"
+      onClick={() => !disabled && setEdit(true)}
+    >
       <h2
         className="relative flex-1 select-none overflow-hidden text-ellipsis break-all"
         title={chat.title}
@@ -80,29 +87,27 @@ const TitleInput = ({ className }: Pick<InputProps, 'className'>) => {
 
 export function ChatHeader({ className }: ChatHeaderItemProps) {
   const chat = useChatStore()
-  const inputRef = useRef<HTMLInputElement>(null)
-  const [isEdit, setEdit] = useState(false)
-
-  useEffect(() => {
-    if (isEdit) {
-      inputRef.current?.focus()
-    }
-  }, [isEdit])
+  const pathname = usePathname()
+  const isInbox = pathname === '/'
 
   if (!chat?.id) return null
 
   return (
     <div
       className={cn(
-        'group relative flex h-16 w-full items-center bg-gradient-to-b from-background/10 via-background/50 to-background/80 px-4 py-1 backdrop-blur-xl',
+        'group relative flex h-16 w-full items-center bg-background px-4 py-1 backdrop-blur-xl',
         className
       )}
     >
       <Button variant="ghost" className="mr-2 h-14 w-14">
-        <RobotAvatar className="text-4xl" />
+        {isInbox ? (
+          <InboxAvatar className="text-4xl" />
+        ) : (
+          <RobotAvatar className="text-4xl" />
+        )}
       </Button>
       <div className="flex w-full flex-1 flex-col justify-between pr-6">
-        <TitleInput />
+        <TitleInput disabled={isInbox} />
         <div className="">
           <Badge variant="secondary">{chat.model}</Badge>
         </div>

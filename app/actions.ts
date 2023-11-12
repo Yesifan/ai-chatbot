@@ -5,9 +5,25 @@ import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import db from '@/lib/database'
-import { Message, type Chat, NewChat } from '@/types/chat'
-import { ErrorCode, GPT_Model } from '@/lib/constants'
+import { Message, type Chat } from '@/types/chat'
+import { ErrorCode, INBOX_CHAT } from '@/lib/constants'
 import { nanoid } from '@/lib/utils'
+
+export async function getMessages(
+  id: string
+): Promise<Message[] | { error: string }> {
+  const session = await auth()
+  if (!session) {
+    return {
+      error: 'Unauthorized'
+    }
+  }
+  return await db
+    .selectFrom('message')
+    .selectAll()
+    .where('chatId', '=', id)
+    .execute()
+}
 
 export async function removeMessage(id: string) {
   const session = await auth()
@@ -49,7 +65,8 @@ export async function getChats() {
       .selectFrom('chat')
       .selectAll()
       .where('chat.userId', '=', userId)
-      .orderBy('lastMessageAt', 'desc')
+      .where('chat.title', '!=', INBOX_CHAT)
+      .orderBy('lastMessageAt', 'asc')
       .execute()
   } catch (error) {
     console.error(`[ERROR][getChats] ${error}`)
@@ -88,6 +105,47 @@ export async function getChat(id: string): Promise<[Chat, Message[]] | null> {
   } catch (error) {
     console.error(`[ERROR][getChats] ${error}`)
     return null
+  }
+}
+
+export async function getInboxChat() {
+  const session = await auth()
+
+  if (!session) {
+    return { error: ErrorCode.Unauthorized }
+  }
+
+  const user = session.user
+
+  try {
+    let chat = await db
+      .selectFrom('chat')
+      .selectAll()
+      .where('title', '=', INBOX_CHAT)
+      .where('chat.userId', '=', user.id)
+      .orderBy('createdAt', 'asc')
+      .limit(1)
+      .executeTakeFirst()
+
+    if (!chat) {
+      chat = await db
+        .insertInto('chat')
+        .values({
+          id: nanoid(),
+          userId: user.id,
+          title: INBOX_CHAT,
+          createdAt: new Date(),
+          attachedMessagesCount: 0
+        })
+        .returningAll()
+        .executeTakeFirstOrThrow()
+    }
+    return chat
+  } catch (error) {
+    console.error(`[ERROR][getChats] ${error}`)
+    return {
+      error: ErrorCode.InternetError
+    }
   }
 }
 
@@ -150,6 +208,12 @@ export async function updateChat(id: string, chat: Partial<Chat>) {
   }
 
   const user = session.user
+
+  if (chat.title === INBOX_CHAT) {
+    return {
+      error: ErrorCode.BadRequest
+    }
+  }
 
   try {
     const updatedChat = await db

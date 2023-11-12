@@ -10,7 +10,7 @@ import { RobotAvatar } from './ui/avatar'
 
 interface ChatItemProps {
   chat: Chat
-  children: React.ReactNode
+  children?: React.ReactNode
 }
 
 const Timestamp = dynamic(() => import('@/components/ui/timestamp'), {
@@ -28,7 +28,7 @@ export function ChatItem({ chat, children }: ChatItemProps) {
       className={cn(
         buttonVariants({ variant: 'ghost' }),
         'w-ful group relative flex h-auto overflow-hidden px-2',
-        isActive && 'bg-accent'
+        isActive && 'bg-muted/50'
       )}
     >
       <Link href={`/chat/${chat.id}`} className="flex w-full items-center">
@@ -41,7 +41,7 @@ export function ChatItem({ chat, children }: ChatItemProps) {
             <span className="w-40 truncate text-lg">{chat.title}</span>
             {isActive || (
               <Timestamp
-                date={chat.lastMessageAt}
+                date={chat.lastMessageAt ?? chat.createdAt}
                 className="text-primary/50 group-hover:opacity-0"
               />
             )}
@@ -53,14 +53,16 @@ export function ChatItem({ chat, children }: ChatItemProps) {
           </div>
         </div>
       </Link>
-      <div
-        className={cn(
-          'absolute right-2 top-1 opacity-0 group-hover:opacity-100',
-          isActive && 'opacity-100'
-        )}
-      >
-        {children}
-      </div>
+      {children && (
+        <div
+          className={cn(
+            'absolute right-2 top-1 opacity-0 group-hover:opacity-100',
+            isActive && 'opacity-100'
+          )}
+        >
+          {children}
+        </div>
+      )}
     </div>
   )
 }

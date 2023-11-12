@@ -65,7 +65,7 @@ export function HistoryChatList({ initalChats }: HistoryChatListProps) {
     <div className="flex flex-1 flex-col">
       <NewChatButton
         isLoading={isLoading}
-        className="mx-2 mt-8"
+        className="mx-2"
         variant="outline"
         onClick={updateChats}
       />

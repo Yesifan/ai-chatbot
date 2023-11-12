@@ -1,3 +1,5 @@
+export const INBOX_CHAT = 'Small Talk'
+
 // [openai chat docs](https://platform.openai.com/docs/api-reference/chat)
 /**
  * What sampling [temperature](https://platform.openai.com/docs/api-reference/chat/create#chat-create-temperature) to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.
