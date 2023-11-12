@@ -1,6 +1,6 @@
 'use client'
-
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
 
 import { type Chat } from '@/types/chat'
@@ -12,6 +12,10 @@ interface ChatItemProps {
   chat: Chat
   children: React.ReactNode
 }
+
+const Timestamp = dynamic(() => import('@/components/ui/timestamp'), {
+  ssr: false
+})
 
 export function ChatItem({ chat, children }: ChatItemProps) {
   const { id } = useParams()
@@ -28,17 +32,23 @@ export function ChatItem({ chat, children }: ChatItemProps) {
       )}
     >
       <Link href={`/chat/${chat.id}`} className="flex w-full items-center">
-        <RobotAvatar className="mr-2 h-14 w-14 shrink-0 text-4xl" />
-        <div className="flex w-full flex-col pr-16">
+        <RobotAvatar className="h-14 w-14 shrink-0 text-4xl" />
+        <div className="flex w-full min-w-full flex-col pr-14">
           <h4
-            className="relative flex-1 select-none overflow-hidden text-ellipsis break-all"
+            className="relative flex w-full flex-1 select-none items-center justify-between break-all"
             title={chat.title}
           >
-            <span className="whitespace-nowrap text-lg">{chat.title}</span>
+            <span className="w-40 truncate text-lg">{chat.title}</span>
+            {isActive || (
+              <Timestamp
+                date={chat.lastMessageAt}
+                className="text-primary/50 group-hover:opacity-0"
+              />
+            )}
           </h4>
           <div className="relative max-h-5 flex-1 select-none overflow-hidden text-ellipsis break-all">
-            <span className="whitespace-nowrap text-xs text-gray-400">
-              {chat.title}
+            <span className="whitespace-nowrap text-xs text-primary/50">
+              {chat.lastMessage ?? chat.title}
             </span>
           </div>
         </div>

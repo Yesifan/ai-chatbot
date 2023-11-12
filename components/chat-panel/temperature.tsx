@@ -59,7 +59,7 @@ export const Temperature = ({ className, ...props }: MessageCountProps) => {
   }
 
   const onValueCommit = (values: number[]) => {
-    updateChat(id, { attachedMessagesCount: values[0] })
+    updateChat(id, { temperature: values[0] })
   }
 
   return (

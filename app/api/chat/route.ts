@@ -25,7 +25,17 @@ const recordConversation = async (
   question: Message,
   answer: Message
 ) => {
+  const now = new Date()
   await database
+    .updateTable('chat')
+    .set({
+      lastMessage: question.content,
+      lastMessageAt: now
+    })
+    .where('chat.id', '=', chat.id)
+    .executeTakeFirstOrThrow()
+
+  return await database
     .insertInto('message')
     .values([
       {
@@ -34,7 +44,7 @@ const recordConversation = async (
         content: question.content,
         role: Role.User,
         model: model,
-        createdAt: new Date()
+        createdAt: now
       },
       {
         id: answer.id,
@@ -42,10 +52,10 @@ const recordConversation = async (
         content: answer.content,
         role: Role.Assistant,
         model: model,
-        createdAt: new Date()
+        createdAt: now
       }
     ])
-    .execute()
+    .executeTakeFirstOrThrow()
 }
 
 export async function POST(req: NextRequest) {

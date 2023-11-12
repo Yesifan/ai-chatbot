@@ -44,6 +44,8 @@ export interface ChatTable
   userId: string
   title: string
   createdAt: Date
+  lastMessage?: string
+  lastMessageAt?: Date
 }
 
 export interface MessageTable extends AIMessage {

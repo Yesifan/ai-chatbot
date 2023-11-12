@@ -44,13 +44,12 @@ export async function getChats() {
   }
 
   try {
-    const chatList = await db
+    return await db
       .selectFrom('chat')
       .selectAll()
       .where('chat.userId', '=', userId)
+      .orderBy('lastMessageAt', 'desc')
       .execute()
-
-    return chatList
   } catch (error) {
     console.error(`[ERROR][getChats] ${error}`)
     return []

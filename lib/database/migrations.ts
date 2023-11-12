@@ -1,5 +1,7 @@
 import { Kysely } from 'kysely'
 
+// [An Overview of PostgreSQL Data Types](https://learnsql.com/blog/postgresql-data-types/)
+
 export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('user')
@@ -20,10 +22,10 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('model', 'varchar(20)')
     .addColumn('pinPrompt', 'text')
     .addColumn('maxToken', 'integer')
-    .addColumn('temperature', 'double precision')
-    .addColumn('topP', 'double precision')
-    .addColumn('presencePenalty', 'double precision')
-    .addColumn('frequencyPenalty', 'double precision')
+    .addColumn('temperature', 'real')
+    .addColumn('topP', 'real')
+    .addColumn('presencePenalty', 'real')
+    .addColumn('frequencyPenalty', 'real')
     .addColumn('input_template', 'varchar(120)')
     .addColumn('attachedMessagesCount', 'integer')
     .execute()
@@ -36,13 +38,15 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('userId', 'char(21)', col => col.notNull())
     .addColumn('title', 'varchar(120)', col => col.notNull())
     .addColumn('createdAt', 'timestamp')
+    .addColumn('lastMessage', 'text')
+    .addColumn('lastMessageAt', 'timestamp')
     .addColumn('model', 'varchar(20)')
     .addColumn('pinPrompt', 'text')
     .addColumn('maxToken', 'integer')
-    .addColumn('temperature', 'double precision')
-    .addColumn('topP', 'double precision')
-    .addColumn('presencePenalty', 'double precision')
-    .addColumn('frequencyPenalty', 'double precision')
+    .addColumn('temperature', 'real')
+    .addColumn('topP', 'real')
+    .addColumn('presencePenalty', 'real')
+    .addColumn('frequencyPenalty', 'real')
     .addColumn('input_template', 'varchar(120)')
     .addColumn('attachedMessagesCount', 'integer')
     .execute()
