@@ -5,8 +5,9 @@ import { auth } from '@/auth'
 import { NextRequest } from 'next/server'
 import database from '@/lib/database'
 import { Message, NewChat } from '@/types/chat'
-import { GPT_Model, Role, TEMPERATURE } from '@/lib/constants'
+import { ErrorCode, GPT_Model, Role, TEMPERATURE } from '@/lib/constants'
 import { createOpenai } from './openai'
+import { getOrCreateChat } from '@/app/actions'
 
 export const runtime = 'edge'
 
@@ -16,34 +17,6 @@ export interface ChatBody {
   messages: Message[]
   replyId: string
   temperature: number
-}
-
-const getOrCreateChat = async (
-  id: string,
-  userId: string,
-  messages: Message[]
-): Promise<NewChat> => {
-  const content = messages[0].content!
-  const title = content.substring(0, 100)
-
-  const chat = await database
-    .selectFrom('chat')
-    .selectAll()
-    .where('id', '=', id)
-    .where('userId', '=', userId)
-    .executeTakeFirst()
-  if (chat === undefined) {
-    const chat: NewChat = {
-      id,
-      userId,
-      title,
-      createdAt: new Date()
-    }
-    await database.insertInto('chat').values(chat).executeTakeFirstOrThrow()
-    return chat
-  } else {
-    return chat
-  }
 }
 
 const recordConversation = async (
@@ -90,12 +63,19 @@ export async function POST(req: NextRequest) {
   const { id, model, messages, replyId, temperature } = json
 
   if (!messages || messages.length === 0) {
-    return new Response('Empty messages', {
+    return new Response(ErrorCode.BadRequest, {
       status: 400
     })
   }
 
   const userId = session.user.id
+  const chat = await getOrCreateChat(id, userId, messages)
+
+  if (!chat) {
+    return new Response(ErrorCode.BadRequest, {
+      status: 400
+    })
+  }
 
   try {
     const res = await openai.createChatCompletion(messages as any, {
@@ -111,7 +91,6 @@ export async function POST(req: NextRequest) {
           content: answer,
           role: Role.Assistant
         }
-        const chat = await getOrCreateChat(id, userId, messages)
         await recordConversation(chat, model, question, answerMessage)
       }
     })

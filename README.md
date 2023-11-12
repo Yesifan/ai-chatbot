@@ -48,5 +48,7 @@ Your app template should now be running on [localhost:3000](http://localhost:300
 - [ ] [Sider](./components/sidebar.tsx) add small talk item.
 - [ ] [Message](./components/chat-message-actions.tsx) add support for favorite and pin.
 - [x] [Chat](./components/chat.tsx) add chat header with title and icon.
+  - [ ] Title changes are synchronized to the [Sidebar](./components/sidebar.tsx).
 - [ ] Add PWA support.
 - [ ] Add Mobile support.
+- [ ] Message reload and stop.

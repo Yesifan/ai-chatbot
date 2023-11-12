@@ -5,8 +5,8 @@ import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import db from '@/lib/database'
-import { Message, type Chat } from '@/types/chat'
-import { ErrorCode } from '@/lib/constants'
+import { Message, type Chat, NewChat } from '@/types/chat'
+import { ErrorCode, GPT_Model } from '@/lib/constants'
 
 export async function removeMessage(id: string) {
   const session = await auth()
@@ -112,6 +112,37 @@ export async function getChatTitle(id: string) {
   }
 
   return chat.title
+}
+
+export const getOrCreateChat = async (
+  id: string,
+  userId: string,
+  messages: Message[]
+): Promise<NewChat | null> => {
+  const content = messages[0].content!
+  const title = content.substring(0, 100)
+
+  const chat = await db
+    .selectFrom('chat')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+
+  if (chat?.userId != userId) {
+    return null
+  }
+  if (chat === undefined) {
+    const chat: NewChat = {
+      id,
+      userId,
+      title,
+      createdAt: new Date()
+    }
+    await db.insertInto('chat').values(chat).executeTakeFirstOrThrow()
+    return chat
+  } else {
+    return chat
+  }
 }
 
 export async function updateChat(id: string, chat: Partial<Chat>) {
