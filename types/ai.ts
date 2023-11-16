@@ -83,6 +83,8 @@ export type UseChatHelpers = {
    * new response.
    */
   reload: (
+    id: string,
+    historyCount?: number,
     chatRequestOptions?: ChatRequestOptions
   ) => Promise<Message | null | undefined>
   remove: (id: string) => Message[] | null | undefined

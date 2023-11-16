@@ -5,14 +5,15 @@ import { Message } from 'ai'
 
 import { cn } from '@/lib/utils'
 import { Markdown } from '@/components/markdown'
-import { ChatMessageActions } from '@/components/chat-message-actions'
+import {
+  ChatMessageActions,
+  ChatMessageActionsProps
+} from '@/components/chat-message-actions'
 import { RobotAvatar, UserAvatar } from './ui/avatar'
 import BubblesLoading from './ui/loading'
 
-export interface ChatMessageProps extends Omit<Message, 'id'> {
-  id?: string
+export interface ChatMessageProps extends ChatMessageActionsProps {
   isLoading?: boolean
-  onDelete?: (id: string) => void
 }
 
 const ChatAvatar = ({ role }: { role: Message['role'] }) => {
@@ -28,29 +29,20 @@ const ChatAvatar = ({ role }: { role: Message['role'] }) => {
   )
 }
 
-export function ChatMessage({
-  id,
-  role,
-  content,
-  onDelete,
-  isLoading
-}: ChatMessageProps) {
+export function ChatMessage({ isLoading, ...props }: ChatMessageProps) {
   return (
     <div
       className={cn('group relative mb-8 flex flex-col items-start md:-ml-12')}
     >
       <ChatMessageActions
         className="w-full group-hover:opacity-100 md:opacity-0"
-        id={id}
-        role={role}
-        content={content}
-        onDelete={onDelete}
+        {...props}
       />
       <div className="flex w-full">
-        <ChatAvatar role={role} />
+        <ChatAvatar role={props.role} />
         <div className="ml-4 flex-1 space-y-2 overflow-hidden px-1">
-          {content ? (
-            <Markdown content={content} />
+          {props.content ? (
+            <Markdown content={props.content} />
           ) : isLoading ? (
             <BubblesLoading />
           ) : null}

@@ -219,7 +219,8 @@ export function useChat({
   const append = useCallback(
     async (
       content: string,
-      messagesCount = ATTACHED_MESSAGES_COUNT,
+      messagesCount = chatStore.attachedMessagesCount ??
+        ATTACHED_MESSAGES_COUNT,
       { options, functions, function_call }: ChatRequestOptions = {}
     ) => {
       const message = {
@@ -243,7 +244,7 @@ export function useChat({
 
       return triggerRequest(chatRequest)
     },
-    [mutateMessages, triggerRequest]
+    [chatStore.attachedMessagesCount, mutateMessages, triggerRequest]
   )
 
   const pin = useCallback(
@@ -261,13 +262,27 @@ export function useChat({
   )
 
   const reload = useCallback(
-    async ({ options, functions, function_call }: ChatRequestOptions = {}) => {
+    async (
+      id: string,
+      messagesCount = chatStore.attachedMessagesCount ??
+        ATTACHED_MESSAGES_COUNT,
+      { options, functions, function_call }: ChatRequestOptions = {}
+    ) => {
       if (messages.length === 0) return null
 
       // Remove last assistant message and retry last user message.
-      const lastMessage = messages[messages.length - 1]
+      const messageIndex = messages.findIndex(message => message.id === id)
+      if (messageIndex === -1) {
+        throw new Error('The message is not found.')
+      }
+      if (messages[messageIndex]?.role === Role.Assistant) {
+        throw new Error('The message is not user message.')
+      }
+      const historyMessages = messages.slice(0, messageIndex + 1)
       const sendMessages =
-        lastMessage.role === Role.Assistant ? messages.slice(0, -1) : messages
+        messagesCount === INFINITE_ATTACHED_MESSAGES_COUNT
+          ? historyMessages
+          : historyMessages.slice(-(messagesCount + 1))
 
       const chatRequest: ChatRequest = {
         messages: sendMessages,
@@ -275,10 +290,9 @@ export function useChat({
         ...(functions !== undefined && { functions }),
         ...(function_call !== undefined && { function_call })
       }
-
       return triggerRequest(chatRequest)
     },
-    [messages, triggerRequest]
+    [chatStore.attachedMessagesCount, messages, triggerRequest]
   )
 
   const remove = useCallback(
