@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { toast } from 'react-hot-toast'
 import { useSession } from 'next-auth/react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
@@ -17,19 +17,22 @@ import type { Message } from '@/types/chat'
 import { Separator } from './ui/separator'
 import { ChatMessage } from './chat-message'
 import { Role } from '@/lib/constants'
+import { useChatStore } from '@/lib/store/chat'
+import { getInboxChat, getMessages } from '@/app/actions'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
-  id: string
   initialMessages?: Message[]
 }
 
-export function Chat({ id, initialMessages, className }: ChatProps) {
+export function Chat({ initialMessages, className }: ChatProps) {
   const router = useRouter()
   const pathname = usePathname()
   const search = useSearchParams()
 
   const { status } = useSession()
   const sessionStatusRef = useRef(status)
+
+  const chatStore = useChatStore()
 
   const { messages, ...props } = useChat({
     initialMessages: initialMessages,
@@ -40,6 +43,21 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
     }
   })
 
+  const setInboxChat = useCallback(async () => {
+    const chat = await getInboxChat()
+    if ('error' in chat) {
+      console.error('[IndexPage] get chat', chat.error)
+      return
+    }
+    chatStore.update?.(chat)
+    const messages = await getMessages(chat.id)
+    if ('error' in messages) {
+      console.error('[IndexPage] get message', messages.error)
+      return
+    }
+    props.setMessages(messages)
+  }, [chatStore, props])
+
   // Handle user login status change
   useEffect(() => {
     if (sessionStatusRef.current !== status) {
@@ -48,18 +66,20 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         if (pathname !== '/') {
           router.replace(`/?next=${pathname}`)
         } else {
+          chatStore.clear?.()
           props.setMessages([])
         }
       } else if (status === 'authenticated') {
+        toast.success('Login success!')
         const nextPath = search.get('next')
         if (nextPath) {
           router.push(nextPath)
         } else {
-          props.setMessages([])
+          setInboxChat()
         }
       }
     }
-  }, [pathname, router, props, status, search])
+  }, [pathname, router, props, status, search, setInboxChat, chatStore])
 
   return (
     <>
@@ -80,7 +100,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         </div>
         <ChatScrollAnchor trackVisibility={props.isLoading} />
       </div>
-      <ChatPanel id={id} messages={messages} {...props} />
+      <ChatPanel id={chatStore.id} messages={messages} {...props} />
     </>
   )
 }

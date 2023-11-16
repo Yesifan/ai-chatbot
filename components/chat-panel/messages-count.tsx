@@ -68,6 +68,7 @@ export const MessagesCount = ({ className, ...props }: MessageCountProps) => {
   }
 
   const onValueCommit = (values: number[]) => {
+    if (!id) return
     updateChat(id, { attachedMessagesCount: values[0] })
   }
 

@@ -9,7 +9,6 @@ import {
   useState
 } from 'react'
 import { GPT_Model, TEMPERATURE } from '../constants'
-import { nanoid } from '../utils'
 
 export type ChatStoreProps = Pick<
   Chat,
@@ -17,22 +16,23 @@ export type ChatStoreProps = Pick<
 >
 
 export interface ChatStore extends Partial<ChatStoreProps> {
-  id: string
-  setTitle?: (title: string) => void
+  id?: string
+  clear?: () => void
+  update?: (chat: Partial<ChatStoreProps>) => void
+  setTitle?: (title?: string) => void
   setModel?: (model: GPT_Model) => void
   setTemperature?: (temperature: number) => void
   setAttachedMessagesCount?: (count: number) => void
 }
 
-const ChatStoreContext = createContext<ChatStore>({
-  id: nanoid()
-})
+const ChatStoreContext = createContext<ChatStore>({})
 
 export const ChatStoreProvider = ({
-  id,
+  id: _id,
   children,
   ...chat
 }: PropsWithChildren & Partial<ChatStoreProps>) => {
+  const [id, setId] = useState(_id)
   const [title, setTitle] = useState(chat.title)
   const [model, setModel] = useState(chat.model ?? GPT_Model.GPT_3_5_TURBO)
   const [temperature, setTemperature] = useState(
@@ -41,13 +41,29 @@ export const ChatStoreProvider = ({
   const [attachedMessagesCount, setAttachedMessagesCount] = useState(
     chat.attachedMessagesCount ?? 5
   )
+
+  const update = (chat: Partial<ChatStoreProps>) => {
+    setId(chat.id)
+    setTitle(chat.title)
+    setModel(chat.model ?? GPT_Model.GPT_3_5_TURBO)
+    setTemperature(chat.temperature ?? TEMPERATURE)
+    setAttachedMessagesCount(chat.attachedMessagesCount ?? 5)
+  }
+
+  const clear = () => {
+    setId(undefined)
+    setTitle(undefined)
+  }
+
   const store = useMemo<ChatStore>(() => {
     return {
-      id: id ?? nanoid(),
+      id,
       title,
       model,
       temperature,
       attachedMessagesCount,
+      clear,
+      update,
       setModel,
       setTitle,
       setTemperature,

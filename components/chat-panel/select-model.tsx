@@ -17,6 +17,7 @@ export const SelectModel = ({ className, ...props }: SelectModelProps) => {
   const { id, model, setModel } = useChatStore()
 
   const onValueChange = (values: GPT_Model) => {
+    if (!id) return
     setModel?.(values)
     updateChat(id, { model: values })
   }

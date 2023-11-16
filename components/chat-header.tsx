@@ -40,8 +40,10 @@ const TitleInput = ({
   }
 
   const onSubmit = () => {
-    setEdit(false)
-    updateChat(chat.id, { title: chat.title })
+    if (chat.id) {
+      setEdit(false)
+      updateChat(chat.id, { title: chat.title })
+    }
   }
 
   const onCancel = () => {
@@ -73,7 +75,7 @@ const TitleInput = ({
   ) : (
     <span
       className="whitespace-nowrap text-lg"
-      onClick={() => !disabled && setEdit(true)}
+      onClick={() => chat.id && !disabled && setEdit(true)}
     >
       <h2
         className="relative flex-1 select-none overflow-hidden text-ellipsis break-all"
@@ -89,8 +91,6 @@ export function ChatHeader({ className }: ChatHeaderItemProps) {
   const chat = useChatStore()
   const pathname = usePathname()
   const isInbox = pathname === '/'
-
-  if (!chat?.id) return null
 
   return (
     <div
