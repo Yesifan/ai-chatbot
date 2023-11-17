@@ -51,5 +51,5 @@ Your app template should now be running on [localhost:3000](http://localhost:300
   - [ ] Title changes are synchronized to the [Sidebar](./components/sidebar.tsx).
 - [ ] Add PWA support.
 - [ ] Add Mobile support.
-- [ ] Message reload and stop.
+- [x] Message reload and stop.
 - [ ] support for chat prompt.

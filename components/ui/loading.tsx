@@ -1,5 +1,5 @@
-import { Theme } from '@/lib/constants'
-import { useTheme } from 'next-themes'
+import { cn } from '@/lib/utils'
+import { forwardRef } from 'react'
 
 const Svg = () => (
   <svg viewBox="0 0 32 24" xmlns="http://www.w3.org/2000/svg">
@@ -42,16 +42,21 @@ const Svg = () => (
   </svg>
 )
 
-const BubblesLoading = () => {
-  const { theme } = useTheme()
+const BubblesLoading = forwardRef<
+  HTMLDivElement,
+  React.ButtonHTMLAttributes<HTMLButtonElement>
+>(({ className, style }, ref) => {
   return (
     <div
-      className={theme === Theme.Light ? 'fill-black' : 'fill-white'}
-      style={{ height: 24, width: 32 }}
+      ref={ref}
+      className={cn('fill-primary', className)}
+      style={style ? style : { height: 24, width: 32 }}
     >
       <Svg />
     </div>
   )
-}
+})
+
+BubblesLoading.displayName = 'BubblesLoading'
 
 export default BubblesLoading
