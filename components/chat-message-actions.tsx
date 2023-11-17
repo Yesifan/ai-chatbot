@@ -9,9 +9,10 @@ import {
   IconRefresh,
   IconTrash
 } from '@/components/ui/icons'
-import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard'
 import { cn } from '@/lib/utils'
 import { Role } from '@/lib/constants'
+import { useDelayStatus } from '@/lib/hooks/use-delay-status'
+import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard'
 
 type MessageComponentProps = React.ComponentProps<'div'> & Message
 
@@ -27,14 +28,20 @@ export function ChatMessageActions({
   content,
   className,
   onDelete,
-  onReload,
   ...props
 }: ChatMessageActionsProps) {
+  const [isReload, pickReload] = useDelayStatus({ timeout: 2000 })
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
 
   const onCopy = () => {
     if (isCopied) return
     copyToClipboard(content)
+  }
+
+  const onReload = (id: string) => {
+    if (isReload) return
+    pickReload()
+    props.onReload?.(id)
   }
 
   return (
@@ -44,9 +51,9 @@ export function ChatMessageActions({
         className
       )}
     >
-      {id && props.role === Role.User && onReload && (
+      {id && props.role === Role.User && props.onReload && (
         <Button variant="ghost" size="icon" onClick={() => onReload(id)}>
-          <IconRefresh />
+          {isReload ? <IconCheck /> : <IconRefresh />}
           <span className="sr-only">Reload the message</span>
         </Button>
       )}
@@ -55,6 +62,7 @@ export function ChatMessageActions({
         <span className="sr-only">Copy message</span>
       </Button>
       {id && onDelete && (
+        // TODO: Secondary confirmation
         <Button variant="ghost" size="icon" onClick={() => onDelete(id)}>
           <IconTrash />
           <span className="sr-only">Delete the message</span>
