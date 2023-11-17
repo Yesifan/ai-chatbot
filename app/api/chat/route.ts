@@ -16,6 +16,7 @@ export interface ChatBody {
   model: GPT_Model
   messages: Message[]
   replyId: string
+  questionId: string
   temperature: number
 }
 
@@ -98,7 +99,7 @@ export async function POST(req: NextRequest) {
   }
 
   const json = (await req.json()) as ChatBody
-  const { id, model, messages, replyId, temperature } = json
+  const { id, model, messages, replyId, questionId, temperature } = json
 
   if (!messages || messages.length === 0) {
     return new Response(ErrorCode.BadRequest, {
@@ -123,7 +124,11 @@ export async function POST(req: NextRequest) {
     })
     const stream = OpenAIStream(res, {
       async onCompletion(answer) {
-        const question = messages[messages.length - 1]
+        const question = {
+          id: questionId,
+          content: messages[messages.length - 1].content,
+          role: Role.User
+        }
         const answerMessage = {
           id: replyId,
           content: answer,

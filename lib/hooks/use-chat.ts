@@ -25,6 +25,7 @@ const getStreamedResponse = async (
   onResponse?: (response: Response) => void | Promise<void>
 ) => {
   const replyId = nanoid()
+  const questionId = chatRequest.messages[chatRequest.messages.length - 1].id
 
   const constructedMessagesPayload = chatRequest.messages.map(
     ({ role, content, name, function_call }) => ({
@@ -41,6 +42,7 @@ const getStreamedResponse = async (
     method: 'POST',
     body: JSON.stringify({
       replyId,
+      questionId,
       messages: constructedMessagesPayload,
       functions: chatRequest.functions,
       function_call: chatRequest.function_call,
