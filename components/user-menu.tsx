@@ -28,8 +28,8 @@ export function UserMenu() {
     <div className="flex items-center justify-between">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="px-0">
-            <UserAvatar />
+          <Button variant="ghost" className="px-2">
+            <UserAvatar className="h-6 w-6" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent sideOffset={8} align="start" className="w-[180px]">

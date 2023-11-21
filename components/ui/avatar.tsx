@@ -30,15 +30,27 @@ const Avatar = ({ src, fallback, className }: AvatarProps) => (
 )
 
 export const UserAvatar: React.FC<{ className?: string }> = props => {
-  return <Avatar fallback="👩🏼‍🚀" className={props.className} />
+  return (
+    <Avatar
+      src="/images/astronaut.png"
+      fallback="👩🏼‍🚀"
+      className={props.className}
+    />
+  )
 }
 
 export const RobotAvatar: React.FC<{ className?: string }> = props => {
-  return <Avatar fallback="🤖" className={props.className} />
+  return <Avatar src="/favicon.png" fallback="🤖" className={props.className} />
 }
 
 export const InboxAvatar: React.FC<{ className?: string }> = props => {
-  return <Avatar fallback="☕" className={props.className} />
+  return (
+    <Avatar
+      src="/images/coffee.webp"
+      fallback="☕"
+      className={props.className}
+    />
+  )
 }
 
 export default Avatar

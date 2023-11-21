@@ -24,7 +24,11 @@ const ChatAvatar = ({ role }: { role: Message['role'] }) => {
         role.includes('user') && 'bg-background'
       )}
     >
-      {role.includes('user') ? <UserAvatar /> : <RobotAvatar />}
+      {role.includes('user') ? (
+        <UserAvatar className="h-8 w-8 p-1" />
+      ) : (
+        <RobotAvatar className="h-8 w-8 p-1" />
+      )}
     </div>
   )
 }

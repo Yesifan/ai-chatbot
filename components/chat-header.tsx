@@ -99,13 +99,13 @@ export function ChatHeader({ className }: ChatHeaderItemProps) {
         className
       )}
     >
-      <Button variant="ghost" className="mr-2 h-14 w-14">
-        {isInbox ? (
-          <InboxAvatar className="text-4xl" />
-        ) : (
-          <RobotAvatar className="text-4xl" />
-        )}
-      </Button>
+      {isInbox ? (
+        <InboxAvatar className="mx-2 mr-4 w-10 text-4xl" />
+      ) : (
+        <Button variant="ghost" className="mr-2 h-14 px-2">
+          <RobotAvatar className="w-10 text-4xl" />
+        </Button>
+      )}
       <div className="flex w-full flex-1 flex-col justify-between pr-6">
         <TitleInput disabled={isInbox} />
         <div className="">

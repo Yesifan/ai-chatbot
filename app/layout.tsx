@@ -15,14 +15,14 @@ import '@/app/globals.css'
 export const metadata: Metadata = {
   metadataBase: new URL(`http://localhost:${process.env.PORT || 3000}`),
   title: {
-    default: 'Next.js AI Chatbot',
-    template: `%s - Next.js AI Chatbot`
+    default: 'Jarvis - AI Assistant',
+    template: `%s - Jarvis Assistant`
   },
-  description: 'An AI-powered chatbot template built with Next.js and Vercel.',
+  description: 'An AI-powered chatbot.',
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png'
+    apple: '/favicon.png'
   }
 }
 
