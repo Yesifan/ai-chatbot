@@ -12,16 +12,12 @@ export interface AvatarProps {
 const Avatar = ({ src, fallback, className }: AvatarProps) => (
   <RadixAvatar.Root
     className={cn(
-      `flex h-10 w-10 items-center justify-center text-xl`,
+      `flex h-10 w-10 items-center justify-center overflow-hidden text-xl`,
       className
     )}
   >
     {src && (
-      <RadixAvatar.Image
-        className="h-full w-full rounded-full"
-        src={src}
-        alt={fallback}
-      />
+      <RadixAvatar.Image className="h-full w-full" src={src} alt={fallback} />
     )}
     <RadixAvatar.Fallback className="h-auto" delayMs={600}>
       {fallback}
