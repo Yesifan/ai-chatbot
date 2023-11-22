@@ -228,7 +228,8 @@ export function useChat({
       const message = {
         id: nanoid(),
         content,
-        role: Role.User
+        role: Role.User,
+        createdAt: new Date()
       }
       mutateMessages([...messagesRef.current, message])
 

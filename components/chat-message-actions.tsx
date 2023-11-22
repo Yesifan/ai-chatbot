@@ -1,7 +1,5 @@
 'use client'
 
-import { type Message } from 'ai'
-
 import { Button } from '@/components/ui/button'
 import {
   IconCheck,
@@ -13,6 +11,7 @@ import { cn } from '@/lib/utils'
 import { Role } from '@/lib/constants'
 import { useDelayStatus } from '@/lib/hooks/use-delay-status'
 import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard'
+import { Message } from '@/types/chat'
 
 type MessageComponentProps = React.ComponentProps<'div'> & Message
 

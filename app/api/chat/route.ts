@@ -10,6 +10,7 @@ import { ChatBody } from '@/types/api'
 
 export const runtime = 'edge'
 
+// TODO: fix aborted error
 export async function POST(req: NextRequest) {
   const session = await auth()
 
