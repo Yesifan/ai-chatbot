@@ -39,26 +39,35 @@ export const recordConversation = async (
       console.error('[update chat error]', e?.message)
     })
 
+  const questionMessage = {
+    id: chatBody.questionId,
+    chatId: chatBody.id,
+    content: question,
+    role: Role.User,
+    model: chatBody.model,
+    createdAt: questionAt
+  }
+
+  const answerMessage = {
+    id: chatBody.replyId,
+    chatId: chatBody.id,
+    content: answer,
+    role: Role.Assistant,
+    model: chatBody.model,
+    createdAt: now
+  }
+
   return await database
     .insertInto('message')
-    .values([
-      {
-        id: chatBody.questionId,
-        chatId: chatBody.id,
-        content: question,
-        role: Role.User,
-        model: chatBody.model,
-        createdAt: questionAt
-      },
-      {
-        id: chatBody.replyId,
-        chatId: chatBody.id,
-        content: answer,
-        role: Role.Assistant,
-        model: chatBody.model,
-        createdAt: now
-      }
-    ])
+    .values(
+      chatBody.isReload ? [answerMessage] : [questionMessage, answerMessage]
+    )
     .executeTakeFirstOrThrow()
-    .catch(error => console.error('[OPENAI CHAT ERROR]', error))
+    .then(res => {
+      console.log('[record conversation success]', res)
+    })
+    .catch(error => {
+      console.error('[OPENAI CHAT ERROR]', error)
+      console.error('[OPENAI CHAT ERROR]', chatBody)
+    })
 }

@@ -32,7 +32,7 @@ export function ChatItem({ chat, children }: ChatItemProps) {
       )}
     >
       <Link href={`/chat/${chat.id}`} className="flex w-full items-center">
-        <RobotAvatar className="mr-1 h-14 w-14 shrink-0 p-1 text-4xl" />
+        <RobotAvatar className="mr-1 h-14 w-14 shrink-0 p-2 text-4xl" />
         <div className="flex w-full min-w-full flex-col pr-14">
           <h4
             className="relative flex w-full flex-1 select-none items-center justify-between break-all"

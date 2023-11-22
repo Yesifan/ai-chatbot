@@ -22,6 +22,7 @@ export async function getMessages(
     .selectFrom('message')
     .selectAll()
     .where('chatId', '=', id)
+    .orderBy('createdAt')
     .execute()
 }
 

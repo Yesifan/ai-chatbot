@@ -280,6 +280,11 @@ export function useChat({
       if (messages[messageIndex]?.role === Role.Assistant) {
         throw new Error('The message is not user message.')
       }
+      options = options ?? {}
+      options.body = {
+        isReload: true,
+        ...(options.body ?? {})
+      }
       const historyMessages = messages.slice(0, messageIndex + 1)
       const sendMessages =
         messagesCount === INFINITE_ATTACHED_MESSAGES_COUNT
