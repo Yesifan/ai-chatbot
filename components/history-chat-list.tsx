@@ -45,17 +45,7 @@ export function HistoryChatList({ initalChats }: HistoryChatListProps) {
     return (
       <div className="flex-1 overflow-auto">
         <div className="p-8 text-center">
-          <p className="text-sm text-muted-foreground">Please log in first</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (!chats?.length) {
-    return (
-      <div className="flex-1 overflow-auto">
-        <div className="p-8 text-center">
-          <p className="text-sm text-muted-foreground">No chat history</p>
+          <p className="text-sm text-muted-foreground">Please login in first</p>
         </div>
       </div>
     )

@@ -37,3 +37,8 @@ yarn-error.log*
 .vercel
 .vscode
 .env*.local
+
+# Auto Generated PWA files
+**/public/sw.js*
+**/public/worker-*
+**/public/workbox-*

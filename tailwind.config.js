@@ -17,6 +17,7 @@ module.exports = {
         sans: ['var(--font-sans)', ...fontFamily.sans]
       },
       colors: {
+        theme: 'hsl(var(--theme))',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
