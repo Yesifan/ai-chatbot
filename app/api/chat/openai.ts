@@ -3,9 +3,7 @@ import { config } from '@/config/server'
 import { OpenAIChatStreamPayload } from '@/types/openai'
 import { ChatCompletionMessageParam } from 'openai/resources'
 
-interface MessageParam extends ChatCompletionMessageParam {
-  id: string
-}
+type MessageParam = { id: string } & ChatCompletionMessageParam
 
 declare module 'openai' {
   interface OpenAI {
