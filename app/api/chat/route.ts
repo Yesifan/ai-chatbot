@@ -22,12 +22,8 @@ export interface ChatBody {
 
 const getOrCreateChat = async (
   id: string,
-  userId: string,
-  messages: Message[]
+  userId: string
 ): Promise<NewChat | null> => {
-  const content = messages[0].content!
-  const title = content.substring(0, 100)
-
   const chat = await database
     .selectFrom('chat')
     .selectAll()
@@ -108,7 +104,7 @@ export async function POST(req: NextRequest) {
   }
 
   const userId = session.user.id
-  const chat = await getOrCreateChat(id, userId, messages)
+  const chat = await getOrCreateChat(id, userId)
 
   if (!chat) {
     return new Response(ErrorCode.BadRequest, {
@@ -134,7 +130,9 @@ export async function POST(req: NextRequest) {
           content: answer,
           role: Role.Assistant
         }
-        await recordConversation(chat, model, question, answerMessage)
+        recordConversation(chat, model, question, answerMessage).catch(error =>
+          console.error('[OPENAI CHAT ERROR]', error)
+        )
       }
     })
     return new StreamingTextResponse(stream)
