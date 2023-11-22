@@ -66,7 +66,7 @@ export async function getChats() {
       .selectAll()
       .where('chat.userId', '=', userId)
       .where('chat.title', '!=', INBOX_CHAT)
-      .orderBy('lastMessageAt', 'asc')
+      .orderBy('lastMessageAt', 'desc')
       .execute()
   } catch (error) {
     console.error(`[ERROR][getChats] ${error}`)
@@ -172,8 +172,8 @@ export async function getChatTitle(id: string) {
   return chat.title
 }
 
-export const createChat = async (id?: string) => {
-  const pk = id ?? nanoid()
+export const createChat = async () => {
+  const pk = nanoid()
   const session = await auth()
   if (!session) {
     return {

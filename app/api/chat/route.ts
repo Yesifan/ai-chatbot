@@ -3,99 +3,25 @@ import { OpenAIStream, StreamingTextResponse } from 'ai'
 
 import { auth } from '@/auth'
 import { NextRequest } from 'next/server'
-import database from '@/lib/database'
-import { Message, NewChat } from '@/types/chat'
-import { ErrorCode, GPT_Model, Role, TEMPERATURE } from '@/lib/constants'
+import { ErrorCode, GPT_Model, TEMPERATURE } from '@/lib/constants'
 import { createOpenai } from './openai'
-import { createChat } from '@/app/actions'
+import { getChat, recordConversation } from './database'
+import { ChatBody } from '@/types/api'
 
 export const runtime = 'edge'
 
-export interface ChatBody {
-  id: string
-  model: GPT_Model
-  messages: Message[]
-  replyId: string
-  questionId: string
-  temperature: number
-}
-
-const getOrCreateChat = async (
-  id: string,
-  userId: string
-): Promise<NewChat | null> => {
-  const chat = await database
-    .selectFrom('chat')
-    .selectAll()
-    .where('id', '=', id)
-    .executeTakeFirst()
-
-  if (chat?.userId != userId) {
-    return null
-  }
-  if (chat === undefined) {
-    const newChat = await createChat(id)
-    if ('error' in newChat) {
-      return null
-    }
-    return newChat
-  } else {
-    return chat
-  }
-}
-
-const recordConversation = async (
-  chat: NewChat,
-  model: GPT_Model,
-  question: Message,
-  answer: Message
-) => {
-  const now = new Date()
-  await database
-    .updateTable('chat')
-    .set({
-      lastMessage: question.content,
-      lastMessageAt: now
-    })
-    .where('chat.id', '=', chat.id)
-    .executeTakeFirstOrThrow()
-
-  return await database
-    .insertInto('message')
-    .values([
-      {
-        id: question.id,
-        chatId: chat.id,
-        content: question.content,
-        role: Role.User,
-        model: model,
-        createdAt: now
-      },
-      {
-        id: answer.id,
-        chatId: chat.id,
-        content: answer.content,
-        role: Role.Assistant,
-        model: model,
-        createdAt: now
-      }
-    ])
-    .executeTakeFirstOrThrow()
-}
-
 export async function POST(req: NextRequest) {
   const session = await auth()
-
-  const openai = createOpenai()
 
   if (!session?.user) {
     return new Response('Unauthorized', {
       status: 401
     })
   }
-
-  const json = (await req.json()) as ChatBody
-  const { id, model, messages, replyId, questionId, temperature } = json
+  const now = new Date()
+  const openai = createOpenai()
+  const chatJson = (await req.json()) as ChatBody
+  const { id, model, messages, temperature } = chatJson
 
   if (!messages || messages.length === 0) {
     return new Response(ErrorCode.BadRequest, {
@@ -104,7 +30,7 @@ export async function POST(req: NextRequest) {
   }
 
   const userId = session.user.id
-  const chat = await getOrCreateChat(id, userId)
+  const chat = await getChat(id, userId)
 
   if (!chat) {
     return new Response(ErrorCode.BadRequest, {
@@ -120,19 +46,7 @@ export async function POST(req: NextRequest) {
     })
     const stream = OpenAIStream(res, {
       async onCompletion(answer) {
-        const question = {
-          id: questionId,
-          content: messages[messages.length - 1].content,
-          role: Role.User
-        }
-        const answerMessage = {
-          id: replyId,
-          content: answer,
-          role: Role.Assistant
-        }
-        recordConversation(chat, model, question, answerMessage).catch(error =>
-          console.error('[OPENAI CHAT ERROR]', error)
-        )
+        recordConversation(answer, now, chatJson)
       }
     })
     return new StreamingTextResponse(stream)
