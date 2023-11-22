@@ -21,7 +21,7 @@ const ChatAvatar = ({ role }: { role: Message['role'] }) => {
     <div
       className={cn(
         'flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow',
-        role.includes('user') && 'bg-background'
+        role.includes('user') ? 'bg-background' : 'bg-theme-gradient'
       )}
     >
       {role.includes('user') ? (
