@@ -11,6 +11,7 @@ import { Providers } from '@/components/providers'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
 
 import '@/app/globals.css'
+import { isMobileDevice } from '@/lib/utils/responsive'
 
 const title = 'Jarvis - AI Assistant'
 
@@ -52,6 +53,7 @@ interface RootLayoutProps {
 
 export default async function RootLayout({ children }: RootLayoutProps) {
   const session = await auth()
+  const isMobile = isMobileDevice()
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -67,7 +69,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <Providers attribute="class" defaultTheme="system" enableSystem>
           <SessionProvider session={session}>
             <div className="flex h-screen">
-              <Sidebar />
+              {!isMobile && <Sidebar />}
               <main className="relative flex flex-1 flex-col bg-muted/50">
                 {children}
               </main>

@@ -12,25 +12,26 @@ import {
 import { RobotAvatar, UserAvatar } from './ui/avatar'
 import BubblesLoading from './ui/loading'
 import Timestamp from './ui/timestamp'
+import { Role } from '@/lib/constants'
 
 export interface ChatMessageProps extends ChatMessageActionsProps {
   isLoading?: boolean
 }
 
-const ChatAvatar = ({ role }: { role: Message['role'] }) => {
-  return (
-    <div
-      className={cn(
-        'flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow',
-        role.includes('user') ? 'bg-background' : 'bg-theme-gradient'
-      )}
-    >
-      {role.includes('user') ? (
-        <UserAvatar className="h-8 w-8 p-1" />
-      ) : (
-        <RobotAvatar className="h-8 w-8 p-1" />
-      )}
-    </div>
+const ChatAvatar = ({
+  role,
+  className,
+  ...props
+}: { role: Message['role'] } & React.HTMLAttributes<HTMLDivElement>) => {
+  const classNames = cn(
+    'h-6 w-6 shrink-0 select-none rounded border p-0.5 shadow lg:h-8 lg:w-8 lg:p-1',
+    role.includes('user') ? 'bg-background' : 'bg-theme-gradient',
+    className
+  )
+  return role === Role.User ? (
+    <UserAvatar className={classNames} {...props} />
+  ) : (
+    <RobotAvatar className={classNames} {...props} />
   )
 }
 
@@ -39,7 +40,8 @@ export function ChatMessage({ isLoading, ...props }: ChatMessageProps) {
     <div
       className={cn('group relative mb-8 flex flex-col items-start md:-ml-12')}
     >
-      <div className="flex w-full items-center">
+      <div className="flex w-full items-center px-1 lg:px-0">
+        <ChatAvatar role={props.role} className="block lg:hidden" />
         <ChatMessageActions
           className="mr-2 flex-1 group-hover:opacity-100 md:opacity-0"
           {...props}
@@ -47,8 +49,8 @@ export function ChatMessage({ isLoading, ...props }: ChatMessageProps) {
         <Timestamp full date={props.createdAt} className="text-primary/50" />
       </div>
       <div className="flex w-full">
-        <ChatAvatar role={props.role} />
-        <div className="ml-4 flex-1 space-y-2 overflow-hidden px-1">
+        <ChatAvatar role={props.role} className="hidden lg:block" />
+        <div className="flex-1 space-y-2 overflow-hidden px-1 lg:ml-4">
           {props.content ? (
             <Markdown content={props.content} />
           ) : isLoading ? (

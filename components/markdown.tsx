@@ -3,10 +3,7 @@ import ReactMarkdown, { Options } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 
-import { cn } from '@/lib/utils'
 import { CodeBlock } from '@/components/ui/codeblock'
-import { ChatMessageActions } from '@/components/chat-message-actions'
-import { RobotAvatar, UserAvatar } from './ui/avatar'
 
 export const MemoizedReactMarkdown: FC<Options> = memo(
   ReactMarkdown,
@@ -17,7 +14,7 @@ export const MemoizedReactMarkdown: FC<Options> = memo(
 
 export const Markdown = ({ content }: { content: string }) => (
   <MemoizedReactMarkdown
-    className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
+    className="prose break-words text-sm dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 lg:text-base"
     remarkPlugins={[remarkGfm, remarkMath]}
     components={{
       p({ children }) {

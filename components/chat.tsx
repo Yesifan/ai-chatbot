@@ -92,7 +92,7 @@ export function Chat({ initialMessages, className }: ChatProps) {
         ) : (
           messages.length === 0 && <EmptyScreen setInput={props.setInput} />
         )}
-        <div className="relative mx-auto max-w-2xl px-4 pb-[200px] pt-[4.5rem]">
+        <div className="relative mx-auto w-screen px-1 pb-[200px] pt-[4.5rem] md:max-w-2xl md:px-4">
           <ChatList messages={messages} {...props} />
           {props.input.trim().length > 0 && (
             <>
