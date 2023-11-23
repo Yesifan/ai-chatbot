@@ -19,6 +19,8 @@ import { ChatMessage } from './chat-message'
 import { Role } from '@/lib/constants'
 import { useChatStore } from '@/lib/store/chat'
 import { getInboxChat, getMessages } from '@/app/actions'
+import { ScrollProvider } from '@/lib/hooks/use-scroll'
+import { ButtonScrollToBottom } from './button-scroll-to-bottom'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
@@ -83,13 +85,14 @@ export function Chat({ initialMessages, className }: ChatProps) {
 
   return (
     <>
-      <div className={cn('overflow-y-auto pb-[200px] pt-[4.5rem]', className)}>
+      <ScrollProvider className={cn('overflow-y-auto', className)}>
+        <ButtonScrollToBottom className="absolute right-4 top-20 z-10 " />
         {status != 'authenticated' ? (
           <NotLogin />
         ) : (
           messages.length === 0 && <EmptyScreen setInput={props.setInput} />
         )}
-        <div className="relative mx-auto max-w-2xl px-4">
+        <div className="relative mx-auto max-w-2xl px-4 pb-[200px] pt-[4.5rem]">
           <ChatList messages={messages} {...props} />
           {props.input.trim().length > 0 && (
             <>
@@ -99,7 +102,7 @@ export function Chat({ initialMessages, className }: ChatProps) {
           )}
         </div>
         <ChatScrollAnchor trackVisibility={props.isLoading} />
-      </div>
+      </ScrollProvider>
       <ChatPanel id={chatStore.id} messages={messages} {...props} />
     </>
   )
