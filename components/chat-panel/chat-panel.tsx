@@ -4,7 +4,7 @@ import { signIn, useSession } from 'next-auth/react'
 
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
-import { nanoid } from '@/lib/utils'
+import { cn, nanoid } from '@/lib/utils'
 import { useChatStore } from '@/lib/store/chat'
 import { Credential, Role } from '@/lib/constants'
 import { SelectModel } from './select-model'
@@ -27,6 +27,7 @@ export interface ChatPanelProps
     | 'setLoading'
   > {
   id?: string
+  className?: string
 }
 
 const useLogin = () => {
@@ -53,7 +54,12 @@ const useLogin = () => {
   return login
 }
 
-export function ChatPanel({ id, setLoading, ...props }: ChatPanelProps) {
+export function ChatPanel({
+  id,
+  setLoading,
+  className,
+  ...props
+}: ChatPanelProps) {
   const { status } = useSession()
   const chatStore = useChatStore()
 
@@ -85,7 +91,7 @@ export function ChatPanel({ id, setLoading, ...props }: ChatPanelProps) {
   }
 
   return (
-    <div className="bg-background pt-2 shadow-lg">
+    <div className={cn('bg-background pt-2 shadow-lg', className)}>
       <div className="flex space-x-6 px-4 pb-2">
         <SelectModel className="h-6 w-6" />
         <MessagesCount className="h-6 w-6" />

@@ -85,7 +85,7 @@ export function Chat({ initialMessages, className }: ChatProps) {
 
   return (
     <>
-      <ScrollProvider className={cn('flex-1 overflow-y-auto pt-20', className)}>
+      <ScrollProvider className={cn('overflow-y-auto pt-20', className)}>
         <ButtonScrollToBottom className="absolute right-4 top-20 z-10 " />
         {status != 'authenticated' ? (
           <NotLogin />
@@ -103,7 +103,12 @@ export function Chat({ initialMessages, className }: ChatProps) {
         </div>
         <ChatScrollAnchor trackVisibility={props.isLoading} />
       </ScrollProvider>
-      <ChatPanel id={chatStore.id} messages={messages} {...props} />
+      <ChatPanel
+        className="mt-auto"
+        id={chatStore.id}
+        messages={messages}
+        {...props}
+      />
     </>
   )
 }
