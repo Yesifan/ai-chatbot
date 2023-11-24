@@ -12,6 +12,7 @@ import { TailwindIndicator } from '@/components/tailwind-indicator'
 
 import '@/app/globals.css'
 import { isMobileDevice } from '@/lib/utils/responsive'
+import { SafeArea } from '@/components/ui/safe-area'
 
 const title = 'Jarvis - AI Assistant'
 
@@ -68,11 +69,14 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <Toaster />
         <Providers attribute="class" defaultTheme="system" enableSystem>
           <SessionProvider session={session}>
-            <div className="flex h-screen">
-              {!isMobile && <Sidebar />}
-              <main className="relative flex flex-1 flex-col bg-muted/50">
-                {children}
-              </main>
+            <div className="flex h-screen flex-col">
+              <SafeArea />
+              <div className="h-full flex-1">
+                {!isMobile && <Sidebar />}
+                <main className="relative flex h-full flex-1 flex-col bg-muted/50">
+                  {children}
+                </main>
+              </div>
             </div>
           </SessionProvider>
           <TailwindIndicator />

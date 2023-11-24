@@ -85,7 +85,7 @@ export function Chat({ initialMessages, className }: ChatProps) {
 
   return (
     <>
-      <ScrollProvider className={cn('overflow-y-auto', className)}>
+      <ScrollProvider className={cn('flex-1 overflow-y-auto pt-20', className)}>
         <ButtonScrollToBottom className="absolute right-4 top-20 z-10 " />
         {status != 'authenticated' ? (
           <NotLogin />
