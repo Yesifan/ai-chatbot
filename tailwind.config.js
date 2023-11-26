@@ -56,7 +56,8 @@ module.exports = {
         'theme-gradient': 'linear-gradient(136deg, #FDB747 12%, #CB3732 70%, #D13E36 80%, #DF4D40 100%)',
       },
       padding: {
-        'safe-are': 'env(safe-area-inset-bottom)'
+        'safe-area-top': 'env(safe-area-inset-top)',
+        'safe-area-bottom': 'env(safe-area-inset-bottom)'
       },
       borderRadius: {
         lg: `var(--radius)`,

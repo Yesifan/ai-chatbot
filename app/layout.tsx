@@ -69,21 +69,22 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <Toaster />
         <Providers attribute="class" defaultTheme="system" enableSystem>
           <SessionProvider session={session}>
-            {isMobile ? (
-              <div className="flex h-screen flex-col">
-                <SafeArea />
-                <main className="relative flex h-full flex-1 flex-col bg-muted/50">
-                  {children}
-                </main>
-              </div>
-            ) : (
-              <div className="h-screen flex-1">
-                {!isMobile && <Sidebar />}
-                <main className="relative flex h-full flex-1 flex-col bg-muted/50">
-                  {children}
-                </main>
-              </div>
-            )}
+            <div
+              className={cn(
+                'flex h-screen overflow-hidden',
+                isMobile && 'flex-col'
+              )}
+            >
+              {isMobile ? <SafeArea /> : <Sidebar />}
+              <main
+                className={cn(
+                  'relative flex flex-col overflow-hidden bg-muted/50',
+                  isMobile ? 'flex-1' : 'h-screen'
+                )}
+              >
+                {children}
+              </main>
+            </div>
           </SessionProvider>
           <TailwindIndicator />
         </Providers>

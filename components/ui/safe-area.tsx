@@ -9,6 +9,9 @@ export const SafeArea = ({
   const isMobile = isMobileDevice()
 
   return isMobile ? (
-    <div className={cn('bg-background pb-safe-are', className)} {...props} />
+    <div
+      className={cn('bg-background pb-safe-area-top', className)}
+      {...props}
+    />
   ) : null
 }
