@@ -1,23 +1,25 @@
 import * as React from 'react'
 import dynamic from 'next/dynamic'
 
+import { cn } from '@/lib/utils'
 import { clearChats, getChats } from '@/app/actions'
+import { Header } from '@/components/header'
+import { ClearHistory } from '@/components/clear-history'
+import { InboxChatItem } from '@/components/inbox-chat-item'
 import { HistoryChatList } from '@/components/history-chat-list'
 
-import { ClearHistory } from '@/components/clear-history'
-import { cn } from '@/lib/utils'
-import { Header } from './header'
-import { InboxChatItem } from './inbox-chat-item'
+export const runtime = 'edge'
+export const preferredRegion = 'home'
 
 const ThemeToggle = dynamic(() => import('@/components/theme-toggle'), {
   ssr: false
 })
 
-export async function Sidebar() {
+export async function Siderbar({ className }: { className?: string }) {
   const chats = await getChats()
 
   return (
-    <section className="inset-y-0 flex h-auto w-[300px] flex-col border-r p-0">
+    <section className={cn('flex h-full flex-col p-0', className)}>
       <Header />
       <InboxChatItem className="m-2 shrink-0" />
       <HistoryChatList initalChats={chats} />

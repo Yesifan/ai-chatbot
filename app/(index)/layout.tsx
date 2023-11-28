@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
-import Sidebar from '@/app/(mobile)/history/page'
-import { SafeArea } from '@/components/ui/safe-area'
 import { isMobileDevice } from '@/lib/utils/responsive'
+import { SafeArea } from '@/components/ui/safe-area'
+import { Siderbar } from '@/components/sidebar'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -17,7 +17,7 @@ export default async function RootLayout({ children }: LayoutProps) {
       {isMobile ? (
         <SafeArea />
       ) : (
-        <Sidebar className="h-auto w-[300px] border-r" />
+        <Siderbar className="h-auto w-[300px] border-r" />
       )}
       <main
         className={cn(

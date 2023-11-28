@@ -1,6 +1,5 @@
 import { Metadata } from 'next'
 import { cn } from '@/lib/utils'
-import { Sidebar } from '@/components/sidebar'
 import { SafeArea } from '@/components/ui/safe-area'
 import { isMobileDevice } from '@/lib/utils/responsive'
 import { redirect } from 'next/navigation'
