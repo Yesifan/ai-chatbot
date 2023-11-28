@@ -38,10 +38,12 @@ const ChatAvatar = ({
 export function ChatMessage({ isLoading, ...props }: ChatMessageProps) {
   return (
     <div
-      className={cn('group relative mb-8 flex flex-col items-start md:-ml-12')}
+      className={cn(
+        'group relative mb-8 flex flex-col items-start md:-ml-6 lg:-ml-12'
+      )}
     >
       <div className="flex w-full items-center px-1 lg:px-0">
-        <ChatAvatar role={props.role} className="block lg:hidden" />
+        <ChatAvatar role={props.role} className="block md:hidden" />
         <ChatMessageActions
           className="mr-2 flex-1 group-hover:opacity-100 md:opacity-0"
           {...props}
@@ -49,7 +51,7 @@ export function ChatMessage({ isLoading, ...props }: ChatMessageProps) {
         <Timestamp full date={props.createdAt} className="text-primary/50" />
       </div>
       <div className="flex w-full">
-        <ChatAvatar role={props.role} className="hidden lg:block" />
+        <ChatAvatar role={props.role} className="hidden md:block" />
         <div className="flex-1 space-y-2 overflow-hidden px-1 lg:ml-4">
           {props.content ? (
             <Markdown content={props.content} />
