@@ -1,7 +1,7 @@
 import { Chat } from '@/components/chat'
 import { ChatStoreProvider } from '@/lib/store/chat'
 import { ChatHeader } from '@/components/chat-header'
-import { getInboxChat, getMessages } from './actions'
+import { getInboxChat, getMessages } from '../actions'
 import { ErrorCode } from '@/lib/constants'
 
 export const runtime = 'edge'

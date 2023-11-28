@@ -6,13 +6,10 @@ import { auth } from '@/auth'
 
 import { cn } from '@/lib/utils'
 import { fontMono, fontSans } from '@/lib/fonts'
-import { Sidebar } from '@/components/sidebar'
 import { Providers } from '@/components/providers'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
 
 import '@/app/globals.css'
-import { isMobileDevice } from '@/lib/utils/responsive'
-import { SafeArea } from '@/components/ui/safe-area'
 
 const title = 'Jarvis - AI Assistant'
 
@@ -54,7 +51,6 @@ interface RootLayoutProps {
 
 export default async function RootLayout({ children }: RootLayoutProps) {
   const session = await auth()
-  const isMobile = isMobileDevice()
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -68,24 +64,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
       >
         <Toaster />
         <Providers attribute="class" defaultTheme="system" enableSystem>
-          <SessionProvider session={session}>
-            <div
-              className={cn(
-                'flex h-screen overflow-hidden',
-                isMobile && 'flex-col'
-              )}
-            >
-              {isMobile ? <SafeArea /> : <Sidebar />}
-              <main
-                className={cn(
-                  'relative flex flex-1 flex-col overflow-hidden bg-muted/50',
-                  isMobile ? 'w-screen' : 'h-screen'
-                )}
-              >
-                {children}
-              </main>
-            </div>
-          </SessionProvider>
+          <SessionProvider session={session}>{children}</SessionProvider>
           <TailwindIndicator />
         </Providers>
       </body>
