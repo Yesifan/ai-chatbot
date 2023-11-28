@@ -78,8 +78,8 @@ export default async function RootLayout({ children }: RootLayoutProps) {
               {isMobile ? <SafeArea /> : <Sidebar />}
               <main
                 className={cn(
-                  'relative flex flex-col overflow-hidden bg-muted/50',
-                  isMobile ? 'flex-1' : 'h-screen'
+                  'relative flex flex-1 flex-col overflow-hidden bg-muted/50',
+                  isMobile ? 'w-screen' : 'h-screen'
                 )}
               >
                 {children}
