@@ -1,6 +1,6 @@
 'use client'
 
-import { Chat } from '@/types/chat'
+import { Chat } from '@/types/database'
 import {
   PropsWithChildren,
   createContext,

@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import db from '@/lib/database'
-import { Message, type Chat } from '@/types/chat'
+import { Message, type Chat } from '@/types/database'
 import { ErrorCode, INBOX_CHAT } from '@/lib/constants'
 import { nanoid } from '@/lib/utils'
 

@@ -7,7 +7,7 @@ import {
   INFINITE_ATTACHED_MESSAGES_COUNT,
   Role
 } from '../constants'
-import type { Message } from '@/types/chat'
+import type { Message } from '@/types/database'
 import {
   UseChatOptions,
   ChatRequest,

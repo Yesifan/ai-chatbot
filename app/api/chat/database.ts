@@ -1,5 +1,5 @@
 import database from '@/lib/database'
-import { NewChat } from '@/types/chat'
+import { NewChat } from '@/types/database'
 import { Role } from '@/lib/constants'
 import { ChatBody } from '@/types/api'
 

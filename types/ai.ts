@@ -1,5 +1,5 @@
 import { experimental_StreamingReactResponse, FunctionCall } from 'ai'
-import { Message } from './chat'
+import { Message } from './database'
 
 export type RequestOptions = {
   headers?: Record<string, string> | Headers

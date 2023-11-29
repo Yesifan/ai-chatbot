@@ -4,7 +4,7 @@ import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 
-import { ServerActionResult } from '@/types/chat'
+import { ServerActionResult } from '@/types/database'
 import { Button } from '@/components/ui/button'
 import {
   AlertDialog,

@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
-import { ServerActionResult } from '@/types/chat'
+import { ServerActionResult } from '@/types/database'
 import {
   AlertDialog,
   AlertDialogAction,

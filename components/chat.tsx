@@ -13,7 +13,7 @@ import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { useChat } from '@/lib/hooks/use-chat'
 import { NotLogin } from './not-login'
 
-import type { Message } from '@/types/chat'
+import type { Message } from '@/types/database'
 import { Separator } from './ui/separator'
 import { ChatMessage } from './chat-message'
 import { Role } from '@/lib/constants'

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
 
-import { type Chat } from '@/types/chat'
+import { type Chat } from '@/types/database'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { RobotAvatar } from './ui/avatar'

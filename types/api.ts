@@ -1,4 +1,4 @@
-import { Message } from '@/types/chat'
+import { Message } from '@/types/database'
 import { GPT_Model } from '@/lib/constants'
 
 export interface ChatBody {
