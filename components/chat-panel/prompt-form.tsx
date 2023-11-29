@@ -10,13 +10,33 @@ import {
   TooltipTrigger
 } from '@/components/ui/tooltip'
 import { useMateEnterSubmit } from '@/lib/hooks/use-enter-submit'
-import BubblesLoading from './ui/loading'
+import BubblesLoading from '../ui/loading'
 
 export interface PromptProps
   extends Pick<UseChatHelpers, 'input' | 'setInput' | 'stop'> {
   onSubmit: (value: string) => Promise<void>
   isLoading: boolean
   placeholder?: string
+}
+
+export function EnterButton(props: { isLoading: boolean; disabled: boolean }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        {props.isLoading ? (
+          <Button variant="outline">
+            <BubblesLoading />
+          </Button>
+        ) : (
+          <Button type="submit" size="icon" disabled={props.disabled}>
+            <IconArrowElbow />
+            <span className="sr-only">Send message</span>
+          </Button>
+        )}
+      </TooltipTrigger>
+      <TooltipContent>Send message</TooltipContent>
+    </Tooltip>
+  )
 }
 
 export function PromptForm({
@@ -78,21 +98,7 @@ export function PromptForm({
       </div>
 
       <div className="flex flex-row-reverse p-4">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            {isLoading ? (
-              <Button variant="outline">
-                <BubblesLoading />
-              </Button>
-            ) : (
-              <Button type="submit" size="icon" disabled={input === ''}>
-                <IconArrowElbow />
-                <span className="sr-only">Send message</span>
-              </Button>
-            )}
-          </TooltipTrigger>
-          <TooltipContent>Send message</TooltipContent>
-        </Tooltip>
+        <EnterButton isLoading={isLoading} disabled={input === ''} />
         {isLoading && (
           <Button variant="outline" className="mr-2" onClick={stop}>
             <IconPause />

@@ -21,6 +21,7 @@ import { useChatStore } from '@/lib/store/chat'
 import { getInboxChat, getMessages } from '@/app/actions'
 import { ScrollProvider } from '@/lib/hooks/use-scroll'
 import { ButtonScrollToBottom } from './button-scroll-to-bottom'
+import { ChatLoginPanel } from './chat-panel/chat-login-panel'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
@@ -103,12 +104,16 @@ export function Chat({ initialMessages, className }: ChatProps) {
         </div>
         <ChatScrollAnchor trackVisibility={props.isLoading} />
       </ScrollProvider>
-      <ChatPanel
-        className="mt-auto"
-        id={chatStore.id}
-        messages={messages}
-        {...props}
-      />
+      {status != 'authenticated' ? (
+        <ChatLoginPanel className="mt-auto" messages={messages} {...props} />
+      ) : (
+        <ChatPanel
+          className="mt-auto"
+          id={chatStore.id}
+          messages={messages}
+          {...props}
+        />
+      )}
     </>
   )
 }

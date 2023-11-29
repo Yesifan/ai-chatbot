@@ -1,22 +1,22 @@
 import { useRef, type RefObject } from 'react'
 import { platform, Platform } from '../utils/responsive.clint'
 
-
-
-export function useMateEnterSubmit(): {
+export function useMateEnterSubmit(isNeedHelper = true): {
   formRef: RefObject<HTMLFormElement>
-  onKeyDown: (event: React.KeyboardEvent<HTMLTextAreaElement>) => void
+  onKeyDown: (
+    event: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => void
 } {
   const formRef = useRef<HTMLFormElement>(null)
 
   const handleKeyDown = (
-    event: React.KeyboardEvent<HTMLTextAreaElement>
+    event: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>
   ): void => {
     const isHelperDown =
       platform === Platform.Mac ? event.metaKey : event.ctrlKey
 
     if (event.key === 'Enter') {
-      if (isHelperDown && !event.nativeEvent.isComposing) {
+      if ((isHelperDown && !event.nativeEvent.isComposing) || !isNeedHelper) {
         event.preventDefault()
         formRef.current?.requestSubmit()
       }
