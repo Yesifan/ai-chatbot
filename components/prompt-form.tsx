@@ -27,7 +27,7 @@ export function PromptForm({
   isLoading,
   placeholder
 }: PromptProps) {
-  const { formRef, onKeyDown } = useMateEnterSubmit(setInput)
+  const { formRef, onKeyDown } = useMateEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
 
   const onKeyDown2 = React.useCallback(

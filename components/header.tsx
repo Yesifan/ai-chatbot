@@ -24,7 +24,7 @@ export async function Header({ className }: { className?: string }) {
   return (
     <header
       className={cn(
-        'z-50 flex h-16 w-full shrink-0 items-center justify-between bg-gradient-to-b from-background/10 via-background/50 to-background/80 px-4',
+        'z-50 flex h-16 w-full shrink-0 items-center justify-between bg-background px-4',
         className
       )}
     >

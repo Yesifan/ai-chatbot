@@ -1,17 +1,18 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 import { updateChat } from '@/app/actions'
 import { cn } from '@/lib/utils'
 import { useChatStore } from '@/lib/store/chat'
+import { platform, Platform } from '@/lib/utils/responsive.clint'
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
 import { IconHisotry } from './ui/icons'
 import { Input, InputProps } from './ui/input'
 import { InboxAvatar, RobotAvatar } from './ui/avatar'
-import Link from 'next/link'
 
 interface ChatHeaderItemProps {
   className?: string
@@ -115,11 +116,13 @@ export function ChatHeader({ className }: ChatHeaderItemProps) {
         </div>
       </div>
       <div className="ml-auto">
-        <Button variant="ghost" className="h-8 w-8 px-1" asChild>
-          <Link href="/history">
-            <IconHisotry className="h-6 w-6" />
-          </Link>
-        </Button>
+        {platform === Platform.Mobile ? (
+          <Button variant="ghost" className="h-8 w-8 px-1" asChild>
+            <Link href="/history">
+              <IconHisotry className="h-6 w-6" />
+            </Link>
+          </Button>
+        ) : null}
       </div>
     </div>
   )

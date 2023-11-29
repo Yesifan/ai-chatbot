@@ -1,10 +1,9 @@
-import { UseChatHelpers } from 'ai/react/dist'
 import { useRef, type RefObject } from 'react'
-import { Platform, getPlatform } from '../utils'
+import { platform, Platform } from '../utils/responsive.clint'
 
-const platform = getPlatform()
 
-export function useMateEnterSubmit(setInput?: UseChatHelpers['setInput']): {
+
+export function useMateEnterSubmit(): {
   formRef: RefObject<HTMLFormElement>
   onKeyDown: (event: React.KeyboardEvent<HTMLTextAreaElement>) => void
 } {
