@@ -43,6 +43,7 @@ export function Chat({ initialMessages, className }: ChatProps) {
   })
 
   const setInboxChat = useCallback(async () => {
+    // TODO: Add get chat Loading
     const chat = await getInboxChat()
     if ('error' in chat) {
       console.error('[IndexPage] get chat', chat.error)
@@ -102,7 +103,7 @@ export function Chat({ initialMessages, className }: ChatProps) {
         <ChatScrollAnchor trackVisibility={props.isLoading} />
       </ScrollProvider>
       {status != 'authenticated' ? (
-        <ChatLoginPanel className="mt-auto" messages={messages} {...props} />
+        <ChatLoginPanel className="mt-auto" setMessages={props.setMessages} />
       ) : (
         <ChatPanel
           className="mt-auto"

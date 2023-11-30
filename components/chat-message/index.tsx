@@ -5,11 +5,14 @@ import { Markdown } from '@/components/markdown'
 import {
   ChatMessageActions,
   ChatMessageActionsProps
-} from '@/components/chat-message-actions'
-import { RobotAvatar, UserAvatar } from './ui/avatar'
-import BubblesLoading from './ui/loading'
-import Timestamp from './ui/timestamp'
-import { Role } from '@/lib/constants'
+} from '@/components/chat-message/actions'
+import { RobotAvatar, UserAvatar } from '../ui/avatar'
+import BubblesLoading from '../ui/loading'
+import Timestamp from '../ui/timestamp'
+import { Role, SYSTEM_MESSAGE_COMMAND, SystemMessageKey } from '@/lib/constants'
+import React from 'react'
+import { ChatMessageLogging } from './system-logging'
+import { ChatMessageWarning } from './system-warning'
 
 export interface ChatMessageProps extends ChatMessageActionsProps {
   isLoading?: boolean
@@ -32,7 +35,10 @@ const ChatAvatar = ({
   )
 }
 
-export function ChatMessage({ isLoading, ...props }: ChatMessageProps) {
+export function ChatMessageContainer({
+  children,
+  ...props
+}: React.PropsWithChildren & ChatMessageProps) {
   return (
     <div
       className={cn('group relative mb-8 flex flex-col items-start lg:-ml-12')}
@@ -48,13 +54,37 @@ export function ChatMessage({ isLoading, ...props }: ChatMessageProps) {
       <div className="flex w-full">
         <ChatAvatar role={props.role} className="hidden lg:block" />
         <div className="flex-1 space-y-2 overflow-hidden px-1 lg:ml-4">
-          {props.content ? (
-            <Markdown content={props.content} />
-          ) : isLoading ? (
-            <BubblesLoading />
-          ) : null}
+          {children}
         </div>
       </div>
     </div>
+  )
+}
+
+function ChatMessageContent({
+  role,
+  content
+}: Pick<ChatMessageProps, 'role' | 'content'>) {
+  if ((role = Role.System)) {
+    const [command, key, ...body] = content.split(':')
+    if (command === SYSTEM_MESSAGE_COMMAND) {
+      if (key === SystemMessageKey.Logging) {
+        return <ChatMessageLogging />
+      } else {
+        return <ChatMessageWarning content={body.join('\n')} />
+      }
+    }
+  }
+  return <Markdown content={content} />
+}
+export function ChatMessage({ isLoading, ...props }: ChatMessageProps) {
+  return (
+    <ChatMessageContainer {...props}>
+      {props.content ? (
+        <ChatMessageContent role={props.role} content={props.content} />
+      ) : isLoading ? (
+        <BubblesLoading />
+      ) : null}
+    </ChatMessageContainer>
   )
 }

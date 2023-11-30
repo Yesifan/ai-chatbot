@@ -50,7 +50,8 @@ module.exports = {
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
-        }
+        },
+        warning: 'hsl(var(--warning))'
       },
       backgroundImage: {
         'theme-gradient': 'linear-gradient(136deg, #FDB747 12%, #CB3732 70%, #D13E36 80%, #DF4D40 100%)',

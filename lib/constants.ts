@@ -43,3 +43,11 @@ export const enum ErrorCode {
   BadRequest = 'BadRequest',
   InternetError = 'InternetError'
 }
+
+// COMMAND:SYSTEM_MESSAGE_KEY:BODY
+export const SYSTEM_MESSAGE_COMMAND = 'SYSTEM_MESSAGE_COMMAND'
+export const enum SystemMessageKey {
+  Logging = 'Logging',
+  Error = 'Error',
+  Warning = 'Warning'
+}

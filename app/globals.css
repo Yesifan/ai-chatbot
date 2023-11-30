@@ -35,6 +35,8 @@
 
     --ring: 240 5% 64.9%;
 
+    --warning: 24 100% 59%;
+
     --radius: 0.5rem;
   }
 
@@ -69,6 +71,8 @@
     --destructive-foreground: 0 85.7% 97.3%;
 
     --ring: 240 3.7% 15.9%;
+
+    --warning: 43 100% 64%;
   }
 }
 
