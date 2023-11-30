@@ -1,8 +1,7 @@
 'use client'
 
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback } from 'react'
 import { toast } from 'react-hot-toast'
-import { useSession } from 'next-auth/react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
 import { cn } from '@/lib/utils'
@@ -10,18 +9,18 @@ import { ChatList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
-import { useChat } from '@/lib/hooks/use-chat'
-import { NotLogin } from './not-login'
-
-import type { Message } from '@/types/database'
-import { Separator } from './ui/separator'
-import { ChatMessage } from './chat-message'
-import { Role } from '@/lib/constants'
-import { useChatStore } from '@/lib/store/chat'
 import { getInboxChat, getMessages } from '@/app/actions'
+import { Separator } from './ui/separator'
+import { Role } from '@/lib/constants'
+import { useChat } from '@/lib/hooks/use-chat'
+import { useChatStore } from '@/lib/store/chat'
 import { ScrollProvider } from '@/lib/hooks/use-scroll'
-import { ButtonScrollToBottom } from './button-scroll-to-bottom'
+import { useSessionStatusEffect } from '@/lib/hooks/use-login'
+import { NotLogin } from './not-login'
+import { ChatMessage } from './chat-message'
 import { ChatLoginPanel } from './chat-panel/chat-login-panel'
+import { ButtonScrollToBottom } from './button-scroll-to-bottom'
+import type { Message } from '@/types/database'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
@@ -31,9 +30,6 @@ export function Chat({ initialMessages, className }: ChatProps) {
   const router = useRouter()
   const pathname = usePathname()
   const search = useSearchParams()
-
-  const { status } = useSession()
-  const sessionStatusRef = useRef(status)
 
   const chatStore = useChatStore()
 
@@ -61,10 +57,8 @@ export function Chat({ initialMessages, className }: ChatProps) {
     props.setMessages(messages)
   }, [chatStore, props])
 
-  // Handle user login status change
-  useEffect(() => {
-    if (sessionStatusRef.current !== status) {
-      sessionStatusRef.current = status
+  const onSessionStatusChange = useCallback(
+    (status: string) => {
       if (status === 'unauthenticated') {
         if (pathname !== '/') {
           router.replace(`/?next=${pathname}`)
@@ -73,7 +67,6 @@ export function Chat({ initialMessages, className }: ChatProps) {
           props.setMessages([])
         }
       } else if (status === 'authenticated') {
-        toast.success('Login success!')
         const nextPath = search.get('next')
         if (nextPath) {
           router.push(nextPath)
@@ -81,8 +74,12 @@ export function Chat({ initialMessages, className }: ChatProps) {
           setInboxChat()
         }
       }
-    }
-  }, [pathname, router, props, status, search, setInboxChat, chatStore])
+    },
+    [chatStore, pathname, props, router, search, setInboxChat]
+  )
+
+  // Handle user login status change
+  const status = useSessionStatusEffect(onSessionStatusChange)
 
   return (
     <>

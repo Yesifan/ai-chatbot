@@ -2,6 +2,9 @@
 
 import * as RadixAvatar from '@radix-ui/react-avatar'
 import { cn } from '@/lib/utils'
+import RobotPic from '@/public/favicon.png'
+import coffeePic from '@/public/images/coffee.webp'
+import astronautPic from '@/public/images/astronaut.png'
 
 export interface AvatarProps {
   src?: string
@@ -27,25 +30,17 @@ const Avatar = ({ src, fallback, className }: AvatarProps) => (
 
 export const UserAvatar: React.FC<{ className?: string }> = props => {
   return (
-    <Avatar
-      src="/images/astronaut.png"
-      fallback="👩🏼‍🚀"
-      className={props.className}
-    />
+    <Avatar src={astronautPic.src} fallback="👩🏼‍🚀" className={props.className} />
   )
 }
 
 export const RobotAvatar: React.FC<{ className?: string }> = props => {
-  return <Avatar src="/favicon.png" fallback="🤖" className={props.className} />
+  return <Avatar src={RobotPic.src} fallback="🤖" className={props.className} />
 }
 
 export const InboxAvatar: React.FC<{ className?: string }> = props => {
   return (
-    <Avatar
-      src="/images/coffee.webp"
-      fallback="☕"
-      className={props.className}
-    />
+    <Avatar src={coffeePic.src} fallback="☕" className={props.className} />
   )
 }
 
