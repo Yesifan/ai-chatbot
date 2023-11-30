@@ -1,5 +1,4 @@
 'use client'
-
 import { signIn, useSession } from 'next-auth/react'
 
 import { cn, nanoid } from '@/lib/utils'
@@ -95,7 +94,12 @@ export function ChatLoginPanel({
           onChange={e => setPassword(e.target.value)}
           className="mr-2 w-full resize-none sm:text-sm"
         />
-        <EnterButton isLoading={isLoading} disabled={password === ''} />
+        <EnterButton
+          isLoading={isLoading}
+          disabled={password === ''}
+          placeholder="Login"
+          className="flex w-20 flex-row-reverse"
+        />
       </form>
     </div>
   )

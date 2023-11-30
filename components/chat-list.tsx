@@ -41,10 +41,10 @@ export function ChatList({ messages, ...props }: ChatListProps) {
   return (
     <>
       {messages.map((message, index) => (
-        <div key={index}>
+        <section key={index}>
           <ChatMessage {...message} onDelete={onDelete} onReload={onReload} />
           {index < messages.length - 1 && <Separator className="my-1" />}
-        </div>
+        </section>
       ))}
       {props.isLoading && (
         <>

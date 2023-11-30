@@ -87,13 +87,13 @@ export function Chat({ initialMessages, className }: ChatProps) {
   return (
     <>
       <ScrollProvider className={cn('overflow-y-auto pt-20', className)}>
-        <ButtonScrollToBottom className="absolute right-4 top-20 z-10 " />
+        <ButtonScrollToBottom className="absolute right-4 top-20 z-10" />
         {status != 'authenticated' ? (
           <NotLogin />
         ) : (
           messages.length === 0 && <EmptyScreen setInput={props.setInput} />
         )}
-        <div className="relative mx-auto w-screen px-1 pb-[200px] pt-[4.5rem] md:max-w-2xl md:px-4">
+        <div className="relative mx-auto w-screen px-1 md:max-w-2xl md:px-4">
           <ChatList messages={messages} {...props} />
           {props.input.trim().length > 0 && (
             <>
