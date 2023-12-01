@@ -17,6 +17,7 @@ import { useChatStore } from '@/lib/store/chat'
 import { ScrollProvider } from '@/lib/hooks/use-scroll'
 import { useSessionStatusEffect } from '@/lib/hooks/use-login'
 import { NotLogin } from './not-login'
+import { PinPrompt } from './pin-prompt'
 import { ChatMessage } from './chat-message'
 import { ChatLoginPanel } from './chat-panel/chat-login-panel'
 import { ButtonScrollToBottom } from './button-scroll-to-bottom'
@@ -86,10 +87,10 @@ export function Chat({ initialMessages, className }: ChatProps) {
     <>
       <ScrollProvider className={cn('overflow-y-auto pt-20', className)}>
         <ButtonScrollToBottom className="absolute right-4 top-20 z-10" />
-        {status != 'authenticated' ? (
-          <NotLogin />
-        ) : (
-          messages.length === 0 && <EmptyScreen setInput={props.setInput} />
+        {status != 'authenticated' && <NotLogin />}
+        {chatStore.pinPrompt && <PinPrompt content={chatStore.pinPrompt} />}
+        {status === 'authenticated' && messages.length === 0 && (
+          <EmptyScreen setInput={props.setInput} />
         )}
         <div className="relative mx-auto w-screen px-1 md:max-w-2xl md:px-4">
           <ChatList messages={messages} {...props} />
