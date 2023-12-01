@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { updateChat } from '@/app/actions'
 import { cn } from '@/lib/utils'
 import { useChatStore } from '@/lib/store/chat'
-import { platform, Platform } from '@/lib/utils/responsive.clint'
+import { getPlatform, Platform } from '@/lib/utils/responsive.clint'
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
@@ -93,6 +93,7 @@ const TitleInput = ({
 export function ChatHeader({ className }: ChatHeaderItemProps) {
   const chat = useChatStore()
   const isInbox = useIsInbox()
+  const platform = getPlatform()
 
   return (
     <div

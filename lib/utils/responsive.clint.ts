@@ -4,7 +4,7 @@ export const enum Platform {
   Mobile = 'Mobile'
 }
 
-function getPlatform() {
+export function getPlatform() {
   if (typeof window !== 'undefined') {
     // use client
     const userAgent = navigator?.userAgent
@@ -30,5 +30,3 @@ function getPlatform() {
     return Platform.Windows
   }
 }
-
-export const platform = getPlatform()

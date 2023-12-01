@@ -1,5 +1,5 @@
 import { useRef, type RefObject } from 'react'
-import { platform, Platform } from '../utils/responsive.clint'
+import { getPlatform, Platform } from '../utils/responsive.clint'
 
 export function useMateEnterSubmit(isNeedHelper = true): {
   formRef: RefObject<HTMLFormElement>
@@ -7,6 +7,7 @@ export function useMateEnterSubmit(isNeedHelper = true): {
     event: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => void
 } {
+  const platform = getPlatform()
   const formRef = useRef<HTMLFormElement>(null)
 
   const handleKeyDown = (
