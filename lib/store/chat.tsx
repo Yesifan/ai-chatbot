@@ -10,16 +10,12 @@ import {
 } from 'react'
 import { GPT_Model, TEMPERATURE } from '../constants'
 
-export type ChatStoreProps = Pick<
-  Chat,
-  'id' | 'title' | 'model' | 'temperature' | 'attachedMessagesCount'
->
-
-export interface ChatStore extends Partial<ChatStoreProps> {
+export interface ChatStore extends Partial<Chat> {
   id?: string
   clear?: () => void
-  update?: (chat: Partial<ChatStoreProps>) => void
+  update?: (chat: Partial<Chat>) => void
   setTitle?: (title?: string) => void
+  setPinPrompt?: (prompt: string) => void
   setModel?: (model: GPT_Model) => void
   setTemperature?: (temperature: number) => void
   setAttachedMessagesCount?: (count: number) => void
@@ -31,9 +27,10 @@ export const ChatStoreProvider = ({
   id: _id,
   children,
   ...chat
-}: PropsWithChildren & Partial<ChatStoreProps>) => {
+}: PropsWithChildren & Partial<Chat>) => {
   const [id, setId] = useState(_id)
   const [title, setTitle] = useState(chat.title)
+  const [pinPrompt, setPinPrompt] = useState(chat.pinPrompt)
   const [model, setModel] = useState(chat.model ?? GPT_Model.GPT_3_5_TURBO)
   const [temperature, setTemperature] = useState(
     chat.temperature ?? TEMPERATURE
@@ -42,7 +39,7 @@ export const ChatStoreProvider = ({
     chat.attachedMessagesCount ?? 5
   )
 
-  const update = (chat: Partial<ChatStoreProps>) => {
+  const update = (chat: Partial<Chat>) => {
     setId(chat.id)
     setTitle(chat.title)
     setModel(chat.model ?? GPT_Model.GPT_3_5_TURBO)
@@ -60,16 +57,18 @@ export const ChatStoreProvider = ({
       id,
       title,
       model,
+      pinPrompt,
       temperature,
       attachedMessagesCount,
       clear,
       update,
-      setModel,
       setTitle,
+      setModel,
+      setPinPrompt,
       setTemperature,
       setAttachedMessagesCount
     }
-  }, [attachedMessagesCount, id, model, temperature, title])
+  }, [attachedMessagesCount, id, model, pinPrompt, temperature, title])
 
   return (
     <ChatStoreContext.Provider value={store}>

@@ -1,26 +1,20 @@
-'use client'
-
 import Link from 'next/link'
 
 import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/button'
 import { InboxAvatar } from './ui/avatar'
-import { usePathname } from 'next/navigation'
+import { buttonVariants } from './ui/button'
+import { INBOX_CHAT } from '@/lib/constants'
 
 interface ChatItemProps {
   className?: string
 }
 
 export function InboxChatItem({ className }: ChatItemProps) {
-  const pathname = usePathname()
-  const isInbox = pathname === '/'
-
   return (
     <div
       className={cn(
         buttonVariants({ variant: 'ghost' }),
-        'w-ful group relative flex h-auto overflow-hidden px-2 py-0',
-        isInbox && 'bg-muted/50',
+        'w-ful group relative flex h-auto overflow-hidden bg-muted/50 px-2 py-0',
         className
       )}
     >
@@ -31,7 +25,7 @@ export function InboxChatItem({ className }: ChatItemProps) {
             className="relative flex w-full flex-1 select-none items-center justify-between break-all text-center"
             title="Small Talk"
           >
-            <span className="w-40 truncate text-lg">Small Talk</span>
+            <span className="w-40 truncate text-lg">{INBOX_CHAT}</span>
           </h4>
         </div>
       </Link>

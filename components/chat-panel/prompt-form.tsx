@@ -12,8 +12,6 @@ import {
 import { useMateEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import BubblesLoading from '../ui/loading'
 
-
-
 export function EnterButton(props: {
   className?: string
   isLoading: boolean
@@ -22,7 +20,7 @@ export function EnterButton(props: {
 }) {
   return (
     <Tooltip>
-      <TooltipTrigger className={props.className}>
+      <TooltipTrigger className={props.className} asChild>
         {props.isLoading ? (
           <Button variant="outline">
             <BubblesLoading />
@@ -30,7 +28,9 @@ export function EnterButton(props: {
         ) : (
           <Button type="submit" size="icon" disabled={props.disabled}>
             <IconArrowElbow />
-            <span className="sr-only">{props.placeholder ?? 'Send message'}</span>
+            <span className="sr-only">
+              {props.placeholder ?? 'Send message'}
+            </span>
           </Button>
         )}
       </TooltipTrigger>
@@ -44,6 +44,7 @@ export interface PromptProps
   onSubmit: (value: string) => Promise<void>
   isLoading: boolean
   placeholder?: string
+  isClearAfterSubmit?: boolean
 }
 
 export function PromptForm({
@@ -52,7 +53,8 @@ export function PromptForm({
   onSubmit,
   setInput,
   isLoading,
-  placeholder
+  placeholder,
+  isClearAfterSubmit = true
 }: PromptProps) {
   const { formRef, onKeyDown } = useMateEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
@@ -72,10 +74,12 @@ export function PromptForm({
       if (!input?.trim()) {
         return
       }
-      setInput('')
+      if (isClearAfterSubmit) {
+        setInput('')
+      }
       await onSubmit(input)
     },
-    [onSubmit, input, setInput]
+    [input, isClearAfterSubmit, onSubmit, setInput]
   )
 
   React.useEffect(() => {
@@ -105,7 +109,11 @@ export function PromptForm({
       </div>
 
       <div className="flex flex-row-reverse p-4">
-        <EnterButton isLoading={isLoading} disabled={input === ''} />
+        <EnterButton
+          isLoading={isLoading}
+          disabled={input === ''}
+          placeholder={placeholder}
+        />
         {isLoading && (
           <Button variant="outline" className="mr-2" onClick={stop}>
             <IconPause />

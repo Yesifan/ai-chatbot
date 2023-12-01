@@ -6,7 +6,6 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('user')
     .ifNotExists()
-    // TODO: type set nanoid
     .addColumn('id', 'char(21)', col => col.primaryKey())
     .addColumn('accessToken', 'varchar(50)', col => col.notNull())
     .addColumn('lastLogin', 'timestamp')

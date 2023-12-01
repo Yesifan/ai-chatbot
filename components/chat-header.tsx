@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 
 import { updateChat } from '@/app/actions'
 import { cn } from '@/lib/utils'
@@ -13,6 +12,7 @@ import { Button } from './ui/button'
 import { IconHisotry } from './ui/icons'
 import { Input, InputProps } from './ui/input'
 import { InboxAvatar, RobotAvatar } from './ui/avatar'
+import { useIsInbox } from '@/lib/hooks/use-inbox'
 
 interface ChatHeaderItemProps {
   className?: string
@@ -92,8 +92,7 @@ const TitleInput = ({
 
 export function ChatHeader({ className }: ChatHeaderItemProps) {
   const chat = useChatStore()
-  const pathname = usePathname()
-  const isInbox = pathname === '/'
+  const isInbox = useIsInbox()
 
   return (
     <div

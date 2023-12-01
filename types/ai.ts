@@ -75,6 +75,7 @@ export type UseChatHelpers = {
   append: (
     content: string,
     historyCount?: number,
+    pinPrompt?: Message[],
     chatRequestOptions?: ChatRequestOptions
   ) => Promise<Message | null | undefined>
   /**

@@ -223,6 +223,7 @@ export function useChat({
       content: string,
       messagesCount = chatStore.attachedMessagesCount ??
         ATTACHED_MESSAGES_COUNT,
+      pinPrompt: Message[] = [],
       { options, functions, function_call }: ChatRequestOptions = {}
     ) => {
       const message = {
@@ -239,7 +240,7 @@ export function useChat({
           : messagesRef.current.slice(-(messagesCount + 1))
 
       const chatRequest: ChatRequest = {
-        messages: historyMessages,
+        messages: [...pinPrompt, ...historyMessages],
         options,
         ...(functions !== undefined && { functions }),
         ...(function_call !== undefined && { function_call })

@@ -38,8 +38,7 @@ export interface RobotTable {
   input_template?: string
 }
 
-export interface ChatTable
-  extends Omit<RobotTable, 'id' | 'name' | 'pinPrompt'> {
+export interface ChatTable extends Omit<RobotTable, 'id' | 'name'> {
   id: string
   userId: string
   title: string
