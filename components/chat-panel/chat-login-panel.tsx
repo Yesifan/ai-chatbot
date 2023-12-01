@@ -101,7 +101,7 @@ export function ChatLoginPanel({
       <form
         ref={formRef}
         onSubmit={submit}
-        className="relative flex w-full items-center bg-background py-2 md:max-w-2xl"
+        className="relative flex w-full items-center bg-background py-2 "
       >
         <Input
           ref={inputRef}
@@ -110,7 +110,7 @@ export function ChatLoginPanel({
           onKeyDown={onKeyDown2}
           placeholder={placeholder}
           onChange={e => setPassword(e.target.value)}
-          className="mr-2 w-full resize-none sm:text-sm"
+          className="mr-2 w-full resize-none sm:text-sm md:max-w-2xl"
         />
         <EnterButton
           isLoading={isLoading}
