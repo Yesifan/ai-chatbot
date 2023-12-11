@@ -1,32 +1,12 @@
-export const enum Platform {
-  Windows = 'Windows',
-  Mac = 'Mac',
-  Mobile = 'Mobile'
-}
+import { UAParser } from 'ua-parser-js'
 
 export function getPlatform() {
-  if (typeof window !== 'undefined') {
-    // use client
-    const userAgent = navigator?.userAgent
+  const ua = new UAParser()
+  return ua.getOS().name as 'Mac OS' | 'Windows' | undefined
+}
 
-    if (/Win/i.test(userAgent)) {
-      return Platform.Windows
-    }
-
-    if (/Mac/i.test(userAgent)) {
-      return Platform.Mac
-    }
-
-    if (
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        userAgent
-      )
-    ) {
-      return Platform.Mobile
-    }
-
-    return Platform.Windows
-  } else {
-    return Platform.Windows
-  }
+export function isMobileDevice() {
+  const ua = new UAParser()
+  const device = ua.getDevice()
+  return device.type === 'mobile'
 }

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { updateChat } from '@/app/actions'
 import { cn } from '@/lib/utils'
 import { useChatStore } from '@/lib/store/chat'
-import { getPlatform, Platform } from '@/lib/utils/responsive.clint'
+import { isMobileDevice } from '@/lib/utils/responsive.clint'
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
@@ -93,7 +93,7 @@ const TitleInput = ({
 export function ChatHeader({ className }: ChatHeaderItemProps) {
   const chat = useChatStore()
   const isInbox = useIsInbox()
-  const platform = getPlatform()
+  const isMobile = isMobileDevice()
 
   return (
     <div
@@ -116,7 +116,7 @@ export function ChatHeader({ className }: ChatHeaderItemProps) {
         </div>
       </div>
       <div className="ml-auto">
-        {platform === Platform.Mobile ? (
+        {isMobile ? (
           <Button variant="ghost" className="h-8 w-8 px-1" asChild>
             <Link href="/history">
               <IconHisotry className="h-6 w-6" />

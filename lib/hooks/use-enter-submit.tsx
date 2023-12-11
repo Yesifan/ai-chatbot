@@ -1,5 +1,5 @@
 import { useRef, type RefObject } from 'react'
-import { getPlatform, Platform } from '../utils/responsive.clint'
+import { getPlatform } from '../utils/responsive.clint'
 
 export function useMateEnterSubmit(isNeedHelper = true): {
   formRef: RefObject<HTMLFormElement>
@@ -9,12 +9,10 @@ export function useMateEnterSubmit(isNeedHelper = true): {
 } {
   const platform = getPlatform()
   const formRef = useRef<HTMLFormElement>(null)
-
   const handleKeyDown = (
     event: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>
   ): void => {
-    const isHelperDown =
-      platform === Platform.Mac ? event.metaKey : event.ctrlKey
+    const isHelperDown = platform === 'Mac OS' ? event.metaKey : event.ctrlKey
 
     if (event.key === 'Enter') {
       if ((isHelperDown && !event.nativeEvent.isComposing) || !isNeedHelper) {
