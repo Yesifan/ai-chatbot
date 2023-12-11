@@ -10,7 +10,7 @@ interface ChatScrollAnchorProps {
 }
 
 export function ChatScrollAnchor({ trackVisibility }: ChatScrollAnchorProps) {
-  const isAtBottom = useAtBottom()
+  const isAtBottom = useAtBottom(30)
   const { ref, entry, inView } = useInView({
     trackVisibility,
     delay: 200,
@@ -20,8 +20,7 @@ export function ChatScrollAnchor({ trackVisibility }: ChatScrollAnchorProps) {
   React.useEffect(() => {
     if (isAtBottom && trackVisibility && !inView) {
       entry?.target.scrollIntoView({
-        block: 'start',
-        behavior: 'smooth'
+        block: 'start'
       })
     }
   }, [inView, entry, isAtBottom, trackVisibility])

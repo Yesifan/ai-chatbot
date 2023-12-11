@@ -9,7 +9,8 @@ import { cn } from '@/lib/utils'
 
 export function PinPrompt({ content }: { content: string }) {
   const { ref, entry, inView } = useInView({
-    delay: 500
+    delay: 500,
+    rootMargin: '-150px 0px 0px 0px'
   })
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
 
@@ -41,11 +42,13 @@ export function PinPrompt({ content }: { content: string }) {
       <div
         className={cn(
           'absolute left-1/2 top-20 z-10 max-w-2xl -translate-x-1/2 px-4 transition-opacity',
-          inView ? 'pointer-events-none opacity-0' : 'cursor-pointer opacity-80'
+          inView
+            ? 'pointer-events-none opacity-0'
+            : 'cursor-pointer opacity-100'
         )}
         onClick={scrollIntoView}
       >
-        <div className="w-full rounded-lg border bg-background px-4 py-2">
+        <div className="w-full rounded-lg border bg-background/60 px-4 py-2 backdrop-blur">
           <span className="block w-full truncate">{content.slice(0, 300)}</span>
         </div>
       </div>

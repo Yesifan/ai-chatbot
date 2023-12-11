@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
@@ -31,6 +31,7 @@ export function Chat({ initialMessages, className }: ChatProps) {
   const router = useRouter()
   const pathname = usePathname()
   const search = useSearchParams()
+  const [isEditing, setIsEditing] = useState(false)
 
   const chatStore = useChatStore()
 
@@ -83,6 +84,16 @@ export function Chat({ initialMessages, className }: ChatProps) {
   // Handle user login status change
   const status = useSessionStatusEffect(onSessionStatusChange)
 
+  useEffect(() => {
+    if (props.input.length > 0) {
+      setIsEditing(true)
+      const delay = setTimeout(() => {
+        setIsEditing(false)
+      }, 1000)
+      return () => clearTimeout(delay)
+    }
+  }, [props.input.length])
+
   return (
     <>
       <ScrollProvider className={cn('overflow-y-auto pt-20', className)}>
@@ -101,7 +112,7 @@ export function Chat({ initialMessages, className }: ChatProps) {
             </>
           )}
         </div>
-        <ChatScrollAnchor trackVisibility={props.isLoading} />
+        <ChatScrollAnchor trackVisibility={props.isLoading || isEditing} />
       </ScrollProvider>
       {status != 'authenticated' ? (
         <ChatLoginPanel className="mt-auto" setMessages={props.setMessages} />
