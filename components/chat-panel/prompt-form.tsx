@@ -94,7 +94,7 @@ export function PromptForm({
       onSubmit={submit}
       className="relative flex w-full flex-col bg-background"
     >
-      <div className="h-24 overflow-y-scroll px-4">
+      <div className="h-36 overflow-y-scroll px-4 pb-1">
         <Textarea
           ref={inputRef}
           tabIndex={0}
@@ -108,7 +108,7 @@ export function PromptForm({
         />
       </div>
 
-      <div className="flex flex-row-reverse p-4">
+      <div className="absolute bottom-0 flex w-full flex-row-reverse p-4">
         <EnterButton
           isLoading={isLoading}
           disabled={input === ''}

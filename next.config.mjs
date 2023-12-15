@@ -8,6 +8,8 @@ const withPWA = nextPWA({
   workboxOptions: {
     skipWaiting: true,
   },
+  cacheStartUrl: true,
+  dynamicStartUrl: true,
 });
 
 
