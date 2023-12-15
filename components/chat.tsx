@@ -95,7 +95,7 @@ export function Chat({ initialMessages, className }: ChatProps) {
 
   return (
     <>
-      <section className={cn('pt-2', className)}>
+      <section className={cn('pt-4', className)}>
         {status != 'authenticated' && <NotLogin />}
         {chatStore.pinPrompt && <PinPrompt content={chatStore.pinPrompt} />}
         {status === 'authenticated' && messages.length === 0 && (
@@ -114,7 +114,10 @@ export function Chat({ initialMessages, className }: ChatProps) {
         <ChatScrollAnchor trackVisibility={props.isLoading || isEditing} />
       </section>
       {status != 'authenticated' ? (
-        <ChatLoginPanel className="mt-auto" setMessages={props.setMessages} />
+        <ChatLoginPanel
+          className="sticky bottom-0 mt-auto"
+          setMessages={props.setMessages}
+        />
       ) : (
         <ChatPanel
           className="sticky bottom-0 mt-auto"

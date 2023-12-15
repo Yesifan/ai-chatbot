@@ -19,7 +19,7 @@ export default async function RootLayout({ children }: LayoutProps) {
       )}
       <main
         className={cn(
-          'relative flex flex-1 flex-col bg-muted/50',
+          'relative flex min-h-screen flex-1 flex-col bg-muted/50',
           isMobile ? 'w-screen' : 'pl-[300px]'
         )}
       >
