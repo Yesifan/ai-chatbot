@@ -14,7 +14,6 @@ import { Separator } from './ui/separator'
 import { Role } from '@/lib/constants'
 import { useChat } from '@/lib/hooks/use-chat'
 import { useChatStore } from '@/lib/store/chat'
-import { ScrollProvider } from '@/lib/hooks/use-scroll'
 import { useSessionStatusEffect } from '@/lib/hooks/use-login'
 import { NotLogin } from './not-login'
 import { PinPrompt } from './pin-prompt'
@@ -96,8 +95,7 @@ export function Chat({ initialMessages, className }: ChatProps) {
 
   return (
     <>
-      <ScrollProvider className={cn('overflow-y-auto pt-20', className)}>
-        <ButtonScrollToBottom className="absolute right-4 top-20 z-10" />
+      <section className={cn('pt-2', className)}>
         {status != 'authenticated' && <NotLogin />}
         {chatStore.pinPrompt && <PinPrompt content={chatStore.pinPrompt} />}
         {status === 'authenticated' && messages.length === 0 && (
@@ -112,13 +110,14 @@ export function Chat({ initialMessages, className }: ChatProps) {
             </>
           )}
         </div>
+        <ButtonScrollToBottom className="fixed bottom-60 right-2 z-10" />
         <ChatScrollAnchor trackVisibility={props.isLoading || isEditing} />
-      </ScrollProvider>
+      </section>
       {status != 'authenticated' ? (
         <ChatLoginPanel className="mt-auto" setMessages={props.setMessages} />
       ) : (
         <ChatPanel
-          className="mt-auto"
+          className="sticky bottom-0 mt-auto"
           id={chatStore.id}
           messages={messages}
           {...props}

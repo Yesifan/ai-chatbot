@@ -11,18 +11,16 @@ export default async function RootLayout({ children }: LayoutProps) {
   const isMobile = isMobileDevice()
 
   return (
-    <div
-      className={cn('flex h-screen overflow-hidden', isMobile && 'flex-col')}
-    >
+    <div className={cn('flex', isMobile && 'flex-col')}>
       {isMobile ? (
         <SafeArea />
       ) : (
-        <Siderbar className="h-auto w-[300px] border-r" />
+        <Siderbar className="fixed z-10 h-screen w-[300px] border-r" />
       )}
       <main
         className={cn(
-          'relative flex flex-1 flex-col overflow-hidden bg-muted/50',
-          isMobile ? 'w-screen' : 'h-screen'
+          'relative flex flex-1 flex-col bg-muted/50',
+          isMobile ? 'w-screen' : 'pl-[300px]'
         )}
       >
         {children}

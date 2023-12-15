@@ -96,9 +96,9 @@ export function ChatHeader({ className }: ChatHeaderItemProps) {
   const isMobile = isMobileDevice()
 
   return (
-    <div
+    <header
       className={cn(
-        'group relative flex h-16 w-full items-center bg-background px-4 py-1 backdrop-blur-xl',
+        'backdrop-blue group relative flex h-16 w-full items-center bg-gradient-to-b from-background/10 via-background/50 to-background/80 px-4 py-1 backdrop-blur-xl',
         className
       )}
     >
@@ -124,6 +124,6 @@ export function ChatHeader({ className }: ChatHeaderItemProps) {
           </Button>
         ) : null}
       </div>
-    </div>
+    </header>
   )
 }

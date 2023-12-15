@@ -19,7 +19,9 @@ export async function Siderbar({ className }: { className?: string }) {
   const chats = await getChats()
 
   return (
-    <section className={cn('flex h-full flex-col p-0', className)}>
+    <section
+      className={cn('flex h-screen flex-col bg-background p-0', className)}
+    >
       <Header />
       <InboxChatItem className="m-2 shrink-0" />
       <HistoryChatList initalChats={chats} />

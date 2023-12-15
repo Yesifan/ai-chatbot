@@ -48,7 +48,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
 
   return (
     <ChatStoreProvider {...chat}>
-      <ChatHeader className="absolute top-0 z-50" />
+      <ChatHeader className="sticky top-0 z-50" />
       <Chat id={id} initialMessages={messages} />
     </ChatStoreProvider>
   )

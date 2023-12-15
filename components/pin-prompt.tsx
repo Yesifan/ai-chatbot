@@ -8,9 +8,9 @@ import { useInView } from 'react-intersection-observer'
 import { cn } from '@/lib/utils'
 
 export function PinPrompt({ content }: { content: string }) {
-  const { ref, entry, inView } = useInView({
+  const { ref, inView } = useInView({
     delay: 500,
-    rootMargin: '-150px 0px 0px 0px'
+    rootMargin: '150px 0px 0px 0px'
   })
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
 
@@ -20,12 +20,15 @@ export function PinPrompt({ content }: { content: string }) {
   }
 
   const scrollIntoView = () => {
-    entry?.target.scrollIntoView({ block: 'start', behavior: 'smooth' })
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
   }
 
   return (
     <>
-      <div ref={ref} className="mx-auto mb-8 max-w-2xl px-4">
+      <div ref={ref} className="mx-auto mb-2 max-w-2xl px-4">
         <div className="flex flex-col rounded-lg border bg-background pb-8 pt-4">
           <div className="flex items-center px-6">
             <span className="mr-auto text-primary/60">Prompt</span>
@@ -41,7 +44,7 @@ export function PinPrompt({ content }: { content: string }) {
       </div>
       <div
         className={cn(
-          'absolute left-1/2 top-20 z-10 max-w-2xl -translate-x-1/2 px-4 transition-opacity',
+          'sticky top-20 z-10 mx-auto h-px max-w-2xl px-4 transition-opacity',
           inView
             ? 'pointer-events-none opacity-0'
             : 'cursor-pointer opacity-100'
