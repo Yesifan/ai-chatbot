@@ -108,17 +108,17 @@ export function PromptForm({
         />
       </div>
 
-      <div className="absolute bottom-0 flex w-full flex-row-reverse p-4">
+      <div className="absolute bottom-0 right-0 flex flex-row space-x-2 p-4">
+        {isLoading && (
+          <Button variant="outline" onClick={stop}>
+            <IconPause />
+          </Button>
+        )}
         <EnterButton
           isLoading={isLoading}
           disabled={input === ''}
           placeholder={placeholder}
         />
-        {isLoading && (
-          <Button variant="outline" className="mr-2" onClick={stop}>
-            <IconPause />
-          </Button>
-        )}
       </div>
     </form>
   )
