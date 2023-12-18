@@ -1,17 +1,14 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
-import { isMobileDevice } from '@/lib/utils/responsive'
 
 export const SafeArea = ({
   className,
   ...props
 }: React.HtmlHTMLAttributes<HTMLDivElement>) => {
-  const isMobile = isMobileDevice()
-
-  return isMobile ? (
+  return (
     <div
       className={cn('bg-background pb-safe-area-top', className)}
       {...props}
     />
-  ) : null
+  )
 }

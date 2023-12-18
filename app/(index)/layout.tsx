@@ -12,9 +12,7 @@ export default async function RootLayout({ children }: LayoutProps) {
 
   return (
     <div className={cn('flex', isMobile && 'flex-col')}>
-      {isMobile ? (
-        <SafeArea />
-      ) : (
+      {!isMobile && (
         <Siderbar className="fixed z-10 h-screen w-[300px] border-r" />
       )}
       <main

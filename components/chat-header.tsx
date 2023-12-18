@@ -13,6 +13,7 @@ import { IconHisotry } from './ui/icons'
 import { Input, InputProps } from './ui/input'
 import { InboxAvatar, RobotAvatar } from './ui/avatar'
 import { useIsInbox } from '@/lib/hooks/use-inbox'
+import { SafeArea } from './ui/safe-area'
 
 interface ChatHeaderItemProps {
   className?: string
@@ -98,31 +99,34 @@ export function ChatHeader({ className }: ChatHeaderItemProps) {
   return (
     <header
       className={cn(
-        'backdrop-blue group relative flex h-16 w-full items-center bg-gradient-to-b from-background/10 via-background/50 to-background/80 px-4 py-1 backdrop-blur-xl',
+        'group relative bg-gradient-to-b from-background/10 via-background/50 to-background/80 backdrop-blur-xl',
         className
       )}
     >
-      {isInbox ? (
-        <InboxAvatar className="mx-2 mr-4 w-10 text-4xl" />
-      ) : (
-        <Button variant="ghost" className="mr-2 h-14 px-2">
-          <RobotAvatar className="w-10 text-4xl" />
-        </Button>
-      )}
-      <div className="flex w-full flex-1 flex-col justify-between pr-6">
-        <TitleInput disabled={isInbox} />
-        <div className="">
-          <Badge variant="secondary">{chat.model}</Badge>
-        </div>
-      </div>
-      <div className="ml-auto">
-        {isMobile ? (
-          <Button variant="ghost" className="h-8 w-8 px-1" asChild>
-            <Link href="/history">
-              <IconHisotry className="h-6 w-6" />
-            </Link>
+      {isMobile && <SafeArea className="bg-transparent" />}
+      <div className="flex h-16 w-full items-center px-4 py-1">
+        {isInbox ? (
+          <InboxAvatar className="mx-2 mr-4 w-10 text-4xl" />
+        ) : (
+          <Button variant="ghost" className="mr-2 h-14 px-2">
+            <RobotAvatar className="w-10 text-4xl" />
           </Button>
-        ) : null}
+        )}
+        <div className="flex w-full flex-1 flex-col justify-between pr-6">
+          <TitleInput disabled={isInbox} />
+          <div className="">
+            <Badge variant="secondary">{chat.model}</Badge>
+          </div>
+        </div>
+        <div className="ml-auto">
+          {isMobile ? (
+            <Button variant="ghost" className="h-8 w-8 px-1" asChild>
+              <Link href="/history">
+                <IconHisotry className="h-6 w-6" />
+              </Link>
+            </Button>
+          ) : null}
+        </div>
       </div>
     </header>
   )
