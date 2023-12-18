@@ -44,7 +44,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
   if (!chatAndMessage) {
     return null
   }
-  const [chat, messages] = chatAndMessage!
+  const [chat, messages] = chatAndMessage
 
   return (
     <ChatStoreProvider {...chat}>

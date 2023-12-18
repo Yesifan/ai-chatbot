@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useTransition } from 'react'
 import { toast } from 'react-hot-toast'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
@@ -9,7 +9,7 @@ import { ChatList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
-import { getInboxChat, getMessages } from '@/app/actions'
+import { getChat, getInboxChat, getMessages } from '@/app/actions'
 import { Separator } from './ui/separator'
 import { Role } from '@/lib/constants'
 import { useChat } from '@/lib/hooks/use-chat'
@@ -20,7 +20,8 @@ import { PinPrompt } from './pin-prompt'
 import { ChatMessage } from './chat-message'
 import { ChatLoginPanel } from './chat-panel/chat-login-panel'
 import { ButtonScrollToBottom } from './button-scroll-to-bottom'
-import type { Message } from '@/types/database'
+import type { Chat, Message } from '@/types/database'
+import { ButtonReload } from './reload-button'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
@@ -31,10 +32,11 @@ export function Chat({ initialMessages, className }: ChatProps) {
   const pathname = usePathname()
   const search = useSearchParams()
   const [isEditing, setIsEditing] = useState(false)
+  const [isInitialize, startTransition] = useTransition()
 
   const chatStore = useChatStore()
 
-  const { messages, ...props } = useChat({
+  const { messages, isLoading, ...props } = useChat({
     initialMessages: initialMessages,
     onResponse(response) {
       if (response.status === 401) {
@@ -59,29 +61,47 @@ export function Chat({ initialMessages, className }: ChatProps) {
     props.setMessages(messages)
   }, [chatStore, props])
 
-  const onSessionStatusChange = useCallback(
-    (status: string) => {
-      if (status === 'unauthenticated') {
-        if (pathname !== '/') {
-          router.replace(`/?next=${pathname}`)
+  const reloadChat = useCallback(async () => {
+    try {
+      if (chatStore.id) {
+        const chatAndMessage = await getChat(chatStore.id)
+        if (chatAndMessage) {
+          const [chat, message] = chatAndMessage
+          chatStore.update?.(chat)
+          props.setMessages(message)
         } else {
-          chatStore.clear?.()
-          props.setMessages([])
+          console.error('[IndexPage] get chat error')
         }
-      } else if (status === 'authenticated') {
-        const nextPath = search.get('next')
-        if (nextPath) {
-          router.push(nextPath)
-        } else {
-          setInboxChat()
-        }
+      } else {
+        await setInboxChat()
       }
-    },
-    [chatStore, pathname, props, router, search, setInboxChat]
-  )
+      toast.success('Reload chat success')
+    } catch (error) {
+      toast.error('Reload chat error')
+      console.error('[IndexPage] get chat error', error)
+    }
+  }, [chatStore, props, setInboxChat])
 
   // Handle user login status change
-  const status = useSessionStatusEffect(onSessionStatusChange)
+  const status = useSessionStatusEffect(async (status: string) => {
+    if (status === 'unauthenticated') {
+      if (pathname !== '/') {
+        router.replace(`/?next=${pathname}`)
+      } else {
+        chatStore.clear?.()
+        props.setMessages([])
+      }
+    } else if (status === 'authenticated') {
+      const nextPath = search.get('next')
+      if (nextPath) {
+        router.push(nextPath)
+      } else {
+        startTransition(async () => {
+          await setInboxChat()
+        })
+      }
+    }
+  })
 
   useEffect(() => {
     if (props.input.length > 0) {
@@ -102,7 +122,7 @@ export function Chat({ initialMessages, className }: ChatProps) {
           <EmptyScreen setInput={props.setInput} />
         )}
         <div className="relative mx-auto w-screen px-1 md:max-w-2xl md:px-4">
-          <ChatList messages={messages} {...props} />
+          <ChatList messages={messages} isLoading={isLoading} {...props} />
           {props.input.trim().length > 0 && (
             <>
               <Separator className="my-1"></Separator>
@@ -110,8 +130,13 @@ export function Chat({ initialMessages, className }: ChatProps) {
             </>
           )}
         </div>
-        <ButtonScrollToBottom className="fixed bottom-60 right-2 z-10" />
-        <ChatScrollAnchor trackVisibility={props.isLoading || isEditing} />
+        <ButtonReload
+          className="fixed bottom-60 right-2 z-10"
+          onClick={reloadChat}
+          isLoading={isInitialize}
+        />
+        <ButtonScrollToBottom className="fixed bottom-72 right-2 z-10" />
+        <ChatScrollAnchor trackVisibility={isLoading || isEditing} />
       </section>
       {status != 'authenticated' ? (
         <ChatLoginPanel
@@ -123,6 +148,7 @@ export function Chat({ initialMessages, className }: ChatProps) {
           className="sticky bottom-0 mt-auto"
           id={chatStore.id}
           messages={messages}
+          isLoading={isLoading || isInitialize}
           {...props}
         />
       )}
