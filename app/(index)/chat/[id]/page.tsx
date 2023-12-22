@@ -6,6 +6,7 @@ import { getChat, getChatTitle } from '@/app/actions'
 import { Chat } from '@/components/chat'
 import { ChatStoreProvider } from '@/lib/store/chat'
 import { ChatHeader } from '@/components/chat-header'
+import { isMobileDevice } from '@/lib/utils/responsive.clint'
 
 export const runtime = 'edge'
 export const preferredRegion = 'home'
@@ -38,6 +39,7 @@ export async function generateMetadata({
 
 export default async function ChatPage({ params }: ChatPageProps) {
   const id = params.id
+  const isMobile = isMobileDevice()
 
   // const session = await auth()
   const chatAndMessage = await getChat(id)
@@ -48,7 +50,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
 
   return (
     <ChatStoreProvider {...chat}>
-      <ChatHeader className="sticky top-0 z-50" />
+      <ChatHeader className="sticky top-0 z-50" isMobile={isMobile} />
       <Chat id={id} initialMessages={messages} />
     </ChatStoreProvider>
   )

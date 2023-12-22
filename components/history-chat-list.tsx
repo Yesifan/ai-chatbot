@@ -8,12 +8,17 @@ import { ChatItemActions } from '@/components/history-chat-actions'
 import { ChatItem } from '@/components/history-chat-item'
 import type { Chat } from '@/types/database'
 import { NewChatButton } from './new-chat-button'
+import { cn } from '@/lib/utils'
 
 interface HistoryChatListProps {
   initalChats?: Chat[]
+  className?: string
 }
 
-export function HistoryChatList({ initalChats }: HistoryChatListProps) {
+export function HistoryChatList({
+  initalChats,
+  className
+}: HistoryChatListProps) {
   const { data: session, status } = useSession()
   const [isLoading, setLoading] = useState(false)
   const [chats, setChats] = useState<Chat[]>(initalChats ?? [])
@@ -43,7 +48,7 @@ export function HistoryChatList({ initalChats }: HistoryChatListProps) {
 
   if (status !== 'authenticated') {
     return (
-      <div className="flex-1 overflow-auto">
+      <div className={cn('flex flex-1 flex-col', className)}>
         <div className="p-8 text-center">
           <p className="text-sm text-muted-foreground">Please login in first</p>
         </div>
@@ -52,7 +57,7 @@ export function HistoryChatList({ initalChats }: HistoryChatListProps) {
   }
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className={cn('flex flex-1 flex-col', className)}>
       <NewChatButton
         isLoading={isLoading}
         className="mx-2"

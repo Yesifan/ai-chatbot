@@ -9,7 +9,7 @@ import { isMobileDevice } from '@/lib/utils/responsive.clint'
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
-import { IconHisotry } from './ui/icons'
+import { IconHisotry, IconMessages } from './ui/icons'
 import { Input, InputProps } from './ui/input'
 import { InboxAvatar, RobotAvatar } from './ui/avatar'
 import { useIsInbox } from '@/lib/hooks/use-inbox'
@@ -17,6 +17,7 @@ import { SafeArea } from './ui/safe-area'
 
 interface ChatHeaderItemProps {
   className?: string
+  isMobile?: boolean
 }
 
 const DEFAULT_TITLE = 'AI Assistant'
@@ -91,10 +92,9 @@ const TitleInput = ({
   )
 }
 
-export function ChatHeader({ className }: ChatHeaderItemProps) {
+export function ChatHeader({ className, isMobile }: ChatHeaderItemProps) {
   const chat = useChatStore()
   const isInbox = useIsInbox()
-  const isMobile = isMobileDevice()
 
   return (
     <header
@@ -118,9 +118,9 @@ export function ChatHeader({ className }: ChatHeaderItemProps) {
             <Badge variant="secondary">{chat.model}</Badge>
           </div>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto space-x-1">
           {isMobile ? (
-            <Button variant="ghost" className="h-8 w-8 px-1" asChild>
+            <Button variant="ghost" className="h-8 w-8 p-1" asChild>
               <Link href="/history">
                 <IconHisotry className="h-6 w-6" />
               </Link>

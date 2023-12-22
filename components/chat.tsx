@@ -22,6 +22,9 @@ import { ChatLoginPanel } from './chat-panel/chat-login-panel'
 import { ButtonScrollToBottom } from './button-scroll-to-bottom'
 import type { Chat, Message } from '@/types/database'
 import { ButtonReload } from './reload-button'
+import { Button } from './ui/button'
+import { IconMessages } from './ui/icons'
+import { HistoryChatList } from './history-chat-list'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
@@ -121,6 +124,7 @@ export function Chat({ initialMessages, className }: ChatProps) {
         {status === 'authenticated' && messages.length === 0 && (
           <EmptyScreen setInput={props.setInput} />
         )}
+        <HistoryChatList className="fixed right-0 top-0 z-20 h-full w-60 bg-background" />
         <div className="relative mx-auto w-screen px-1 md:max-w-2xl md:px-4">
           <ChatList messages={messages} isLoading={isLoading} {...props} />
           {props.input.trim().length > 0 && (
@@ -130,6 +134,14 @@ export function Chat({ initialMessages, className }: ChatProps) {
             </>
           )}
         </div>
+        <Button
+          variant="outline"
+          size="icon"
+          className="fixed right-2 top-20 z-10 bg-background"
+          title="chats"
+        >
+          <IconMessages />
+        </Button>
         <ButtonReload
           className="fixed bottom-60 right-2 z-10"
           onClick={reloadChat}

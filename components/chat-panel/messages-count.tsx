@@ -35,7 +35,7 @@ const TooltipIcon = ({
 
           <span
             className={cn(
-              'absolute bottom-[-5px] right-[-3px] scale-75 rounded-full bg-background px-0.5 text-xs',
+              'absolute bottom-[-5px] right-[-3px] scale-75 rounded-full bg-background/60 px-0.5 text-xs',
               count === INFINITE_ATTACHED_MESSAGES_COUNT
                 ? 'scale-110'
                 : 'scale-75'
