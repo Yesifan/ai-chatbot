@@ -2,10 +2,10 @@ import * as React from 'react'
 import dynamic from 'next/dynamic'
 
 import { cn } from '@/lib/utils'
-import { clearChats, getChats } from '@/app/actions'
 import { Header } from '@/components/header'
-import { ClearHistory } from '@/components/clear-history'
 import { InboxChatItem } from '@/components/inbox-chat-item'
+import { RobotList } from './robot-list/robot-list'
+import { getRobots } from '../actions/robot'
 
 export const runtime = 'edge'
 export const preferredRegion = 'home'
@@ -15,7 +15,7 @@ const ThemeToggle = dynamic(() => import('@/components/theme-toggle'), {
 })
 
 export async function Siderbar({ className }: { className?: string }) {
-  const chats = await getChats()
+  const robots = await getRobots()
 
   return (
     <section
@@ -23,10 +23,10 @@ export async function Siderbar({ className }: { className?: string }) {
     >
       <Header />
       <InboxChatItem className="m-2 shrink-0" />
+      {'error' in robots ? null : <RobotList initalRobots={robots} />}
 
-      <div className={cn('flex items-center justify-between p-4')}>
+      <div className={cn('flex items-center p-4')}>
         <ThemeToggle />
-        <ClearHistory clearChats={clearChats} />
       </div>
     </section>
   )

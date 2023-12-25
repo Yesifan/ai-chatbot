@@ -76,12 +76,13 @@ export type NewMessage = Insertable<MessageTable>
 export type PutMessage = Updateable<MessageTable>
 
 export type ServerActionResult<
-  Result =
-    | {
-        ok: false
-        error: string
-      }
-    | {
-        ok: true
-      }
-> = Promise<Result>
+  R = {
+    ok: true
+  }
+> = Promise<
+  | R
+  | {
+      ok: false
+      error: string
+    }
+>
