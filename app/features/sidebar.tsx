@@ -16,6 +16,7 @@ const ThemeToggle = dynamic(() => import('@/components/theme-toggle'), {
 
 export async function Siderbar({ className }: { className?: string }) {
   const robots = await getRobots()
+  const initalRobots = 'error' in robots ? [] : robots
 
   return (
     <section
@@ -23,8 +24,7 @@ export async function Siderbar({ className }: { className?: string }) {
     >
       <Header />
       <InboxChatItem className="m-2 shrink-0" />
-      {'error' in robots ? null : <RobotList initalRobots={robots} />}
-
+      <RobotList initalRobots={initalRobots} />
       <div className={cn('flex items-center p-4')}>
         <ThemeToggle />
       </div>

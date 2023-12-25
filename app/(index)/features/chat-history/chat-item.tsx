@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation'
 import { type Chat } from '@/types/database'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
-import { RobotAvatar } from '../../../../components/ui/avatar'
+import { FavoriteAction } from '@/components/favorite-action'
 
 interface ChatItemProps {
   chat: Chat
@@ -20,6 +20,10 @@ const Timestamp = dynamic(() => import('@/components/ui/timestamp'), {
 export function ChatItem({ chat, children }: ChatItemProps) {
   const { id } = useParams()
   const isActive = id === chat.id
+
+  const favorite = async (id: string) => {
+    return { ok: false, error: '' }
+  }
 
   if (!chat?.id) return null
 
@@ -37,6 +41,11 @@ export function ChatItem({ chat, children }: ChatItemProps) {
             className="relative flex w-full flex-1 select-none items-center justify-between break-all"
             title={chat.title}
           >
+            <FavoriteAction
+              id={chat.id}
+              isFavorite={true}
+              favorite={favorite}
+            />
             <span className="w-40 truncate text-lg">{chat.title}</span>
             {isActive || (
               <Timestamp

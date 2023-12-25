@@ -152,6 +152,16 @@ export function Chat({ initialMessages, className }: ChatProps) {
         {status === 'authenticated' && (
           <HistoryChatListSidebar isShow={hasHistory} />
         )}
+        {status === 'authenticated' && (
+          <div className="fixed bottom-60 right-2 z-20 flex flex-col space-y-4">
+            <MessagesButton
+              variant={hasHistory ? 'highlight' : 'outline'}
+              onClick={() => setHasHistory(!hasHistory)}
+            />
+            <ButtonReload onClick={reloadChat} isLoading={isInitialize} />
+            <ButtonScrollToBottom />
+          </div>
+        )}
         <div className="relative mx-auto w-screen px-1 md:max-w-2xl md:px-4">
           <ChatMessageList
             messages={messages}
@@ -164,14 +174,6 @@ export function Chat({ initialMessages, className }: ChatProps) {
               <ChatMessage role={Role.User} content={props.input} />
             </>
           )}
-        </div>
-        <div className="fixed bottom-60 right-2 z-20 flex flex-col space-y-4">
-          <MessagesButton
-            variant={hasHistory ? 'highlight' : 'outline'}
-            onClick={() => setHasHistory(!hasHistory)}
-          />
-          <ButtonReload onClick={reloadChat} isLoading={isInitialize} />
-          <ButtonScrollToBottom />
         </div>
 
         <ChatScrollAnchor trackVisibility={isLoading || isEditing} />
