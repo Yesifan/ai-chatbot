@@ -48,6 +48,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('frequencyPenalty', 'real')
     .addColumn('input_template', 'varchar(120)')
     .addColumn('attachedMessagesCount', 'integer')
+    .addColumn('isFavourite', 'boolean', col => col.defaultTo(false))
     .execute()
 
   // TODO: add name to message

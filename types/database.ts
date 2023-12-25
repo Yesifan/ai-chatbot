@@ -45,6 +45,7 @@ export interface ChatTable extends Omit<RobotTable, 'id' | 'name'> {
   createdAt: Date
   lastMessage?: string
   lastMessageAt?: Date
+  isFavourite?: boolean
 }
 
 export interface MessageTable extends AIMessage {
