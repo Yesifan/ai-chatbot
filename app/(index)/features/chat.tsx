@@ -10,37 +10,28 @@ import { ChatPanel } from '@/components/chat-panel/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { getChat, getInboxChat, getMessages } from '@/app/actions'
-import { Separator } from './ui/separator'
+import { Separator } from '@/components/ui/separator'
 import { Role } from '@/lib/constants'
 import { useChat } from '@/lib/hooks/use-chat'
 import { useChatStore } from '@/lib/store/chat'
 import { useSessionStatusEffect } from '@/lib/hooks/use-login'
-import { NotLogin } from './not-login'
-import { PinPrompt } from './pin-prompt'
-import { ChatMessage } from './chat-message'
-import { ChatLoginPanel } from './chat-panel/chat-login-panel'
-import { ButtonScrollToBottom } from './button-scroll-to-bottom'
-import { ButtonReload } from './reload-button'
-import { Button } from './ui/button'
-import { IconMessages } from './ui/icons'
-import { HistoryChatList } from './history-chat-list'
+import { NotLogin } from '@/components/not-login'
+import { PinPrompt } from '@/components/pin-prompt'
+import { ChatMessage } from '@/components/chat-message'
+import { ChatLoginPanel } from '@/components/chat-panel/chat-login-panel'
+import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
+import { ButtonReload } from '@/components/reload-button'
+import { Button, ButtonProps } from '@/components/ui/button'
+import { IconMessages } from '@/components/ui/icons'
+import { HistoryChatList } from '@/components/history-chat-list'
 import type { Chat, Message } from '@/types/database'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
 }
 
-const MessagesButton = ({
-  className,
-  ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-  <Button
-    size="icon"
-    variant="outline"
-    className={cn('bg-background', className)}
-    title="chats"
-    {...props}
-  >
+const MessagesButton = ({ className, ...props }: ButtonProps) => (
+  <Button size="icon" variant="outline" title="chats" {...props}>
     <IconMessages />
   </Button>
 )
@@ -172,8 +163,8 @@ export function Chat({ initialMessages, className }: ChatProps) {
         </div>
         <div className="fixed bottom-60 right-2 z-20 flex flex-col space-y-4">
           <MessagesButton
+            variant={hasHistory ? 'highlight' : 'outline'}
             onClick={() => setHasHistory(!hasHistory)}
-            className={hasHistory ? 'bg-blue-500 text-white' : ''}
           />
           <ButtonReload onClick={reloadChat} isLoading={isInitialize} />
           <ButtonScrollToBottom />

@@ -1,7 +1,6 @@
 import { cn } from '@/lib/utils'
 import { isMobileDevice } from '@/lib/utils/responsive'
-import { SafeArea } from '@/components/ui/safe-area'
-import { Siderbar } from '@/components/sidebar'
+import { Siderbar } from '../features/sidebar'
 
 interface LayoutProps {
   children: React.ReactNode

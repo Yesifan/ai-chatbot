@@ -5,9 +5,46 @@ import { redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import db from '@/lib/database'
-import { Message, type Chat } from '@/types/database'
+import { Message, type Chat, Robot, ServerActionResult } from '@/types/database'
 import { ErrorCode, INBOX_CHAT } from '@/lib/constants'
 import { nanoid } from '@/lib/utils'
+
+export async function getRobots(): Promise<Robot[] | { error: string }> {
+  const session = await auth()
+  if (!session) {
+    return {
+      error: 'Unauthorized'
+    }
+  }
+  return await db.selectFrom('robot').selectAll().orderBy('id').execute()
+}
+
+export async function removeRobot(id: string): Promise<ServerActionResult> {
+  const session = await auth()
+
+  if (!session) {
+    return {
+      ok: false,
+      error: 'Unauthorized'
+    }
+  }
+
+  const robot = await db
+    .deleteFrom('robot')
+    .where('robot.id', '=', id)
+    .executeTakeFirst()
+
+  if (!robot) {
+    return {
+      ok: false,
+      error: 'Not found'
+    }
+  }
+
+  return {
+    ok: true
+  }
+}
 
 export async function getMessages(
   id: string
@@ -26,7 +63,7 @@ export async function getMessages(
     .execute()
 }
 
-export async function removeMessage(id: string) {
+export async function removeMessage(id: string): Promise<ServerActionResult> {
   const session = await auth()
 
   if (!session) {
@@ -238,11 +275,12 @@ export async function updateChat(id: string, chat: Partial<Chat>) {
   }
 }
 
-export async function removeChat(id: string) {
+export async function removeChat(id: string): Promise<ServerActionResult> {
   const session = await auth()
 
   if (!session) {
     return {
+      ok: false,
       error: ErrorCode.Unauthorized
     }
   }
@@ -257,29 +295,34 @@ export async function removeChat(id: string) {
 
     if (chat.numDeletedRows === BigInt(0)) {
       return {
+        ok: false,
         error: ErrorCode.NotFound
       }
     }
 
-    const messages = await db
+    await db
       .deleteFrom('message')
       .where('message.chatId', '=', id)
       .executeTakeFirstOrThrow()
 
-    return messages.numDeletedRows
+    return {
+      ok: true
+    }
   } catch (e) {
     console.error('[REMOVE CHAT]', e)
     return {
+      ok: false,
       error: 'InternetError'
     }
   }
 }
 
-export async function clearChats() {
+export async function clearChats(): Promise<ServerActionResult> {
   const session = await auth()
 
   if (!session?.user?.id) {
     return {
+      ok: false,
       error: 'Unauthorized'
     }
   }

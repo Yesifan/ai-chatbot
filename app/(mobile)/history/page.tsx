@@ -3,7 +3,7 @@ import { type Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 
-import { Siderbar } from '@/components/sidebar'
+import { Siderbar } from '../../features/sidebar'
 
 export const runtime = 'edge'
 export const preferredRegion = 'home'

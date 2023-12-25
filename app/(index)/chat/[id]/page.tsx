@@ -3,10 +3,10 @@ import { notFound, redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import { getChat, getChatTitle } from '@/app/actions'
-import { Chat } from '@/components/chat'
 import { ChatStoreProvider } from '@/lib/store/chat'
-import { ChatHeader } from '@/components/chat-header'
 import { isMobileDevice } from '@/lib/utils/responsive.clint'
+import { Chat } from '../../features/chat'
+import { ChatHeader } from '../../features/chat-header'
 
 export const runtime = 'edge'
 export const preferredRegion = 'home'

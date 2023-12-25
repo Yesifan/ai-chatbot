@@ -42,3 +42,4 @@ yarn-error.log*
 **/public/sw.js*
 **/public/worker-*
 **/public/workbox-*
+**/public/fallback-*

@@ -1,6 +1,6 @@
-import { Chat } from '@/components/chat'
+import { Chat } from './features/chat'
 import { ChatStoreProvider } from '@/lib/store/chat'
-import { ChatHeader } from '@/components/chat-header'
+import { ChatHeader } from './features/chat-header'
 import { getInboxChat, getMessages } from '../actions'
 import { ErrorCode } from '@/lib/constants'
 import { isMobileDevice } from '@/lib/utils/responsive'

@@ -75,9 +75,13 @@ export type Message = Partial<Selectable<MessageTable>> & {
 export type NewMessage = Insertable<MessageTable>
 export type PutMessage = Updateable<MessageTable>
 
-export type ServerActionResult<Result> = Promise<
-  | Result
-  | {
-      error: string
-    }
->
+export type ServerActionResult<
+  Result =
+    | {
+        ok: false
+        error: string
+      }
+    | {
+        ok: true
+      }
+> = Promise<Result>

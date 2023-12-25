@@ -26,7 +26,7 @@ import toast from 'react-hot-toast'
 
 interface ChatItemActionsProps {
   id: string
-  removeChat: (id: string) => ServerActionResult<bigint>
+  removeChat: (id: string) => ServerActionResult
 }
 
 export function ChatItemActions({ id, removeChat }: ChatItemActionsProps) {
@@ -41,7 +41,7 @@ export function ChatItemActions({ id, removeChat }: ChatItemActionsProps) {
     event.preventDefault()
     startRemoveTransition(async () => {
       const result = await removeChat(id)
-      if (typeof result === 'bigint') {
+      if (result.ok) {
         setDeleteDialogOpen(false)
         if (params?.id === id) {
           router.push('/')
