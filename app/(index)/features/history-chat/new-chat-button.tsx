@@ -3,10 +3,10 @@
 import { useState } from 'react'
 
 import { createChat } from '@/app/actions'
-import { Button, ButtonProps } from './ui/button'
+import { Button, ButtonProps } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
-import BubblesLoading from './ui/loading'
+import BubblesLoading from '@/components/ui/loading'
 
 interface NewChatProps extends ButtonProps {
   isLoading?: boolean

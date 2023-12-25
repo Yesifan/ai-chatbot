@@ -24,12 +24,12 @@ import {
 } from '@/components/ui/tooltip'
 import toast from 'react-hot-toast'
 
-interface ChatItemActionsProps {
+interface RemoveActionsProps {
   id: string
-  removeChat: (id: string) => ServerActionResult
+  remove: (id: string) => ServerActionResult
 }
 
-export function ChatItemActions({ id, removeChat }: ChatItemActionsProps) {
+export function RemoveActions({ id, remove }: RemoveActionsProps) {
   const params = useParams()
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
   const [isRemovePending, startRemoveTransition] = React.useTransition()
@@ -40,7 +40,7 @@ export function ChatItemActions({ id, removeChat }: ChatItemActionsProps) {
   > = event => {
     event.preventDefault()
     startRemoveTransition(async () => {
-      const result = await removeChat(id)
+      const result = await remove(id)
       if (result.ok) {
         setDeleteDialogOpen(false)
         if (params?.id === id) {

@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 
 import { cn } from '@/lib/utils'
-import { getRobots, removeRobot } from '@/app/actions/robot'
+import { removeRobot } from '@/app/actions/robot'
 import { Button } from '@/components/ui/button'
-import { ChatItemActions } from '@/components/history-chat-actions'
+import { RemoveActions } from '@/components/remove-actions'
 import { RobotItem } from './robot-item'
 import type { Robot } from '@/types/database'
 import Link from 'next/link'
@@ -17,28 +17,8 @@ interface RobotListProps {
 }
 
 export function RobotList({ initalRobots, className }: RobotListProps) {
-  const { data: session, status } = useSession()
-  const [isLoading, setLoading] = useState(false)
+  const { status } = useSession()
   const [robots, setRobots] = useState<Robot[]>(initalRobots ?? [])
-
-  const updateChats = async () => {
-    setLoading(true)
-    const robot = await getRobots()
-    if ('error' in robot) {
-      console.error(robot.error)
-    } else {
-      setRobots(robot)
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    if (status === 'authenticated' && session.user.id) {
-      updateChats()
-    } else {
-      setRobots([])
-    }
-  }, [status, session?.user.id])
 
   const removeChatHandler = async (id: string) => {
     const result = await removeRobot(id)
@@ -66,7 +46,7 @@ export function RobotList({ initalRobots, className }: RobotListProps) {
       <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
         {robots.map(robot => (
           <RobotItem key={robot?.id} robot={robot}>
-            <ChatItemActions id={robot.id} removeChat={removeChatHandler} />
+            <RemoveActions id={robot.id} remove={removeChatHandler} />
           </RobotItem>
         ))}
       </div>

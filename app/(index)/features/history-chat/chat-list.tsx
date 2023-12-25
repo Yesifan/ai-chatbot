@@ -3,12 +3,13 @@
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 
-import { getChats, removeChat } from '@/app/actions'
-import { ChatItemActions } from '@/components/history-chat-actions'
-import { ChatItem } from '@/components/history-chat-item'
+import { clearChats, getChats, removeChat } from '@/app/actions'
+import { RemoveActions } from '@/components/remove-actions'
+import { ChatItem } from '@/app/(index)/features/history-chat/chat-item'
 import type { Chat } from '@/types/database'
 import { NewChatButton } from './new-chat-button'
 import { cn } from '@/lib/utils'
+import { ClearHistory } from './clear-history'
 
 interface HistoryChatListProps {
   initalChats?: Chat[]
@@ -67,9 +68,12 @@ export function HistoryChatList({
       <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
         {chats.map(chat => (
           <ChatItem key={chat?.id} chat={chat}>
-            <ChatItemActions id={chat.id} removeChat={removeChatHandler} />
+            <RemoveActions id={chat.id} remove={removeChatHandler} />
           </ChatItem>
         ))}
+      </div>
+      <div className={cn('flex items-center p-4')}>
+        <ClearHistory clearChats={clearChats} />
       </div>
     </div>
   )

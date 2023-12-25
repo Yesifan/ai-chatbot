@@ -6,7 +6,7 @@ import { UseChatHelpers } from '@/types/ai'
 import { removeMessage } from '@/app/actions'
 import { Role } from '@/lib/constants'
 
-export interface ChatListProps
+export interface ChatMessageListProps
   extends Pick<
     UseChatHelpers,
     'messages' | 'reload' | 'remove' | 'isLoading' | 'streamData'
@@ -16,7 +16,7 @@ export interface ChatListProps
  * show chat messages
  * @param messages
  */
-export function ChatList({ messages, ...props }: ChatListProps) {
+export function ChatMessageList({ messages, ...props }: ChatMessageListProps) {
   const onReload = useCallback(
     async (id: string) => {
       props.reload(id)

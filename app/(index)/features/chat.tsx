@@ -5,7 +5,7 @@ import { toast } from 'react-hot-toast'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
 import { cn } from '@/lib/utils'
-import { ChatList } from '@/components/chat-list'
+import { ChatMessageList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
@@ -23,7 +23,7 @@ import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { ButtonReload } from '@/components/reload-button'
 import { Button, ButtonProps } from '@/components/ui/button'
 import { IconMessages } from '@/components/ui/icons'
-import { HistoryChatList } from '@/components/history-chat-list'
+import { HistoryChatList } from './history-chat/chat-list'
 import type { Chat, Message } from '@/types/database'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
@@ -153,7 +153,11 @@ export function Chat({ initialMessages, className }: ChatProps) {
           <HistoryChatListSidebar isShow={hasHistory} />
         )}
         <div className="relative mx-auto w-screen px-1 md:max-w-2xl md:px-4">
-          <ChatList messages={messages} isLoading={isLoading} {...props} />
+          <ChatMessageList
+            messages={messages}
+            isLoading={isLoading}
+            {...props}
+          />
           {props.input.trim().length > 0 && (
             <>
               <Separator className="my-1"></Separator>
