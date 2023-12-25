@@ -8,7 +8,7 @@ import {
   SYSTEM_MESSAGE_COMMAND,
   SystemMessageKey
 } from '@/lib/constants'
-import { Input } from '../ui/input'
+import { Input } from '@/components/ui/input'
 import { ChatPanelProps } from './chat-panel'
 import { useCallback, useRef, useState } from 'react'
 import { useMateEnterSubmit } from '@/lib/hooks/use-enter-submit'

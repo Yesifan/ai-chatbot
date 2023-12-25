@@ -10,7 +10,7 @@ import {
   TooltipTrigger
 } from '@/components/ui/tooltip'
 import { useMateEnterSubmit } from '@/lib/hooks/use-enter-submit'
-import BubblesLoading from '../ui/loading'
+import BubblesLoading from '@/components/ui/loading'
 
 export function EnterButton(props: {
   className?: string

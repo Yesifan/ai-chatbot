@@ -10,14 +10,14 @@ import { updateChat } from '@/app/actions'
 import { useChatStore } from '@/lib/store/chat'
 import { ATTACHED_MESSAGES_COUNT } from '@/lib/constants'
 
-import { Slider } from '../ui/slider'
-import { IconThermometer } from '../ui/icons'
+import { Slider } from '@/components/ui/slider'
+import { IconThermometer } from '@/components/ui/icons'
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
   TooltipProps
-} from '../ui/tooltip'
+} from '@/components/ui/tooltip'
 
 // use <span> for asChild instead use forwaredRef
 const TooltipIcon = (props: TooltipProps) => {

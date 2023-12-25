@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 
 import { clearChats, getChats, removeChat } from '@/app/actions'
 import { RemoveActions } from '@/components/remove-actions'
-import { ChatItem } from '@/app/(index)/features/history-chat/chat-item'
+import { ChatItem } from './chat-item'
 import type { Chat } from '@/types/database'
 import { NewChatButton } from './new-chat-button'
 import { cn } from '@/lib/utils'

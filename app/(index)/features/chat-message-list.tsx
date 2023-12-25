@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import toast from 'react-hot-toast'
 import { Separator } from '@/components/ui/separator'
-import { ChatMessage } from '@/components/chat-message'
+import { ChatMessage } from './chat-message/index'
 import { UseChatHelpers } from '@/types/ai'
 import { removeMessage } from '@/app/actions'
 import { Role } from '@/lib/constants'

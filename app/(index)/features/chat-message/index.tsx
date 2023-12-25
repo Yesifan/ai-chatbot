@@ -2,13 +2,10 @@
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Chat/ChatMessage.tsx
 import { cn } from '@/lib/utils'
 import { Markdown } from '@/components/markdown'
-import {
-  ChatMessageActions,
-  ChatMessageActionsProps
-} from '@/components/chat-message/actions'
-import { RobotAvatar, UserAvatar } from '../ui/avatar'
-import BubblesLoading from '../ui/loading'
-import Timestamp from '../ui/timestamp'
+import { ChatMessageActions, ChatMessageActionsProps } from './actions'
+import { RobotAvatar, UserAvatar } from '@/components/ui/avatar'
+import BubblesLoading from '@/components/ui/loading'
+import Timestamp from '@/components/ui/timestamp'
 import { Role, SYSTEM_MESSAGE_COMMAND, SystemMessageKey } from '@/lib/constants'
 import React from 'react'
 import { ChatMessageLogging } from './system-logging'

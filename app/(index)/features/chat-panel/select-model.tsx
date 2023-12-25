@@ -1,12 +1,12 @@
 import { cn } from '@/lib/utils'
-import { IconOpenAI } from '../ui/icons'
+import { IconOpenAI } from '@/components/ui/icons'
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   TriggerProps
-} from '../ui/select'
+} from '@/components/ui/select'
 import { GPT_Model } from '@/lib/constants'
 import { useChatStore } from '@/lib/store/chat'
 import { updateChat } from '@/app/actions'
