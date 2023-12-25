@@ -71,7 +71,9 @@ export function ChatPanel({
   }
 
   return (
-    <div className={cn('bg-background pt-2 shadow-lg', className)}>
+    <div
+      className={cn('flex flex-col bg-background pt-2 shadow-lg', className)}
+    >
       <div className={'flex items-center px-4 pb-2'}>
         <div
           className={cn(

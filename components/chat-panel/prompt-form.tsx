@@ -92,9 +92,9 @@ export function PromptForm({
     <form
       ref={formRef}
       onSubmit={submit}
-      className="relative flex w-full flex-col bg-background"
+      className="relative flex w-full flex-1 flex-col bg-background"
     >
-      <div className="h-36 overflow-y-scroll px-4 pb-1">
+      <div className="overflow-y-scroll px-4 pb-1">
         <Textarea
           ref={inputRef}
           tabIndex={0}
