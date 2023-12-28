@@ -41,10 +41,12 @@ export interface RobotTable {
 export interface ChatTable extends Omit<RobotTable, 'id' | 'name'> {
   id: string
   userId: string
+  robotId?: string
   title: string
   createdAt: Date
   lastMessage?: string
   lastMessageAt?: Date
+  isSaved?: boolean
   isFavourite?: boolean
 }
 
