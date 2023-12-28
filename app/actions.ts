@@ -193,17 +193,22 @@ export const createChat = async () => {
     .executeTakeFirstOrThrow()
 }
 
-export async function updateChat(id: string, chat: Partial<Chat>) {
+export async function updateChat(
+  id: string,
+  chat: Partial<Chat>
+): Promise<ServerActionResult> {
   const session = await auth()
 
   if (!session) {
     return {
+      ok: false,
       error: ErrorCode.Unauthorized
     }
   }
 
   if (chat.id && chat.id !== id) {
     return {
+      ok: false,
       error: ErrorCode.BadRequest
     }
   }
@@ -212,6 +217,7 @@ export async function updateChat(id: string, chat: Partial<Chat>) {
 
   if (chat.title === INBOX_CHAT) {
     return {
+      ok: false,
       error: ErrorCode.BadRequest
     }
   }
@@ -226,13 +232,17 @@ export async function updateChat(id: string, chat: Partial<Chat>) {
 
     if (updatedChat.numUpdatedRows === BigInt(0)) {
       return {
+        ok: false,
         error: ErrorCode.NotFound
       }
     }
-    return updatedChat.numUpdatedRows
+    return {
+      ok: true
+    }
   } catch (e) {
     console.error('[UPDATE CHAT]', e)
     return {
+      ok: false,
       error: ErrorCode.InternetError
     }
   }

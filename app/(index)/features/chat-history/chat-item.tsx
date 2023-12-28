@@ -6,10 +6,14 @@ import { useParams } from 'next/navigation'
 import { type Chat } from '@/types/database'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
-import { FavoriteAction } from '@/components/favorite-action'
+import {
+  FavoriteAction,
+  FavoriteActionProps
+} from '@/components/favorite-action'
 
 interface ChatItemProps {
   chat: Chat
+  favorite?: FavoriteActionProps['favorite']
   children?: React.ReactNode
 }
 
@@ -17,13 +21,9 @@ const Timestamp = dynamic(() => import('@/components/ui/timestamp'), {
   ssr: false
 })
 
-export function ChatItem({ chat, children }: ChatItemProps) {
+export function ChatItem({ chat, children, favorite }: ChatItemProps) {
   const { id } = useParams()
   const isActive = id === chat.id
-
-  const favorite = async (id: string) => {
-    return { ok: false, error: '' }
-  }
 
   if (!chat?.id) return null
 
@@ -36,21 +36,21 @@ export function ChatItem({ chat, children }: ChatItemProps) {
       )}
     >
       <Link href={`/chat/${chat.id}`} className="flex w-full items-center">
-        <div className="flex w-full min-w-full flex-col pr-14">
+        <div className="flex w-full min-w-full flex-col">
           <h4
             className="relative flex w-full flex-1 select-none items-center justify-between break-all"
             title={chat.title}
           >
             <FavoriteAction
               id={chat.id}
-              isFavorite={true}
+              isFavorite={chat.isFavourite}
               favorite={favorite}
             />
-            <span className="w-40 truncate text-lg">{chat.title}</span>
+            <span className="flex-1 truncate text-lg">{chat.title}</span>
             {isActive || (
               <Timestamp
                 date={chat.lastMessageAt ?? chat.createdAt}
-                className="text-primary/50 group-hover:opacity-0"
+                className="w-10 text-right text-primary/50 group-hover:opacity-0"
               />
             )}
           </h4>

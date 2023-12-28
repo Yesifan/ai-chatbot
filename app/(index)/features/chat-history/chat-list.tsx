@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 
-import { clearChats, getChats, removeChat } from '@/app/actions'
+import { clearChats, getChats, removeChat, updateChat } from '@/app/actions'
 import { RemoveActions } from '@/components/remove-actions'
 import { ChatItem } from './chat-item'
 import type { Chat } from '@/types/database'
 import { NewChatButton } from './new-chat-button'
 import { cn } from '@/lib/utils'
 import { ClearHistory } from './clear-history'
+import toast from 'react-hot-toast'
 
 interface HistoryChatListProps {
   initalChats?: Chat[]
@@ -24,7 +25,7 @@ export function HistoryChatList({
   const [isLoading, setLoading] = useState(false)
   const [chats, setChats] = useState<Chat[]>(initalChats ?? [])
 
-  const updateChats = async () => {
+  const updateChatList = async () => {
     setLoading(true)
     const chats = await getChats()
     setChats(chats)
@@ -33,11 +34,25 @@ export function HistoryChatList({
 
   useEffect(() => {
     if (status === 'authenticated' && session.user.id) {
-      updateChats()
+      updateChatList()
     } else {
       setChats([])
     }
   }, [status, session?.user.id])
+
+  const favoriteChatHandler = async (id: string, isFavourite: boolean) => {
+    const result = await updateChat(id, { isFavourite })
+    if (result.ok) {
+      setChats(chats =>
+        chats.map(chat => (chat.id === id ? { ...chat, isFavourite } : chat))
+      )
+      return true
+    } else {
+      console.error(result)
+      toast.error(result.error || 'Failed to update chat')
+      return false
+    }
+  }
 
   const removeChatHandler = async (id: string) => {
     const result = await removeChat(id)
@@ -63,11 +78,11 @@ export function HistoryChatList({
         isLoading={isLoading}
         className="mx-2"
         variant="outline"
-        onClick={updateChats}
+        onClick={updateChatList}
       />
       <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
         {chats.map(chat => (
-          <ChatItem key={chat?.id} chat={chat}>
+          <ChatItem key={chat?.id} chat={chat} favorite={favoriteChatHandler}>
             <RemoveActions id={chat.id} remove={removeChatHandler} />
           </ChatItem>
         ))}
