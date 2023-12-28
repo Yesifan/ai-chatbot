@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { useSession } from 'next-auth/react'
 
 import { clearChats, getChats, removeChat, updateChat } from '@/app/actions'
@@ -22,19 +22,19 @@ export function HistoryChatList({
   className
 }: HistoryChatListProps) {
   const { data: session, status } = useSession()
-  const [isLoading, setLoading] = useState(false)
+  const [isLoading, starTransition] = useTransition()
   const [chats, setChats] = useState<Chat[]>(initalChats ?? [])
 
-  const updateChatList = async () => {
-    setLoading(true)
-    const chats = await getChats()
-    setChats(chats)
-    setLoading(false)
+  const getChatList = async () => {
+    starTransition(async () => {
+      const chats = await getChats()
+      setChats(chats)
+    })
   }
 
   useEffect(() => {
     if (status === 'authenticated' && session.user.id) {
-      updateChatList()
+      getChatList()
     } else {
       setChats([])
     }
@@ -78,7 +78,7 @@ export function HistoryChatList({
         isLoading={isLoading}
         className="mx-2"
         variant="outline"
-        onClick={updateChatList}
+        onClick={getChatList}
       />
       <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
         {chats.map(chat => (

@@ -37,7 +37,7 @@ export function FavoriteAction({
       <TooltipTrigger asChild>
         <Button
           variant="ghost"
-          className="group mr-1 h-6 w-6 p-0 hover:bg-transparent"
+          className="group/fav mr-1 h-6 w-6 p-0 hover:bg-transparent"
           disabled={isPending}
           onClick={favoriteHandler}
         >
@@ -45,8 +45,8 @@ export function FavoriteAction({
             className={cn(
               isPending && ' animate-spin',
               isFavorite
-                ? 'fill-yellow-300 group-hover:fill-yellow-300/80'
-                : 'fill-primary group-hover:fill-yellow-300'
+                ? 'fill-yellow-300 group-hover/fav:fill-yellow-300/80'
+                : 'fill-primary group-hover/fav:fill-yellow-300'
             )}
           />
           <span className="sr-only">Favorite</span>

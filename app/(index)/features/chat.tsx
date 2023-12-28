@@ -30,30 +30,6 @@ export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
 }
 
-const MessagesButton = ({ className, ...props }: ButtonProps) => (
-  <Button size="icon" variant="outline" title="chats" {...props}>
-    <IconMessages />
-  </Button>
-)
-
-const HistoryChatListSidebar = ({
-  isShow,
-  className
-}: {
-  isShow?: boolean
-  className?: string
-}) => (
-  <HistoryChatList
-    className={cn(
-      'w-60 bg-gradient-to-br from-background/80 via-background/50 to-background/10 pt-4 backdrop-blur-xl',
-      'fixed bottom-56 right-0 top-[calc(4rem+env(safe-area-inset-top))] z-10',
-      'transition-transform',
-      isShow ? ' translate-x-0' : 'translate-x-full',
-      className
-    )}
-  />
-)
-
 export function Chat({ initialMessages, className }: ChatProps) {
   const router = useRouter()
   const pathname = usePathname()
@@ -150,14 +126,24 @@ export function Chat({ initialMessages, className }: ChatProps) {
           <EmptyScreen setInput={props.setInput} />
         )}
         {status === 'authenticated' && (
-          <HistoryChatListSidebar isShow={hasHistory} />
+          <HistoryChatList
+            className={cn(
+              'w-60 bg-gradient-to-br from-background/80 via-background/50 to-background/10 pt-4 backdrop-blur-xl',
+              'fixed bottom-56 right-0 top-[calc(4rem+env(safe-area-inset-top))] z-10',
+              'transition-transform',
+              hasHistory ? ' translate-x-0' : 'translate-x-full'
+            )}
+          />
         )}
         {status === 'authenticated' && (
           <div className="fixed bottom-60 right-2 z-20 flex flex-col space-y-4">
-            <MessagesButton
-              variant={hasHistory ? 'highlight' : 'outline'}
+            <Button
+              size="icon"
+              variant={hasHistory ? 'highlight' : 'board'}
               onClick={() => setHasHistory(!hasHistory)}
-            />
+            >
+              <IconMessages />
+            </Button>
             <ButtonReload onClick={reloadChat} isLoading={isInitialize} />
             <ButtonScrollToBottom />
           </div>
