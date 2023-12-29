@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { InboxAvatar } from './ui/avatar'
 import { buttonVariants } from './ui/button'
-import { INBOX_CHAT } from '@/lib/constants'
+import { JARVIS } from '@/lib/constants'
 
 interface ChatItemProps {
   className?: string
@@ -23,9 +23,9 @@ export function InboxChatItem({ className }: ChatItemProps) {
         <div className="flex w-full min-w-full flex-col pr-14">
           <h4
             className="relative flex w-full flex-1 select-none items-center justify-between break-all text-center"
-            title="Small Talk"
+            title={JARVIS}
           >
-            <span className="w-40 truncate text-lg">{INBOX_CHAT}</span>
+            <span className="w-40 truncate text-lg">{JARVIS}</span>
           </h4>
         </div>
       </Link>

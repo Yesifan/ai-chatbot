@@ -43,7 +43,7 @@ export function FavoriteAction({
         >
           <IconStar
             className={cn(
-              isPending && ' animate-spin',
+              isPending && 'animate-spin',
               isFavorite
                 ? 'fill-yellow-300 group-hover/fav:fill-yellow-300/80'
                 : 'fill-primary group-hover/fav:fill-yellow-300'

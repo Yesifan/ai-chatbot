@@ -1,3 +1,4 @@
+export const JARVIS = 'Jarvis'
 export const INBOX_CHAT = 'Small Talk'
 
 // [openai chat docs](https://platform.openai.com/docs/api-reference/chat)

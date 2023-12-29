@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
+import { useCallback, useEffect, useState, useTransition } from 'react'
 import { useSession } from 'next-auth/react'
 
-import { clearChats, getChats, removeChat, updateChat } from '@/app/actions'
+import { getChats } from '@/app/actions/chat'
+import { clearChats, removeChat, updateChat } from '@/app/actions'
 import { RemoveActions } from '@/components/remove-actions'
 import { ChatItem } from './chat-item'
 import type { Chat } from '@/types/database'
@@ -13,11 +14,13 @@ import { ClearHistory } from './clear-history'
 import toast from 'react-hot-toast'
 
 interface HistoryChatListProps {
+  robotId?: string
   initalChats?: Chat[]
   className?: string
 }
 
 export function HistoryChatList({
+  robotId,
   initalChats,
   className
 }: HistoryChatListProps) {
@@ -25,20 +28,12 @@ export function HistoryChatList({
   const [isLoading, starTransition] = useTransition()
   const [chats, setChats] = useState<Chat[]>(initalChats ?? [])
 
-  const getChatList = async () => {
+  const getChatList = useCallback(async () => {
     starTransition(async () => {
-      const chats = await getChats()
+      const chats = await getChats(robotId)
       setChats(chats)
     })
-  }
-
-  useEffect(() => {
-    if (status === 'authenticated' && session.user.id) {
-      getChatList()
-    } else {
-      setChats([])
-    }
-  }, [status, session?.user.id])
+  }, [starTransition, robotId])
 
   const favoriteChatHandler = async (id: string, isFavourite: boolean) => {
     const result = await updateChat(id, { isFavourite })
@@ -56,11 +51,19 @@ export function HistoryChatList({
 
   const removeChatHandler = async (id: string) => {
     const result = await removeChat(id)
-    if (typeof result === 'bigint') {
+    if (result.ok) {
       setChats(chats => chats.filter(chat => chat.id !== id))
     }
     return result
   }
+
+  useEffect(() => {
+    if (status === 'authenticated' && session.user.id) {
+      getChatList()
+    } else {
+      setChats([])
+    }
+  }, [status, session?.user.id, getChatList])
 
   if (status !== 'authenticated') {
     return (

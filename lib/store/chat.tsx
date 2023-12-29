@@ -12,6 +12,7 @@ import { GPT_Model, TEMPERATURE } from '../constants'
 
 export interface ChatStore extends Partial<Chat> {
   id?: string
+  robotId?: string
   clear?: () => void
   update?: (chat: Partial<Chat>) => void
   setTitle?: (title?: string) => void
@@ -29,6 +30,7 @@ export const ChatStoreProvider = ({
   ...chat
 }: PropsWithChildren & Partial<Chat>) => {
   const [id, setId] = useState(_id)
+  const [robotId, setRobotId] = useState(chat.robotId)
   const [title, setTitle] = useState(chat.title)
   const [pinPrompt, setPinPrompt] = useState(chat.pinPrompt)
   const [model, setModel] = useState(chat.model ?? GPT_Model.GPT_3_5_TURBO)
@@ -41,6 +43,7 @@ export const ChatStoreProvider = ({
 
   const update = (chat: Partial<Chat>) => {
     setId(chat.id)
+    setRobotId(chat.robotId)
     setTitle(chat.title)
     setModel(chat.model ?? GPT_Model.GPT_3_5_TURBO)
     setTemperature(chat.temperature ?? TEMPERATURE)
@@ -49,12 +52,14 @@ export const ChatStoreProvider = ({
 
   const clear = () => {
     setId(undefined)
+    setRobotId(undefined)
     setTitle(undefined)
   }
 
   const store = useMemo<ChatStore>(() => {
     return {
       id,
+      robotId,
       title,
       model,
       pinPrompt,
@@ -68,7 +73,7 @@ export const ChatStoreProvider = ({
       setTemperature,
       setAttachedMessagesCount
     }
-  }, [attachedMessagesCount, id, model, pinPrompt, temperature, title])
+  }, [attachedMessagesCount, id, model, pinPrompt, robotId, temperature, title])
 
   return (
     <ChatStoreContext.Provider value={store}>

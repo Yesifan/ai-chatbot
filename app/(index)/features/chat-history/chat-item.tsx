@@ -10,6 +10,7 @@ import {
   FavoriteAction,
   FavoriteActionProps
 } from '@/components/favorite-action'
+import { IconMessageaText } from '@/components/ui/icons'
 
 interface ChatItemProps {
   chat: Chat
@@ -23,7 +24,7 @@ const Timestamp = dynamic(() => import('@/components/ui/timestamp'), {
 
 export function ChatItem({ chat, children, favorite }: ChatItemProps) {
   const { id } = useParams()
-  const isActive = id === chat.id
+  const isActive = id ? id === chat.id : !chat.isSaved
 
   if (!chat?.id) return null
 
@@ -41,11 +42,17 @@ export function ChatItem({ chat, children, favorite }: ChatItemProps) {
             className="relative flex w-full flex-1 select-none items-center justify-between break-all"
             title={chat.title}
           >
-            <FavoriteAction
-              id={chat.id}
-              isFavorite={chat.isFavourite}
-              favorite={favorite}
-            />
+            {chat.isSaved ? (
+              <FavoriteAction
+                id={chat.id}
+                isFavorite={chat.isFavourite}
+                favorite={favorite}
+              />
+            ) : (
+              <div className="mr-1 flex h-6 w-6 items-center justify-center">
+                <IconMessageaText />
+              </div>
+            )}
             <span className="flex-1 truncate text-lg">{chat.title}</span>
             {isActive || (
               <Timestamp
