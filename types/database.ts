@@ -87,5 +87,6 @@ export type ServerActionResult<
   | {
       ok: false
       error: string
+      message?: string
     }
 >

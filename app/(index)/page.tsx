@@ -1,7 +1,8 @@
 import { Chat } from './features/chat'
 import { ChatStoreProvider } from '@/lib/store/chat'
 import { ChatHeader } from './features/chat-header'
-import { getInboxChat, getMessages } from '../actions'
+import { getMessages } from '../actions'
+import { getInboxChat } from '../actions/chat'
 import { ErrorCode } from '@/lib/constants'
 import { isMobileDevice } from '@/lib/utils/responsive'
 

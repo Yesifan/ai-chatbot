@@ -1,9 +1,10 @@
 'use server'
 
 import { auth } from '@/auth'
-import { ErrorCode } from '@/lib/constants'
+import { ErrorCode, INBOX_CHAT } from '@/lib/constants'
 import database from '@/lib/database'
 import { nanoid } from '@/lib/utils'
+import { Chat, ServerActionResult } from '@/types/database'
 
 export async function getChats(robotId?: string) {
   const session = await auth()
@@ -35,55 +36,109 @@ export async function getChats(robotId?: string) {
   }
 }
 
-export const createChat = async (robotId?: string, isSaved?: boolean) => {
+export async function getInboxChat() {
+  const session = await auth()
+
+  if (!session) {
+    return { error: ErrorCode.Unauthorized }
+  }
+
+  const user = session.user
+
+  try {
+    let chat = await database
+      .selectFrom('chat')
+      .selectAll()
+      .where('chat.userId', '=', user.id)
+      .where('chat.robotId', 'is', null)
+      // Add this line to filter chats where isSaved is null or false
+      .where('chat.isSaved', 'in', [null, false])
+      .orderBy('createdAt', 'asc')
+      .limit(1)
+      .executeTakeFirst()
+    if (!chat) {
+      console.log('[getInboxChat] create new inbox chat')
+      const res = await createChat(undefined, false)
+      if ('error' in res) {
+        console.error(`[ERROR][getInboxChat] ${res.error}`)
+        return {
+          error: ErrorCode.InternetError
+        }
+      } else {
+        chat = res
+      }
+    }
+    return chat
+  } catch (error) {
+    console.error(`[ERROR][getInboxChat] ${error}`)
+    return {
+      error: ErrorCode.InternetError
+    }
+  }
+}
+
+export const createChat = async (
+  robotId?: string,
+  isSaved?: boolean
+): Promise<ServerActionResult<Chat>> => {
   const pk = nanoid()
   const session = await auth()
   const userId = session?.user?.id
   if (!userId) {
     return {
+      ok: false,
       error: ErrorCode.Unauthorized
     }
   }
-  return await database
+  const chat = await database
     .insertInto('chat')
     .values({
       id: pk,
       userId,
       robotId,
       isSaved,
-      title: 'Small Talk',
+      title: INBOX_CHAT,
       createdAt: new Date()
     })
-    .returning(['id', 'userId', 'title', 'createdAt'])
+    .returningAll()
     .executeTakeFirstOrThrow()
+
+  return chat
 }
 
+// TODO: auto set title use ai.
 // save default chat to a topic
-export async function saveChat(chatId: string) {
+export async function saveChat(chatId: string): Promise<ServerActionResult> {
   const session = await auth()
   const userId = session?.user?.id
 
   if (!userId) {
-    return
+    return {
+      ok: false,
+      error: ErrorCode.Unauthorized
+    }
   }
 
   try {
     const chat = await database
       .selectFrom('chat')
-      .select('chat.robotId')
+      .select(['chat.robotId', 'chat.isSaved'])
       .where('chat.id', '=', chatId)
       .where('chat.userId', '=', userId)
       .executeTakeFirst()
 
     if (!chat) {
       return {
+        ok: false,
         error: ErrorCode.NotFound
       }
     }
 
-    if (!chat.robotId) {
+    if (chat.isSaved) {
       return {
-        error: ErrorCode.BadRequest
+        ok: false,
+        error: ErrorCode.BadRequest,
+        message: 'Chat is already saved'
       }
     }
 
@@ -94,8 +149,15 @@ export async function saveChat(chatId: string) {
       .where('chat.userId', '=', userId)
       .execute()
 
-    await createChat(chat.robotId)
+    await createChat(chat.robotId, false)
+    return {
+      ok: true
+    }
   } catch (error) {
     console.error(`[ERROR][saveChat] ${error}`)
+    return {
+      ok: false,
+      error: ErrorCode.InternetError
+    }
   }
 }

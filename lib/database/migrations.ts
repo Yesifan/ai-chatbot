@@ -35,7 +35,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .ifNotExists()
     .addColumn('id', 'varchar(8)', col => col.primaryKey())
     .addColumn('userId', 'char(21)', col => col.notNull())
-    .addColumn('groupId', 'varchar(8)')
+    .addColumn('robotId', 'varchar(8)')
     .addColumn('title', 'varchar(120)', col => col.notNull())
     .addColumn('createdAt', 'timestamp')
     .addColumn('lastMessage', 'text')

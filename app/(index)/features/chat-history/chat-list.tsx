@@ -12,6 +12,9 @@ import { NewChatButton } from './new-chat-button'
 import { cn } from '@/lib/utils'
 import { ClearHistory } from './clear-history'
 import toast from 'react-hot-toast'
+import { SaveChatButton } from './save-chat-button'
+import { useParams } from 'next/navigation'
+import { useChatStore } from '@/lib/store/chat'
 
 interface HistoryChatListProps {
   robotId?: string
@@ -26,6 +29,8 @@ export function HistoryChatList({
 }: HistoryChatListProps) {
   const { data: session, status } = useSession()
   const [isLoading, starTransition] = useTransition()
+
+  const chatStore = useChatStore()
   const [chats, setChats] = useState<Chat[]>(initalChats ?? [])
 
   const getChatList = useCallback(async () => {
@@ -68,6 +73,7 @@ export function HistoryChatList({
   if (status !== 'authenticated') {
     return (
       <div className={cn('flex flex-1 flex-col', className)}>
+        <h4 className="mx-2 pb-2 text-sm">Chat List</h4>
         <div className="p-8 text-center">
           <p className="text-sm text-muted-foreground">Please login in first</p>
         </div>
@@ -77,12 +83,15 @@ export function HistoryChatList({
 
   return (
     <div className={cn('flex flex-1 flex-col', className)}>
+      <h4 className="mx-2 pb-2 text-sm">Chat List</h4>
       <NewChatButton
         isLoading={isLoading}
-        className="mx-2"
-        variant="outline"
+        className="mx-2 mb-2"
         onClick={getChatList}
       />
+      {chatStore.id && !chatStore.isSaved && (
+        <SaveChatButton chatId={chatStore.id} className="mx-2" />
+      )}
       <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
         {chats.map(chat => (
           <ChatItem key={chat?.id} chat={chat} favorite={favoriteChatHandler}>

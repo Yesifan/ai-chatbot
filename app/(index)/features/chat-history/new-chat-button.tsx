@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useTransition } from 'react'
 
 import { createChat } from '@/app/actions'
 import { Button, ButtonProps } from '@/components/ui/button'
@@ -14,24 +14,29 @@ interface NewChatProps extends ButtonProps {
 
 export function NewChatButton({ isLoading, onClick, ...props }: NewChatProps) {
   const route = useRouter()
-  const [loading, setLoading] = useState(false)
+  const [loading, starTransition] = useTransition()
 
   const createNewChat: React.MouseEventHandler<
     HTMLButtonElement
   > = async event => {
-    setLoading(true)
-    const chat = await createChat()
-    if ('error' in chat) {
-      toast(chat.error)
-    } else {
-      route.push(`/chat/${chat.id}`)
-      onClick?.(event)
-    }
-    setLoading(false)
+    starTransition(async () => {
+      const chat = await createChat()
+      if ('error' in chat) {
+        toast(chat.error)
+      } else {
+        route.push(`/chat/${chat.id}`)
+        onClick?.(event)
+      }
+    })
   }
 
   return (
-    <Button {...props} onClick={createNewChat} disabled={isLoading || loading}>
+    <Button
+      variant="outline"
+      onClick={createNewChat}
+      disabled={isLoading || loading}
+      {...props}
+    >
       {isLoading || loading ? <BubblesLoading /> : 'New Chat 💬'}
     </Button>
   )
