@@ -1,4 +1,4 @@
-import NextAuth, { type DefaultSession } from 'next-auth'
+import NextAuth, { type NextAuthConfig, type DefaultSession } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import db from './lib/database'
 import { up } from './lib/database/migrations'
@@ -27,10 +27,7 @@ const getLoginUser = async (token: string) => {
   return user[0]
 }
 
-export const {
-  handlers: { GET, POST },
-  auth
-} = NextAuth({
+const config = {
   providers: [
     CredentialsProvider({
       id: Credential.AccessToken,
@@ -82,4 +79,6 @@ export const {
   pages: {
     signIn: '/' // overrides the next-auth default signin page https://authjs.dev/guides/basics/pages
   }
-})
+} satisfies NextAuthConfig
+
+export const { handlers, auth, signIn, signOut } = NextAuth(config)
