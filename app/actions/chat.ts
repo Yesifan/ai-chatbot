@@ -1,16 +1,16 @@
 'use server'
 
-import { auth } from '@/auth'
-import { ErrorCode, INBOX_CHAT } from '@/lib/constants'
+import { auth } from '@/app/actions/auth'
+import { INBOX_CHAT } from '@/lib/constants'
 import database from '@/lib/database'
+import { ActionErrorCode } from '@/lib/error'
 import { nanoid } from '@/lib/utils'
 import { Chat, ServerActionResult } from '@/types/database'
 
 export async function getChats(robotId?: string) {
   const session = await auth()
-  const userId = session?.user?.id
 
-  if (!userId) {
+  if (!session) {
     return []
   }
 
@@ -18,7 +18,7 @@ export async function getChats(robotId?: string) {
     const query = database
       .selectFrom('chat')
       .selectAll()
-      .where('chat.userId', '=', userId)
+      .where('chat.userId', '=', session.id)
 
     if (robotId) {
       query.where('chat.robotId', '=', robotId)
@@ -40,16 +40,14 @@ export async function getInboxChat() {
   const session = await auth()
 
   if (!session) {
-    return { error: ErrorCode.Unauthorized }
+    return { error: ActionErrorCode.Unauthorized }
   }
-
-  const user = session.user
 
   try {
     let chat = await database
       .selectFrom('chat')
       .selectAll()
-      .where('chat.userId', '=', user.id)
+      .where('chat.userId', '=', session.id)
       .where('chat.robotId', 'is', null)
       // Add this line to filter chats where isSaved is null or false
       .where('chat.isSaved', 'in', [null, false])
@@ -62,7 +60,7 @@ export async function getInboxChat() {
       if ('error' in res) {
         console.error(`[ERROR][getInboxChat] ${res.error}`)
         return {
-          error: ErrorCode.InternetError
+          error: ActionErrorCode.InternetError
         }
       } else {
         chat = res
@@ -72,7 +70,7 @@ export async function getInboxChat() {
   } catch (error) {
     console.error(`[ERROR][getInboxChat] ${error}`)
     return {
-      error: ErrorCode.InternetError
+      error: ActionErrorCode.InternetError
     }
   }
 }
@@ -83,18 +81,18 @@ export const createChat = async (
 ): Promise<ServerActionResult<Chat>> => {
   const pk = nanoid()
   const session = await auth()
-  const userId = session?.user?.id
-  if (!userId) {
+
+  if (!session) {
     return {
       ok: false,
-      error: ErrorCode.Unauthorized
+      error: ActionErrorCode.Unauthorized
     }
   }
   const chat = await database
     .insertInto('chat')
     .values({
       id: pk,
-      userId,
+      userId: session.id,
       robotId,
       isSaved,
       title: INBOX_CHAT,
@@ -110,12 +108,11 @@ export const createChat = async (
 // save default chat to a topic
 export async function saveChat(chatId: string): Promise<ServerActionResult> {
   const session = await auth()
-  const userId = session?.user?.id
 
-  if (!userId) {
+  if (!session) {
     return {
       ok: false,
-      error: ErrorCode.Unauthorized
+      error: ActionErrorCode.Unauthorized
     }
   }
 
@@ -124,20 +121,20 @@ export async function saveChat(chatId: string): Promise<ServerActionResult> {
       .selectFrom('chat')
       .select(['chat.robotId', 'chat.isSaved'])
       .where('chat.id', '=', chatId)
-      .where('chat.userId', '=', userId)
+      .where('chat.userId', '=', session.id)
       .executeTakeFirst()
 
     if (!chat) {
       return {
         ok: false,
-        error: ErrorCode.NotFound
+        error: ActionErrorCode.NotFound
       }
     }
 
     if (chat.isSaved) {
       return {
         ok: false,
-        error: ErrorCode.BadRequest,
+        error: ActionErrorCode.BadRequest,
         message: 'Chat is already saved'
       }
     }
@@ -146,7 +143,7 @@ export async function saveChat(chatId: string): Promise<ServerActionResult> {
       .updateTable('chat')
       .set({ isSaved: true })
       .where('chat.id', '=', chatId)
-      .where('chat.userId', '=', userId)
+      .where('chat.userId', '=', session.id)
       .execute()
 
     await createChat(chat.robotId, false)
@@ -157,7 +154,7 @@ export async function saveChat(chatId: string): Promise<ServerActionResult> {
     console.error(`[ERROR][saveChat] ${error}`)
     return {
       ok: false,
-      error: ErrorCode.InternetError
+      error: ActionErrorCode.InternetError
     }
   }
 }

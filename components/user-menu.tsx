@@ -1,7 +1,5 @@
 'use client'
 
-import { signOut, useSession } from 'next-auth/react'
-
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -10,18 +8,18 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { UserAvatar } from './ui/avatar'
+import { signOut } from '@/lib/auth'
+import { useSession } from '@/lib/auth/provider'
 
 export function UserMenu() {
-  const { data: session } = useSession()
-  if (!session?.user) {
+  const { data: session, update } = useSession()
+  if (!session) {
     return null
   }
 
   const signOutHandler = async () => {
-    await signOut({
-      callbackUrl: '/',
-      redirect: false
-    })
+    signOut(true)
+    update()
   }
 
   return (

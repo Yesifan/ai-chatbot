@@ -1,17 +1,16 @@
 import * as React from 'react'
 import { type Metadata } from 'next'
 import { redirect } from 'next/navigation'
-import { auth } from '@/auth'
+import { auth } from '@/app/actions/auth'
 
 import { Siderbar } from '../../features/sidebar'
 
 export const runtime = 'edge'
-export const preferredRegion = 'home'
 
 export async function generateMetadata(): Promise<Metadata> {
   const session = await auth()
 
-  if (!session?.user) {
+  if (!session) {
     redirect(`/?next=/history`)
   }
 

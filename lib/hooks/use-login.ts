@@ -1,25 +1,25 @@
 import { useEffect, useRef } from 'react'
-import { signIn, useSession } from 'next-auth/react'
-import { Credential } from '../constants'
+
+import { signIn } from '../auth'
+import { useSession } from '../auth/provider'
 
 export const useLogin = () => {
   const { update } = useSession()
 
   const login = async (value: string) => {
     try {
-      const res = await signIn(Credential.AccessToken, {
-        redirect: false,
-        token: value
-      })
+      const res = await signIn(value)
+
       if (res?.error) {
-        return 'Login failed, Wrong access token!'
+        throw new Error('Login failed, Wrong access token!')
       } else {
-        await update()
-        return true
+        const session = await update()
+        console.log('session', session)
+        return session
       }
     } catch (error: any) {
       console.error('[LOGININ]', error)
-      return error.message || 'Login failed, please try again!'
+      throw new Error(error.message || 'Login failed, please try again!')
     }
   }
 

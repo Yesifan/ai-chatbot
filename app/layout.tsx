@@ -1,8 +1,7 @@
 import { Metadata, Viewport } from 'next'
 import { Toaster } from 'react-hot-toast'
-import { SessionProvider } from 'next-auth/react'
 
-import { auth } from '@/auth'
+import { auth } from '@/app/actions/auth'
 
 import { cn } from '@/lib/utils'
 import { fontMono, fontSans } from '@/lib/fonts'
@@ -10,6 +9,7 @@ import { Providers } from '@/components/providers'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
 
 import '@/app/globals.css'
+import { SessionProvider } from '@/lib/auth/provider'
 
 const title = 'Jarvis - AI Assistant'
 

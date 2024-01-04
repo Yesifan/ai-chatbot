@@ -1,12 +1,13 @@
+import { NextRequest } from 'next/server'
 import { APIError } from 'openai'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 
-import { auth } from '@/auth'
-import { NextRequest } from 'next/server'
-import { ErrorCode, GPT_Model, TEMPERATURE } from '@/lib/constants'
+import { ChatBody } from '@/types/api'
+import { auth } from '@/app/actions/auth'
+import { ActionErrorCode } from '@/lib/error'
+import { GPT_Model, TEMPERATURE } from '@/lib/constants'
 import { createOpenai } from './openai'
 import { getChat, recordConversation } from './database'
-import { ChatBody } from '@/types/api'
 
 export const runtime = 'edge'
 
@@ -14,7 +15,7 @@ export const runtime = 'edge'
 export async function POST(req: NextRequest) {
   const session = await auth()
 
-  if (!session?.user) {
+  if (!session) {
     return new Response('Unauthorized', {
       status: 401
     })
@@ -25,16 +26,16 @@ export async function POST(req: NextRequest) {
   const { id, model, messages, temperature } = chatJson
 
   if (!messages || messages.length === 0) {
-    return new Response(ErrorCode.BadRequest, {
+    return new Response(ActionErrorCode.BadRequest, {
       status: 400
     })
   }
 
-  const userId = session.user.id
+  const userId = session.id
   const chat = await getChat(id, userId)
 
   if (!chat) {
-    return new Response(ErrorCode.BadRequest, {
+    return new Response(ActionErrorCode.BadRequest, {
       status: 400
     })
   }

@@ -3,11 +3,12 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-import { auth } from '@/auth'
+import { auth } from '@/app/actions/auth'
 import db from '@/lib/database'
 import { Message, type Chat, ServerActionResult } from '@/types/database'
-import { ErrorCode, INBOX_CHAT } from '@/lib/constants'
+import { INBOX_CHAT } from '@/lib/constants'
 import { nanoid } from '@/lib/utils'
+import { ActionErrorCode } from '@/lib/error'
 
 export async function getMessages(
   id: string
@@ -55,9 +56,8 @@ export async function removeMessage(id: string): Promise<ServerActionResult> {
 
 export async function getChats() {
   const session = await auth()
-  const userId = session?.user?.id
 
-  if (!userId) {
+  if (!session) {
     return []
   }
 
@@ -65,7 +65,7 @@ export async function getChats() {
     return await db
       .selectFrom('chat')
       .selectAll()
-      .where('chat.userId', '=', userId)
+      .where('chat.userId', '=', session.id)
       .where('chat.title', '!=', INBOX_CHAT)
       .orderBy('lastMessageAt', 'desc')
       .execute()
@@ -82,14 +82,12 @@ export async function getChat(id: string): Promise<[Chat, Message[]] | null> {
     return null
   }
 
-  const user = session.user
-
   try {
     const chat = await db
       .selectFrom('chat')
       .selectAll()
       .where('chat.id', '=', id)
-      .where('chat.userId', '=', user.id)
+      .where('chat.userId', '=', session.id)
       .executeTakeFirst()
 
     if (!chat) {
@@ -113,17 +111,15 @@ export async function getInboxChat() {
   const session = await auth()
 
   if (!session) {
-    return { error: ErrorCode.Unauthorized }
+    return { error: ActionErrorCode.Unauthorized }
   }
-
-  const user = session.user
 
   try {
     let chat = await db
       .selectFrom('chat')
       .selectAll()
       .where('title', '=', INBOX_CHAT)
-      .where('chat.userId', '=', user.id)
+      .where('chat.userId', '=', session.id)
       .orderBy('createdAt', 'asc')
       .limit(1)
       .executeTakeFirst()
@@ -133,7 +129,7 @@ export async function getInboxChat() {
         .insertInto('chat')
         .values({
           id: nanoid(),
-          userId: user.id,
+          userId: session.id,
           title: INBOX_CHAT,
           createdAt: new Date(),
           attachedMessagesCount: 0
@@ -145,7 +141,7 @@ export async function getInboxChat() {
   } catch (error) {
     console.error(`[ERROR][getChats] ${error}`)
     return {
-      error: ErrorCode.InternetError
+      error: ActionErrorCode.InternetError
     }
   }
 }
@@ -154,20 +150,18 @@ export async function getChatTitle(id: string) {
   const session = await auth()
 
   if (!session) {
-    return { error: ErrorCode.Unauthorized }
+    return { error: ActionErrorCode.Unauthorized }
   }
-
-  const user = session.user
 
   const chat = await db
     .selectFrom('chat')
     .select('chat.title')
     .where('chat.id', '=', id)
-    .where('chat.userId', '=', user.id)
+    .where('chat.userId', '=', session.id)
     .executeTakeFirst()
 
   if (!chat) {
-    return { error: ErrorCode.NotFound }
+    return { error: ActionErrorCode.NotFound }
   }
 
   return chat.title
@@ -178,14 +172,14 @@ export const createChat = async () => {
   const session = await auth()
   if (!session) {
     return {
-      error: ErrorCode.Unauthorized
+      error: ActionErrorCode.Unauthorized
     }
   }
   return await db
     .insertInto('chat')
     .values({
       id: pk,
-      userId: session.user.id,
+      userId: session.id,
       title: 'New Chat',
       createdAt: new Date()
     })
@@ -202,23 +196,21 @@ export async function updateChat(
   if (!session) {
     return {
       ok: false,
-      error: ErrorCode.Unauthorized
+      error: ActionErrorCode.Unauthorized
     }
   }
 
   if (chat.id && chat.id !== id) {
     return {
       ok: false,
-      error: ErrorCode.BadRequest
+      error: ActionErrorCode.BadRequest
     }
   }
-
-  const user = session.user
 
   if (chat.title === INBOX_CHAT) {
     return {
       ok: false,
-      error: ErrorCode.BadRequest
+      error: ActionErrorCode.BadRequest
     }
   }
 
@@ -227,13 +219,13 @@ export async function updateChat(
       .updateTable('chat')
       .set(chat)
       .where('chat.id', '=', id)
-      .where('chat.userId', '=', user.id)
+      .where('chat.userId', '=', session.id)
       .executeTakeFirstOrThrow()
 
     if (updatedChat.numUpdatedRows === BigInt(0)) {
       return {
         ok: false,
-        error: ErrorCode.NotFound
+        error: ActionErrorCode.NotFound
       }
     }
     return {
@@ -243,7 +235,7 @@ export async function updateChat(
     console.error('[UPDATE CHAT]', e)
     return {
       ok: false,
-      error: ErrorCode.InternetError
+      error: ActionErrorCode.InternetError
     }
   }
 }
@@ -254,22 +246,21 @@ export async function removeChat(id: string): Promise<ServerActionResult> {
   if (!session) {
     return {
       ok: false,
-      error: ErrorCode.Unauthorized
+      error: ActionErrorCode.Unauthorized
     }
   }
 
-  const user = session.user
   try {
     const chat = await db
       .deleteFrom('chat')
       .where('chat.id', '=', id)
-      .where('chat.userId', '=', user.id)
+      .where('chat.userId', '=', session.id)
       .executeTakeFirstOrThrow()
 
     if (chat.numDeletedRows === BigInt(0)) {
       return {
         ok: false,
-        error: ErrorCode.NotFound
+        error: ActionErrorCode.NotFound
       }
     }
 
@@ -293,7 +284,7 @@ export async function removeChat(id: string): Promise<ServerActionResult> {
 export async function clearChats(): Promise<ServerActionResult> {
   const session = await auth()
 
-  if (!session?.user?.id) {
+  if (!session) {
     return {
       ok: false,
       error: 'Unauthorized'
@@ -303,7 +294,7 @@ export async function clearChats(): Promise<ServerActionResult> {
   const chats = await db
     .selectFrom('chat')
     .select('chat.id')
-    .where('userId', '=', session.user.id)
+    .where('userId', '=', session.id)
     .execute()
   chats.forEach(async chat => {
     await db

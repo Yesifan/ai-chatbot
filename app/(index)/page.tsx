@@ -3,7 +3,6 @@ import { ChatStoreProvider } from '@/lib/store/chat'
 import { ChatHeader } from './features/chat-header'
 import { getMessages } from '../actions'
 import { getInboxChat } from '../actions/chat'
-import { ErrorCode } from '@/lib/constants'
 import { isMobileDevice } from '@/lib/utils/responsive'
 
 export const runtime = 'edge'
@@ -12,7 +11,7 @@ export default async function IndexPage() {
   const chat = await getInboxChat()
   const isMobile = isMobileDevice()
 
-  if ('error' in chat && chat.error !== ErrorCode.Unauthorized) {
+  if ('error' in chat) {
     console.error('[IndexPage] get chat', chat.error)
     return <div>Get Chat Some Error</div>
   }

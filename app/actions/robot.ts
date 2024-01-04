@@ -1,6 +1,6 @@
 'use server'
 
-import { auth } from '@/auth'
+import { auth } from '@/app/actions/auth'
 import db from '@/lib/database'
 import { Robot, ServerActionResult } from '@/types/database'
 

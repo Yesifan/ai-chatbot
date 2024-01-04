@@ -1,7 +1,7 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState, useTransition } from 'react'
-import { useSession } from 'next-auth/react'
 
 import { cn } from '@/lib/utils'
 import { getRobots, removeRobot } from '@/app/actions/robot'
@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button'
 import { RemoveActions } from '@/components/remove-actions'
 import { RobotItem } from './robot-item'
 import type { Robot } from '@/types/database'
-import Link from 'next/link'
 import BubblesLoading from '@/components/ui/loading'
+import { useSession } from '@/lib/auth/provider'
 
 interface RobotListProps {
   initalRobots?: Robot[]
@@ -43,12 +43,12 @@ export function RobotList({ initalRobots, className }: RobotListProps) {
   }
 
   useEffect(() => {
-    if (status === 'authenticated' && session.user.id) {
+    if (status === 'authenticated' && session.id) {
       updateChats()
     } else {
       setRobots([])
     }
-  }, [status, session?.user.id, robots.length])
+  }, [status, session?.id, robots.length])
 
   if (status !== 'authenticated' || error) {
     return (

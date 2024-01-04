@@ -1,6 +1,8 @@
 import { ReloadButton } from './reload-button'
 import { IconWifiSlash } from '@/components/ui/icons'
 
+export const runtime = 'edge'
+
 export default function FallbackPage() {
   return (
     <main className="flex h-screen flex-col items-center justify-center bg-background">

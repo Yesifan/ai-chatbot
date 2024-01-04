@@ -1,42 +1,12 @@
 'use client'
-import { signIn, useSession } from 'next-auth/react'
-
 import { cn, nanoid } from '@/lib/utils'
-import {
-  Credential,
-  Role,
-  SYSTEM_MESSAGE_COMMAND,
-  SystemMessageKey
-} from '@/lib/constants'
+import { Role, SYSTEM_MESSAGE_COMMAND, SystemMessageKey } from '@/lib/constants'
 import { Input } from '@/components/ui/input'
 import { ChatPanelProps } from './chat-panel'
 import { useCallback, useRef, useState } from 'react'
 import { useMateEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { EnterButton } from './prompt-form'
-
-const useLogin = () => {
-  const { update } = useSession()
-
-  const login = async (value: string) => {
-    try {
-      const res = await signIn(Credential.AccessToken, {
-        redirect: false,
-        token: value
-      })
-      if (res?.error) {
-        return 'Login failed, Wrong access token!'
-      } else {
-        await update()
-        return true
-      }
-    } catch (error: any) {
-      console.error('[LOGININ]', error)
-      return error.message || 'Login failed, please try again!'
-    }
-  }
-
-  return login
-}
+import { useLogin } from '@/lib/hooks/use-login'
 
 const placeholder = 'Please enter access token here.'
 
@@ -73,22 +43,25 @@ export function ChatLoginPanel({
           role: Role.System
         }
       ])
-      const result = await login(password.trim())
-      setLoading(false)
-      if (result !== true) {
-        setMessages(messages => {
-          const oldMessages = messages.slice(0, -1)
-          return [
-            ...oldMessages,
-            {
-              id: nanoid(),
-              content: `${SYSTEM_MESSAGE_COMMAND}:${SystemMessageKey.Warning}:${result}`,
-              createdAt: new Date(),
-              role: Role.System
-            }
-          ]
-        })
+      try {
+        await login(password.trim())
+      } catch (e: any) {
+        if (e instanceof Error) {
+          setMessages(messages => {
+            const oldMessages = messages.slice(0, -1)
+            return [
+              ...oldMessages,
+              {
+                id: nanoid(),
+                content: `${SYSTEM_MESSAGE_COMMAND}:${SystemMessageKey.Warning}:${e.message}`,
+                createdAt: new Date(),
+                role: Role.System
+              }
+            ]
+          })
+        }
       }
+      setLoading(false)
     },
     [login, password, setMessages]
   )

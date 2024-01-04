@@ -7,9 +7,6 @@ import { InboxChatItem } from '@/components/inbox-chat-item'
 import { RobotList } from './robot-list/robot-list'
 import { getRobots } from '../actions/robot'
 
-export const runtime = 'edge'
-export const preferredRegion = 'home'
-
 const ThemeToggle = dynamic(() => import('@/components/theme-toggle'), {
   ssr: false
 })

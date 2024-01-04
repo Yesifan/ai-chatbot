@@ -1,7 +1,6 @@
 'use client'
-
+import toast from 'react-hot-toast'
 import { useCallback, useEffect, useState, useTransition } from 'react'
-import { useSession } from 'next-auth/react'
 
 import { getChats } from '@/app/actions/chat'
 import { clearChats, removeChat, updateChat } from '@/app/actions'
@@ -11,10 +10,9 @@ import type { Chat } from '@/types/database'
 import { NewChatButton } from './new-chat-button'
 import { cn } from '@/lib/utils'
 import { ClearHistory } from './clear-history'
-import toast from 'react-hot-toast'
 import { SaveChatButton } from './save-chat-button'
-import { useParams } from 'next/navigation'
 import { useChatStore } from '@/lib/store/chat'
+import { useSession } from '@/lib/auth/provider'
 
 interface HistoryChatListProps {
   robotId?: string
@@ -63,12 +61,12 @@ export function HistoryChatList({
   }
 
   useEffect(() => {
-    if (status === 'authenticated' && session.user.id) {
+    if (status === 'authenticated' && session.id) {
       getChatList()
     } else {
       setChats([])
     }
-  }, [status, session?.user.id, getChatList])
+  }, [status, session?.id, getChatList])
 
   if (status !== 'authenticated') {
     return (
@@ -82,7 +80,12 @@ export function HistoryChatList({
   }
 
   return (
-    <div className={cn('flex flex-1 flex-col', className)}>
+    <div
+      className={cn(
+        'flex w-60 flex-1 flex-col bg-gradient-to-br from-background/80 via-background/50 to-background/10 pt-4 backdrop-blur-xl',
+        className
+      )}
+    >
       <h4 className="mx-2 pb-2 text-sm">Chat List</h4>
       <NewChatButton
         isLoading={isLoading}

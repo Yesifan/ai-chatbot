@@ -1,3 +1,5 @@
+export const TOKEN_COOKIE_KEY = 'jarvis.token'
+
 export const JARVIS = 'Jarvis'
 export const INBOX_CHAT = 'Small Talk'
 
@@ -9,10 +11,6 @@ export const INBOX_CHAT = 'Small Talk'
 export const TEMPERATURE = 0.9
 export const ATTACHED_MESSAGES_COUNT = 6
 export const INFINITE_ATTACHED_MESSAGES_COUNT = 31
-
-export const enum Credential {
-  AccessToken = 'access-token'
-}
 
 // [openai models](https://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbo)
 /**
@@ -42,7 +40,8 @@ export const enum ErrorCode {
   NotFound = 'NotFound',
   Unauthorized = 'Unauthorized',
   BadRequest = 'BadRequest',
-  InternetError = 'InternetError'
+  InternetError = 'InternetError',
+  InternalServerError = 'InternalServerError'
 }
 
 // COMMAND:SYSTEM_MESSAGE_KEY:BODY
