@@ -29,6 +29,7 @@ export interface ChatPanelProps
   > {
   id?: string
   className?: string
+  noPause?: boolean
 }
 
 export function ChatPanel({

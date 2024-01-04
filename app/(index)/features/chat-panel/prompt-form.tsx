@@ -42,6 +42,7 @@ export function EnterButton(props: {
 export interface PromptProps
   extends Pick<UseChatHelpers, 'input' | 'setInput' | 'stop'> {
   onSubmit: (value: string) => Promise<void>
+  noPause?: boolean
   isLoading: boolean
   placeholder?: string
   isClearAfterSubmit?: boolean
@@ -52,6 +53,7 @@ export function PromptForm({
   stop,
   onSubmit,
   setInput,
+  noPause,
   isLoading,
   placeholder,
   isClearAfterSubmit = true
@@ -109,7 +111,7 @@ export function PromptForm({
       </div>
 
       <div className="absolute bottom-0 right-0 flex flex-row space-x-2 p-4">
-        {isLoading && (
+        {isLoading && !noPause && (
           <Button variant="outline" onClick={stop}>
             <IconPause />
           </Button>

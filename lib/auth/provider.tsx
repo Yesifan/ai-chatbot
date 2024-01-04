@@ -56,6 +56,7 @@ export function SessionProvider({ children, ...props }: SessionProviderProps) {
       : session
       ? 'authenticated'
       : 'unauthenticated'
+
     const update: UpdateSession = async data => {
       if (loading) return
 
@@ -76,6 +77,7 @@ export function SessionProvider({ children, ...props }: SessionProviderProps) {
         }
       })
     }
+
     return {
       data: session,
       status,

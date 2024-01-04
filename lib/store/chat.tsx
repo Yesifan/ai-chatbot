@@ -1,6 +1,6 @@
 'use client'
 
-import { Chat } from '@/types/database'
+import { Chat, Robot } from '@/types/database'
 import {
   PropsWithChildren,
   createContext,
@@ -28,7 +28,7 @@ export const ChatStoreProvider = ({
   id: _id,
   children,
   ...chat
-}: PropsWithChildren & Partial<Chat>) => {
+}: Partial<Chat> & PropsWithChildren) => {
   const [id, setId] = useState(_id)
   const [robotId, setRobotId] = useState(chat.robotId)
   const [title, setTitle] = useState(chat.title)

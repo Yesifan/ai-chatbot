@@ -7,6 +7,7 @@ import { ChatStoreProvider } from '@/lib/store/chat'
 import { isMobileDevice } from '@/lib/utils/responsive.clint'
 import { Chat } from '../../features/chat'
 import { ChatHeader } from '../../features/chat-header'
+import { getRobot } from '@/app/actions/robot'
 
 export const runtime = 'edge'
 
@@ -40,16 +41,23 @@ export default async function ChatPage({ params }: ChatPageProps) {
   const id = params.id
   const isMobile = isMobileDevice()
 
-  // const session = await auth()
   const chatAndMessage = await getChat(id)
+
   if (!chatAndMessage) {
     return null
   }
   const [chat, messages] = chatAndMessage
 
+  const robotRes = chat.robotId ? await getRobot(chat.robotId) : undefined
+  const robot = robotRes && 'error' in robotRes ? undefined : robotRes
+
   return (
     <ChatStoreProvider {...chat}>
-      <ChatHeader className="sticky top-0 z-50" isMobile={isMobile} />
+      <ChatHeader
+        robot={robot}
+        isMobile={isMobile}
+        className="sticky top-0 z-50"
+      />
       <Chat id={id} initialMessages={messages} />
     </ChatStoreProvider>
   )

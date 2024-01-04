@@ -11,12 +11,15 @@ import { Button } from '../../../components/ui/button'
 import { IconHisotry } from '../../../components/ui/icons'
 import { Input, InputProps } from '../../../components/ui/input'
 import { InboxAvatar, RobotAvatar } from '../../../components/ui/avatar'
-import { useIsInbox } from '@/lib/hooks/use-inbox'
 import { SafeArea } from '../../../components/ui/safe-area'
+import { Robot } from '@/types/database'
+import { JARVIS } from '@/lib/constants'
 
 interface ChatHeaderItemProps {
-  className?: string
+  robot?: Robot
+  isInbox?: boolean
   isMobile?: boolean
+  className?: string
 }
 
 const DEFAULT_TITLE = 'AI Assistant'
@@ -91,9 +94,13 @@ const TitleInput = ({
   )
 }
 
-export function ChatHeader({ className, isMobile }: ChatHeaderItemProps) {
+export function ChatHeader({
+  robot,
+  isInbox,
+  isMobile,
+  className
+}: ChatHeaderItemProps) {
   const chat = useChatStore()
-  const isInbox = useIsInbox()
 
   return (
     <header
@@ -104,15 +111,19 @@ export function ChatHeader({ className, isMobile }: ChatHeaderItemProps) {
     >
       {isMobile && <SafeArea className="bg-transparent" />}
       <div className="flex h-16 w-full items-center px-4 py-1">
-        {isInbox ? (
-          <InboxAvatar className="mx-2 mr-4 w-10 text-4xl" />
-        ) : (
+        {robot ? (
           <Button variant="ghost" className="mr-2 h-14 px-2">
             <RobotAvatar className="w-10 text-4xl" />
           </Button>
+        ) : (
+          <InboxAvatar className="mx-2 mr-4 w-10 text-4xl" />
         )}
         <div className="flex w-full flex-1 flex-col justify-between pr-6">
-          <TitleInput disabled={isInbox} />
+          <div className="flex text-lg">
+            <span>{robot ? robot.name : JARVIS}</span>
+            <span className="px-2">-</span>
+            <TitleInput disabled={isInbox} />
+          </div>
           <div className="">
             <Badge variant="secondary">{chat.model}</Badge>
           </div>

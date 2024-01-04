@@ -3,23 +3,20 @@ import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
 
-const timestampVariants = cva(
-  'inline-flex cursor-default items-center text-xs transition',
-  {
-    variants: {
-      variant: {
-        default: 'hover:text-primary/80',
-        secondary: 'border-transparent bg-secondary text-secondary-foreground',
-        destructive:
-          'border-transparent bg-destructive text-destructive-foreground shadow',
-        outline: 'text-foreground'
-      }
-    },
-    defaultVariants: {
-      variant: 'default'
+const timestampVariants = cva('cursor-default text-xs transition', {
+  variants: {
+    variant: {
+      default: 'hover:text-primary/80',
+      secondary: 'border-transparent bg-secondary text-secondary-foreground',
+      destructive:
+        'border-transparent bg-destructive text-destructive-foreground shadow',
+      outline: 'text-foreground'
     }
+  },
+  defaultVariants: {
+    variant: 'default'
   }
-)
+})
 
 export interface DatetimeProps
   extends React.HTMLAttributes<HTMLSpanElement>,
@@ -39,6 +36,7 @@ function Timestamp({
   if (!date) {
     return null
   }
+
   const isToday =
     now.getFullYear() === date.getFullYear() &&
     now.getMonth() === date.getMonth() &&
@@ -61,7 +59,12 @@ function Timestamp({
   }
   return (
     <span className={cn(timestampVariants({ variant }), className)} {...props}>
-      {date.getMonth()}/{date.getDate()} {full ? time : null}
+      {date.getFullYear() !== now.getFullYear()
+        ? `${date.getFullYear()}/`
+        : null}
+      {date.getMonth() < 9 ? `0${date.getMonth() + 1}` : date.getMonth() + 1}/
+      {date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()}
+      {full ? time : null}
     </span>
   )
 }

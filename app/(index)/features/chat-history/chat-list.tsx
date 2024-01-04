@@ -93,7 +93,7 @@ export function HistoryChatList({
         onClick={getChatList}
       />
       {chatStore.id && !chatStore.isSaved && (
-        <SaveChatButton chatId={chatStore.id} className="mx-2" />
+        <SaveChatButton chatId={chatStore.id} className="mx-2 mb-2" />
       )}
       <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
         {chats.map(chat => (

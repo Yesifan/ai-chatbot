@@ -9,7 +9,8 @@ import { ChatMessageList } from './chat-message-list'
 import { ChatPanel } from './chat-panel/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
-import { getChat, getInboxChat, getMessages } from '@/app/actions'
+import { getChat, getMessages } from '@/app/actions'
+import { getInboxChat } from '@/app/actions/chat'
 import { Separator } from '@/components/ui/separator'
 import { Role } from '@/lib/constants'
 import { useChat } from '@/lib/hooks/use-chat'
@@ -21,7 +22,7 @@ import { ChatMessage } from './chat-message'
 import { ChatLoginPanel } from './chat-panel/chat-login-panel'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { ButtonReload } from '@/components/reload-button'
-import { Button, ButtonProps } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { IconMessages } from '@/components/ui/icons'
 import { HistoryChatList } from './chat-history/chat-list'
 import type { Chat, Message } from '@/types/database'
@@ -169,6 +170,7 @@ export function Chat({ initialMessages, className }: ChatProps) {
         ) : (
           <ChatPanel
             className="h-56"
+            noPause={!isLoading}
             id={chatStore.id}
             messages={messages}
             isLoading={isLoading || isInitialize}

@@ -28,6 +28,10 @@ export function ChatItem({ chat, children, favorite }: ChatItemProps) {
 
   if (!chat?.id) return null
 
+  console.log(chat.title)
+  console.log(chat.createdAt)
+  console.log(chat.lastMessageAt)
+
   return (
     <div
       className={cn(
@@ -57,14 +61,12 @@ export function ChatItem({ chat, children, favorite }: ChatItemProps) {
             {isActive || (
               <Timestamp
                 date={chat.lastMessageAt ?? chat.createdAt}
-                className="w-10 text-right text-primary/50 group-hover:opacity-0"
+                className="w-20 text-right text-primary/50 group-hover:opacity-0"
               />
             )}
           </h4>
-          <div className="relative max-h-5 flex-1 select-none overflow-hidden text-ellipsis break-all">
-            <span className="whitespace-nowrap text-xs text-primary/50">
-              {chat.lastMessage ?? chat.title}
-            </span>
+          <div className="relative max-h-5 flex-1 select-none truncate text-xs text-primary/50">
+            {chat.lastMessage ?? chat.title}
           </div>
         </div>
       </Link>
