@@ -68,7 +68,7 @@ export function RobotList({ initalRobots, className }: RobotListProps) {
         {isLoading ? (
           <BubblesLoading />
         ) : (
-          <Link href="/robot/create">New Robot 🤖</Link>
+          <Link href="/robot">New Robot 🤖</Link>
         )}
       </Button>
       <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
