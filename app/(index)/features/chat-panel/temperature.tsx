@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 
-import { updateChat } from '@/app/actions'
+import { updateChat } from '@/app/actions/chat'
 import { useChatStore } from '@/lib/store/chat'
 import { ATTACHED_MESSAGES_COUNT } from '@/lib/constants'
 

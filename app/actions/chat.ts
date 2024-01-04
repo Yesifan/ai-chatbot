@@ -1,7 +1,7 @@
 'use server'
 
 import { auth } from '@/app/actions/auth'
-import { INBOX_CHAT } from '@/lib/constants'
+import { DEFAULT_CHAT_NAME, INBOX_CHAT } from '@/lib/constants'
 import database from '@/lib/database'
 import { ActionErrorCode } from '@/lib/error'
 import { nanoid } from '@/lib/utils'
@@ -56,7 +56,7 @@ export async function getInboxChat() {
       .executeTakeFirst()
     if (!chat) {
       console.log('[getInboxChat] create new inbox chat')
-      const res = await createChat(undefined, false)
+      const res = await createChat(INBOX_CHAT, undefined, false)
       if ('error' in res) {
         console.error(`[ERROR][getInboxChat] ${res.error}`)
         return {
@@ -76,8 +76,9 @@ export async function getInboxChat() {
 }
 
 export const createChat = async (
+  title: string,
   robotId?: string,
-  isSaved?: boolean
+  isSaved = false
 ): Promise<ServerActionResult<Chat>> => {
   const pk = nanoid()
   const session = await auth()
@@ -95,7 +96,7 @@ export const createChat = async (
       userId: session.id,
       robotId,
       isSaved,
-      title: INBOX_CHAT,
+      title: title,
       createdAt: new Date()
     })
     .returningAll()
@@ -146,12 +147,58 @@ export async function saveChat(chatId: string): Promise<ServerActionResult> {
       .where('chat.userId', '=', session.id)
       .execute()
 
-    await createChat(chat.robotId, false)
+    await createChat(INBOX_CHAT, chat.robotId, false)
     return {
       ok: true
     }
   } catch (error) {
     console.error(`[ERROR][saveChat] ${error}`)
+    return {
+      ok: false,
+      error: ActionErrorCode.InternetError
+    }
+  }
+}
+
+export async function updateChat(
+  id: string,
+  chat: Partial<Chat>
+): Promise<ServerActionResult> {
+  const session = await auth()
+
+  if (!session) {
+    return {
+      ok: false,
+      error: ActionErrorCode.Unauthorized
+    }
+  }
+
+  if (chat.id && chat.id !== id) {
+    return {
+      ok: false,
+      error: ActionErrorCode.BadRequest
+    }
+  }
+
+  try {
+    const updatedChat = await database
+      .updateTable('chat')
+      .set(chat)
+      .where('chat.id', '=', id)
+      .where('chat.userId', '=', session.id)
+      .executeTakeFirstOrThrow()
+
+    if (updatedChat.numUpdatedRows === BigInt(0)) {
+      return {
+        ok: false,
+        error: ActionErrorCode.NotFound
+      }
+    }
+    return {
+      ok: true
+    }
+  } catch (e) {
+    console.error('[UPDATE CHAT]', e)
     return {
       ok: false,
       error: ActionErrorCode.InternetError

@@ -3,7 +3,8 @@ import toast from 'react-hot-toast'
 import { useCallback, useEffect, useState, useTransition } from 'react'
 
 import { getChats } from '@/app/actions/chat'
-import { clearChats, removeChat, updateChat } from '@/app/actions'
+import { clearChats, removeChat } from '@/app/actions'
+import { updateChat } from '@/app/actions/chat'
 import { RemoveActions } from '@/components/remove-actions'
 import { ChatItem } from './chat-item'
 import type { Chat } from '@/types/database'
@@ -88,6 +89,7 @@ export function HistoryChatList({
     >
       <h4 className="mx-2 pb-2 text-sm">Chat List</h4>
       <NewChatButton
+        robotId={robotId}
         isLoading={isLoading}
         className="mx-2 mb-2"
         onClick={getChatList}

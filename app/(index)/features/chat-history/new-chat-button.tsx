@@ -2,13 +2,15 @@
 
 import { useTransition } from 'react'
 
-import { createChat } from '@/app/actions'
+import { createChat } from '@/app/actions/chat'
 import { Button, ButtonProps } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import BubblesLoading from '@/components/ui/loading'
+import { DEFAULT_CHAT_NAME } from '@/lib/constants'
 
 interface NewChatProps extends ButtonProps {
+  robotId?: string
   isLoading?: boolean
 }
 
@@ -20,7 +22,7 @@ export function NewChatButton({ isLoading, onClick, ...props }: NewChatProps) {
     HTMLButtonElement
   > = async event => {
     starTransition(async () => {
-      const chat = await createChat()
+      const chat = await createChat(DEFAULT_CHAT_NAME, props.robotId)
       if ('error' in chat) {
         toast(chat.error)
       } else {

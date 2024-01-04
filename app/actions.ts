@@ -6,7 +6,6 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/app/actions/auth'
 import db from '@/lib/database'
 import { Message, type Chat, ServerActionResult } from '@/types/database'
-import { INBOX_CHAT } from '@/lib/constants'
 import { nanoid } from '@/lib/utils'
 import { ActionErrorCode } from '@/lib/error'
 
@@ -54,27 +53,6 @@ export async function removeMessage(id: string): Promise<ServerActionResult> {
   }
 }
 
-export async function getChats() {
-  const session = await auth()
-
-  if (!session) {
-    return []
-  }
-
-  try {
-    return await db
-      .selectFrom('chat')
-      .selectAll()
-      .where('chat.userId', '=', session.id)
-      .where('chat.title', '!=', INBOX_CHAT)
-      .orderBy('lastMessageAt', 'desc')
-      .execute()
-  } catch (error) {
-    console.error(`[ERROR][getChats] ${error}`)
-    return []
-  }
-}
-
 export async function getChat(id: string): Promise<[Chat, Message[]] | null> {
   const session = await auth()
 
@@ -104,45 +82,6 @@ export async function getChat(id: string): Promise<[Chat, Message[]] | null> {
   } catch (error) {
     console.error(`[ERROR][getChats] ${error}`)
     return null
-  }
-}
-
-export async function getInboxChat() {
-  const session = await auth()
-
-  if (!session) {
-    return { error: ActionErrorCode.Unauthorized }
-  }
-
-  try {
-    let chat = await db
-      .selectFrom('chat')
-      .selectAll()
-      .where('title', '=', INBOX_CHAT)
-      .where('chat.userId', '=', session.id)
-      .orderBy('createdAt', 'asc')
-      .limit(1)
-      .executeTakeFirst()
-
-    if (!chat) {
-      chat = await db
-        .insertInto('chat')
-        .values({
-          id: nanoid(),
-          userId: session.id,
-          title: INBOX_CHAT,
-          createdAt: new Date(),
-          attachedMessagesCount: 0
-        })
-        .returningAll()
-        .executeTakeFirstOrThrow()
-    }
-    return chat
-  } catch (error) {
-    console.error(`[ERROR][getChats] ${error}`)
-    return {
-      error: ActionErrorCode.InternetError
-    }
   }
 }
 
@@ -185,59 +124,6 @@ export const createChat = async () => {
     })
     .returning(['id', 'userId', 'title', 'createdAt'])
     .executeTakeFirstOrThrow()
-}
-
-export async function updateChat(
-  id: string,
-  chat: Partial<Chat>
-): Promise<ServerActionResult> {
-  const session = await auth()
-
-  if (!session) {
-    return {
-      ok: false,
-      error: ActionErrorCode.Unauthorized
-    }
-  }
-
-  if (chat.id && chat.id !== id) {
-    return {
-      ok: false,
-      error: ActionErrorCode.BadRequest
-    }
-  }
-
-  if (chat.title === INBOX_CHAT) {
-    return {
-      ok: false,
-      error: ActionErrorCode.BadRequest
-    }
-  }
-
-  try {
-    const updatedChat = await db
-      .updateTable('chat')
-      .set(chat)
-      .where('chat.id', '=', id)
-      .where('chat.userId', '=', session.id)
-      .executeTakeFirstOrThrow()
-
-    if (updatedChat.numUpdatedRows === BigInt(0)) {
-      return {
-        ok: false,
-        error: ActionErrorCode.NotFound
-      }
-    }
-    return {
-      ok: true
-    }
-  } catch (e) {
-    console.error('[UPDATE CHAT]', e)
-    return {
-      ok: false,
-      error: ActionErrorCode.InternetError
-    }
-  }
 }
 
 export async function removeChat(id: string): Promise<ServerActionResult> {

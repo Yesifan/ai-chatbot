@@ -2,6 +2,8 @@ export const TOKEN_COOKIE_KEY = 'jarvis.token'
 
 export const JARVIS = 'Jarvis'
 export const INBOX_CHAT = 'Small Talk'
+export const DEFAULT_CHAT_NAME = 'New Chat'
+export const DEFAULT_ROBOT_NAME = 'New Ai Assistant'
 
 // [openai chat docs](https://platform.openai.com/docs/api-reference/chat)
 /**

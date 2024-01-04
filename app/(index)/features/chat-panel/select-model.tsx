@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/select'
 import { GPT_Model } from '@/lib/constants'
 import { useChatStore } from '@/lib/store/chat'
-import { updateChat } from '@/app/actions'
+import { updateChat } from '@/app/actions/chat'
 
 export interface SelectModelProps extends TriggerProps {}
 

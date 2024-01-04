@@ -1,7 +1,7 @@
 import toast from 'react-hot-toast'
 import { useState } from 'react'
 import { useChatStore } from '../store/chat'
-import { updateChat } from '@/app/actions'
+import { updateChat } from '@/app/actions/chat'
 
 export const usePrompt = () => {
   const chatStore = useChatStore()
