@@ -7,12 +7,12 @@ import { cn } from '@/lib/utils'
 import { getRobots, removeRobot } from '@/app/actions/robot'
 import { Button } from '@/components/ui/button'
 import { RemoveActions } from '@/components/remove-actions'
-import { RobotItem } from './robot-item'
+import { RobotItem, RobotWithLastMessage } from './robot-item'
 import type { Robot } from '@/types/database'
 import { useSessionStatusEffect } from '@/lib/hooks/use-login'
 
 interface RobotListProps {
-  initalRobots?: Robot[]
+  initalRobots?: RobotWithLastMessage[]
   className?: string
 }
 
@@ -21,7 +21,7 @@ export function RobotList({ initalRobots, className }: RobotListProps) {
   const [isLoading, startTransition] = useTransition()
   const [robots, setRobots] = useState<Robot[]>(initalRobots ?? [])
 
-  const removeChatHandler = async (id: string) => {
+  const removeRobotHandler = async (id: string) => {
     const result = await removeRobot(id)
     if (typeof result === 'bigint') {
       setRobots(chats => chats.filter(chat => chat.id !== id))
@@ -68,7 +68,7 @@ export function RobotList({ initalRobots, className }: RobotListProps) {
       <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
         {robots.map(robot => (
           <RobotItem key={robot?.id} robot={robot}>
-            <RemoveActions id={robot.id} remove={removeChatHandler} />
+            <RemoveActions id={robot.id} remove={removeRobotHandler} />
           </RobotItem>
         ))}
       </div>

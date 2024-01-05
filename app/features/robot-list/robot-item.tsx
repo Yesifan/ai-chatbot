@@ -1,20 +1,24 @@
 'use client'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
 
-import { type Robot } from '@/types/database'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { RobotAvatar } from '@/components/ui/avatar'
+import { Chat, Robot } from '@/types/database'
+
+export type RobotWithLastMessage = Robot &
+  Partial<Pick<Chat, 'lastMessage' | 'lastMessageAt'>>
 
 interface RobotItemProps {
-  robot: Robot
+  robot: RobotWithLastMessage
   children?: React.ReactNode
 }
 
-// const Timestamp = dynamic(() => import('@/components/ui/timestamp'), {
-//   ssr: false
-// })
+const Timestamp = dynamic(() => import('@/components/ui/timestamp'), {
+  ssr: false
+})
 
 export function RobotItem({ robot, children }: RobotItemProps) {
   const { chat } = useParams()
@@ -40,17 +44,15 @@ export function RobotItem({ robot, children }: RobotItemProps) {
             title={robot.name}
           >
             <span className="w-40 truncate text-lg">{robot.name}</span>
-            {/* {isActive || (
+            {isActive || (
               <Timestamp
                 date={robot.lastMessageAt ?? robot.createdAt}
                 className="text-primary/50 group-hover:opacity-0"
               />
-            )} */}
+            )}
           </h4>
-          <div className="relative max-h-5 flex-1 select-none overflow-hidden text-ellipsis break-all">
-            <span className="whitespace-nowrap text-xs text-primary/50">
-              {robot.pinPrompt}
-            </span>
+          <div className="relative max-h-5 flex-1 select-none truncate text-xs text-primary/50">
+            {robot.lastMessage ?? robot.description}
           </div>
         </div>
       </Link>

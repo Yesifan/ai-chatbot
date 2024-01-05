@@ -10,3 +10,12 @@ export interface ChatBody {
   questionId: string
   temperature: number
 }
+
+export interface RobotTemplate {
+  id: string
+  name: string
+  description?: string
+  pinPrompt?: string
+  tags?: string[]
+  input_template?: string
+}

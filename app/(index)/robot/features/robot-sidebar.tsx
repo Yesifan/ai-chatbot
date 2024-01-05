@@ -1,5 +1,7 @@
 'use client'
 import Link from 'next/link'
+import { useTransition } from 'react'
+import toast from 'react-hot-toast'
 
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
@@ -9,8 +11,7 @@ import { DEFAULT_ROBOT_TEMP } from '../[[...id]]/page'
 import { Button } from '@/components/ui/button'
 import { createRobot } from '@/app/actions/robot'
 import { useRouter } from 'next/navigation'
-import toast from 'react-hot-toast'
-import { useTransition } from 'react'
+import { Separator } from '@/components/ui/separator'
 
 interface RobotCardProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
   id?: string
@@ -20,10 +21,10 @@ export function RobotSidebar({ id, className, ...props }: RobotCardProps) {
   const router = useRouter()
   const [isLoading, startTransition] = useTransition()
 
-  const robot = DEFAULT_ROBOT_TEMP
+  const template = DEFAULT_ROBOT_TEMP
   const createRobotHandler = async () => {
     startTransition(async () => {
-      const res = await createRobot()
+      const res = await createRobot(template)
       if ('error' in res) {
         console.error('[RobotSidebar] create robot', res.error)
         toast.error('Create robot failed, please try again later.')
@@ -38,6 +39,7 @@ export function RobotSidebar({ id, className, ...props }: RobotCardProps) {
       }
     })
   }
+
   return (
     <div
       className={cn(
@@ -50,20 +52,22 @@ export function RobotSidebar({ id, className, ...props }: RobotCardProps) {
     >
       <div className="flex w-80 flex-col items-center gap-2 p-4 pt-8">
         <RobotAvatar className="h-20 w-20 rounded bg-secondary p-2 " />
-        <h3 className=" my-5 text-xl font-semibold">{robot.name}</h3>
-        <div className="min-h-10">
-          <Markdown content={robot.pinPrompt} />
-        </div>
-        <div className="mb-auto h-[22px] w-full">
-          {robot.tags?.map(tag => (
+        <h3 className="mt-5 text-xl font-semibold">{template.name}</h3>
+        <div className="text-xs text-primary/80">{template.description}</div>
+        <div className="mt-2 h-[22px] w-full">
+          {template.tags?.map(tag => (
             <Badge variant="secondary" key={tag}>
               {tag}
             </Badge>
           ))}
         </div>
+        <Separator className="my-5" />
+        <div className="min-h-10">
+          <Markdown content={template.pinPrompt ?? ''} />
+        </div>
 
         <Button
-          className="w-full"
+          className="mt-auto w-full"
           variant="highlight"
           isLoading={isLoading}
           onClick={createRobotHandler}

@@ -1,12 +1,13 @@
 'use server'
 
-import { auth } from '@/app/actions/auth'
-import { DEFAULT_ROBOT_NAME, INBOX_CHAT } from '@/lib/constants'
 import db from '@/lib/database'
+import { auth } from '@/app/actions/auth'
 import { ActionErrorCode } from '@/lib/error'
 import { nanoid } from '@/lib/utils'
-import { Robot, ServerActionResult } from '@/types/database'
+import { Chat, Robot, ServerActionResult } from '@/types/database'
+import { DEFAULT_ROBOT_NAME, INBOX_CHAT } from '@/lib/constants'
 import { createChat } from './chat'
+import { RobotTemplate } from '@/types/api'
 
 export async function getRobot(id: string): Promise<ServerActionResult<Robot>> {
   const session = await auth()
@@ -33,7 +34,12 @@ export async function getRobot(id: string): Promise<ServerActionResult<Robot>> {
   }
 }
 
-export async function getRobots(): Promise<ServerActionResult<Robot[]>> {
+type RobotWithLastMessage = Robot &
+  Partial<Pick<Chat, 'lastMessage' | 'lastMessageAt'>>
+
+export async function getRobots(): Promise<
+  ServerActionResult<RobotWithLastMessage[]>
+> {
   const session = await auth()
   if (!session) {
     return {
@@ -41,16 +47,34 @@ export async function getRobots(): Promise<ServerActionResult<Robot[]>> {
       error: ActionErrorCode.Unauthorized
     }
   }
-  return await db
+  const robots = await db
     .selectFrom('robot')
     .selectAll()
     .where('userId', '=', session.id)
     .orderBy('id')
     .execute()
+
+  const chats = await db
+    .selectFrom('chat')
+    .select(['robotId', 'lastMessageAt', 'lastMessage'])
+    .where('lastMessageAt', 'is not', null)
+    .distinctOn('robotId')
+    .orderBy('robotId')
+    .orderBy('lastMessageAt', 'desc')
+    .execute()
+
+  return robots.map(robot => {
+    const chat = chats.find(c => c.robotId === robot.id)
+    return {
+      ...robot,
+      lastMessage: chat?.lastMessage,
+      lastMessageAt: chat?.lastMessageAt
+    }
+  })
 }
 
 export async function createRobot(
-  template?: Partial<Pick<Robot, 'name' | 'pinPrompt' | 'input_template'>>
+  template?: RobotTemplate
 ): Promise<ServerActionResult<[string | undefined, Robot]>> {
   const pk = nanoid()
   const session = await auth()
@@ -68,6 +92,8 @@ export async function createRobot(
       .values({
         id: pk,
         userId: session.id,
+        createdAt: new Date(),
+        description: template?.description,
         name: template?.name ?? DEFAULT_ROBOT_NAME,
         pinPrompt: template?.pinPrompt,
         input_template: template?.input_template

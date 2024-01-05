@@ -1,19 +1,13 @@
-import { Robot } from '@/types/database'
 import { Badge } from '@/components/ui/badge'
 import { RobotAvatar } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
+import { RobotTemplate } from '@/types/api'
 
 interface RobotCardProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
-  tags?: string[]
-  template: Partial<Pick<Robot, 'name' | 'pinPrompt' | 'input_template'>>
+  template: RobotTemplate
 }
 
-export function RobotCard({
-  tags,
-  template,
-  className,
-  ...props
-}: RobotCardProps) {
+export function RobotCard({ template, className, ...props }: RobotCardProps) {
   return (
     <div
       className={cn(
@@ -25,10 +19,10 @@ export function RobotCard({
       <RobotAvatar className="h-14 w-14 rounded bg-secondary p-2 " />
       <h3 className="font-semibold">{template.name}</h3>
       <p className="line-clamp-2 h-10 text-sm text-primary/60">
-        {template.pinPrompt}
+        {template.description}
       </p>
       <div className="h-[22px]">
-        {tags?.map(tag => (
+        {template.tags?.map(tag => (
           <Badge variant="secondary" key={tag}>
             {tag}
           </Badge>

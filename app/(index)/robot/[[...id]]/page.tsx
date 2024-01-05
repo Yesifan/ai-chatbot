@@ -1,16 +1,18 @@
 import Link from 'next/link'
 import { RobotCard } from '../features/robot-card'
 import { RobotSidebar } from '../features/robot-sidebar'
+import { RobotTemplate } from '@/types/api'
 
 export const runtime = 'edge'
 
-export const DEFAULT_ROBOT_TEMP = {
+export const DEFAULT_ROBOT_TEMP: RobotTemplate = {
   id: 'you_ai_assiatnat',
   name: 'You Ai Assistant',
   // auth: 'Your ai assistant, to help you with anything.',
-  // describe: 'Your ai assistant, to help you with anything.',
+  description: 'Your ai assistant, to help you with anything.',
   // releaseDate: 'Your ai assistant, to help you with anything.',
-  pinPrompt: 'Your ai assistant, to help you with anything.',
+  pinPrompt:
+    'Take a deep breath and help the questioner solve the problem step by step.',
   tags: ['Assistant']
 }
 
@@ -35,10 +37,7 @@ export default async function RobotPage({
       <div className="relative flex min-h-[calc(100%-4rem)]">
         <div className="flex h-full flex-1 overflow-y-auto p-6">
           <Link href={`/robot/${DEFAULT_ROBOT_TEMP.id}`}>
-            <RobotCard
-              template={DEFAULT_ROBOT_TEMP}
-              tags={DEFAULT_ROBOT_TEMP.tags}
-            />
+            <RobotCard template={DEFAULT_ROBOT_TEMP} />
           </Link>
         </div>
         <RobotSidebar id={id} className="shrink-0" />
