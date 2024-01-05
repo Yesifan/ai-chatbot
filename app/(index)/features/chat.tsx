@@ -130,7 +130,9 @@ export function Chat({ initialMessages, className }: ChatProps) {
           <HistoryChatList
             robotId={chatStore.robotId}
             className={cn(
-              'fixed bottom-56 right-0 top-[calc(4rem+env(safe-area-inset-top))] z-10 transition-transform',
+              'md:mottom-56 bottom-0 w-full md:w-80',
+              'top-[calc(4rem+env(safe-area-inset-top))]',
+              'fixed right-0 z-10 transition-transform',
               hasHistory ? ' translate-x-0' : 'translate-x-full'
             )}
           />

@@ -43,14 +43,15 @@ export function RobotSidebar({ id, className, ...props }: RobotCardProps) {
   return (
     <div
       className={cn(
-        id ? 'w-80' : 'w-0',
-        'flex overflow-hidden border-l transition-all',
+        'absolute lg:relative',
+        id ? 'w-full lg:w-80' : 'w-0',
+        'flex h-full overflow-hidden border-l transition-all',
         'bg-gradient-to-tr from-background/70 via-background/50 to-background/10 backdrop-blur-3xl',
         className
       )}
       {...props}
     >
-      <div className="flex w-80 flex-col items-center gap-2 p-4 pt-8">
+      <div className="flex w-full min-w-80 flex-col items-center gap-2 p-4 pt-8">
         <RobotAvatar className="h-20 w-20 rounded bg-secondary p-2 " />
         <h3 className="mt-5 text-xl font-semibold">{template.name}</h3>
         <div className="text-xs text-primary/80">{template.description}</div>

@@ -76,7 +76,7 @@ export function HistoryChatList({ robotId, className }: HistoryChatListProps) {
   return (
     <div
       className={cn(
-        'flex w-60 flex-1 flex-col bg-gradient-to-br from-background/80 via-background/50 to-background/10 pt-4 backdrop-blur-xl',
+        'flex w-80 flex-1 flex-col bg-gradient-to-br from-background/80 via-background/50 to-background/10 pt-4 backdrop-blur-xl',
         className
       )}
     >
