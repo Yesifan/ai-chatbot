@@ -1,6 +1,6 @@
 'use client'
 import toast from 'react-hot-toast'
-import { useCallback, useEffect, useState, useTransition } from 'react'
+import { useCallback, useState, useTransition } from 'react'
 
 import { getChats } from '@/app/actions/chat'
 import { clearChats, removeChat } from '@/app/actions'
@@ -13,24 +13,18 @@ import { cn } from '@/lib/utils'
 import { ClearHistory } from './clear-history'
 import { SaveChatButton } from './save-chat-button'
 import { useChatStore } from '@/lib/store/chat'
-import { useSession } from '@/lib/auth/provider'
+import { useSessionStatusEffect } from '@/lib/hooks/use-login'
 
 interface HistoryChatListProps {
   robotId?: string
-  initalChats?: Chat[]
   className?: string
 }
 
-export function HistoryChatList({
-  robotId,
-  initalChats,
-  className
-}: HistoryChatListProps) {
-  const { data: session, status } = useSession()
+export function HistoryChatList({ robotId, className }: HistoryChatListProps) {
   const [isLoading, starTransition] = useTransition()
 
   const chatStore = useChatStore()
-  const [chats, setChats] = useState<Chat[]>(initalChats ?? [])
+  const [chats, setChats] = useState<Chat[]>([])
 
   const reloadChats = useCallback(async () => {
     starTransition(async () => {
@@ -47,7 +41,6 @@ export function HistoryChatList({
       )
       return true
     } else {
-      console.error(result)
       toast.error(result.error || 'Failed to update chat')
       return false
     }
@@ -61,13 +54,13 @@ export function HistoryChatList({
     return result
   }
 
-  useEffect(() => {
-    if (status === 'authenticated' && session.id) {
+  const status = useSessionStatusEffect(() => {
+    if (status === 'authenticated') {
       reloadChats()
     } else {
       setChats([])
     }
-  }, [status, session?.id, reloadChats])
+  }, true)
 
   if (status !== 'authenticated') {
     return (

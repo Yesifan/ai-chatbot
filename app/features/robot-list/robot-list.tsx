@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState, useTransition } from 'react'
+import { useState, useTransition } from 'react'
 
 import { cn } from '@/lib/utils'
 import { getRobots, removeRobot } from '@/app/actions/robot'
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { RemoveActions } from '@/components/remove-actions'
 import { RobotItem } from './robot-item'
 import type { Robot } from '@/types/database'
-import { useSession } from '@/lib/auth/provider'
+import { useSessionStatusEffect } from '@/lib/hooks/use-login'
 
 interface RobotListProps {
   initalRobots?: Robot[]
@@ -17,7 +17,6 @@ interface RobotListProps {
 }
 
 export function RobotList({ initalRobots, className }: RobotListProps) {
-  const { data: session, status } = useSession()
   const [error, setError] = useState<string>()
   const [isLoading, startTransition] = useTransition()
   const [robots, setRobots] = useState<Robot[]>(initalRobots ?? [])
@@ -41,13 +40,13 @@ export function RobotList({ initalRobots, className }: RobotListProps) {
     })
   }
 
-  useEffect(() => {
-    if (status === 'authenticated' && session.id) {
+  const status = useSessionStatusEffect(() => {
+    if (status === 'authenticated') {
       reloadRobots()
     } else {
       setRobots([])
     }
-  }, [status, session?.id, robots.length])
+  })
 
   if (status !== 'authenticated' || error) {
     return (

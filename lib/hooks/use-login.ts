@@ -26,10 +26,18 @@ export const useLogin = () => {
 
 type SessionStatus = 'authenticated' | 'loading' | 'unauthenticated'
 export const useSessionStatusEffect = (
-  effect: (status: SessionStatus) => void
+  effect: (status: SessionStatus) => void,
+  isInitialEffect: boolean = false
 ) => {
   const { status } = useSession()
   const sessionStatusRef = useRef(status)
+
+  useEffect(() => {
+    if (isInitialEffect) {
+      effect(status)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     if (sessionStatusRef.current !== status) {
