@@ -17,7 +17,9 @@ interface RobotItemProps {
 // })
 
 export function RobotItem({ robot, children }: RobotItemProps) {
-  const { id } = useParams()
+  const { chat } = useParams()
+  const id = chat?.[0]
+
   const isActive = id === robot.id
 
   if (!robot?.id) return null

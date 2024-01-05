@@ -1,6 +1,6 @@
 'use client'
 
-import { Chat, Robot } from '@/types/database'
+import { Chat } from '@/types/database'
 import {
   PropsWithChildren,
   createContext,
@@ -26,24 +26,25 @@ const ChatStoreContext = createContext<ChatStore>({})
 
 export const ChatStoreProvider = ({
   id: _id,
+  title: _title,
+  pinPrompt: _pinPrompt,
+  model: _model,
+  temperature: _temperature,
   children,
   ...chat
 }: Partial<Chat> & PropsWithChildren) => {
   const [id, setId] = useState(_id)
-  const [robotId, setRobotId] = useState(chat.robotId)
-  const [title, setTitle] = useState(chat.title)
-  const [pinPrompt, setPinPrompt] = useState(chat.pinPrompt)
-  const [model, setModel] = useState(chat.model ?? GPT_Model.GPT_3_5_TURBO)
-  const [temperature, setTemperature] = useState(
-    chat.temperature ?? TEMPERATURE
-  )
+
+  const [title, setTitle] = useState(_title)
+  const [pinPrompt, setPinPrompt] = useState(_pinPrompt)
+  const [model, setModel] = useState(_model ?? GPT_Model.GPT_3_5_TURBO)
+  const [temperature, setTemperature] = useState(_temperature ?? TEMPERATURE)
   const [attachedMessagesCount, setAttachedMessagesCount] = useState(
     chat.attachedMessagesCount ?? 5
   )
 
   const update = (chat: Partial<Chat>) => {
     setId(chat.id)
-    setRobotId(chat.robotId)
     setTitle(chat.title)
     setModel(chat.model ?? GPT_Model.GPT_3_5_TURBO)
     setTemperature(chat.temperature ?? TEMPERATURE)
@@ -52,19 +53,18 @@ export const ChatStoreProvider = ({
 
   const clear = () => {
     setId(undefined)
-    setRobotId(undefined)
     setTitle(undefined)
   }
 
   const store = useMemo<ChatStore>(() => {
     return {
       id,
-      robotId,
       title,
       model,
       pinPrompt,
       temperature,
       attachedMessagesCount,
+      ...chat,
       clear,
       update,
       setTitle,
@@ -73,7 +73,7 @@ export const ChatStoreProvider = ({
       setTemperature,
       setAttachedMessagesCount
     }
-  }, [attachedMessagesCount, id, model, pinPrompt, robotId, temperature, title])
+  }, [attachedMessagesCount, chat, id, model, pinPrompt, temperature, title])
 
   return (
     <ChatStoreContext.Provider value={store}>

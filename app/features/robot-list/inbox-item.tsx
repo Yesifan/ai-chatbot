@@ -5,19 +5,20 @@ import { cn } from '@/lib/utils'
 import { InboxAvatar } from '@/components/ui/avatar'
 import { buttonVariants } from '@/components/ui/button'
 import { JARVIS } from '@/lib/constants'
-import { usePathname } from 'next/navigation'
+import { useIsInbox } from '@/lib/hooks/use-inbox'
 
 interface ChatItemProps {
   className?: string
 }
 
 export function InboxItem({ className }: ChatItemProps) {
-  const path = usePathname()
+  const isInbox = useIsInbox()
   return (
     <div
       className={cn(
         buttonVariants({ variant: 'ghost' }),
-        'w-ful group relative flex h-auto overflow-hidden bg-muted/50 px-2 py-0',
+        'w-ful h-auto overflow-hidden px-2 py-0',
+        isInbox && 'bg-muted/50',
         className
       )}
     >

@@ -28,7 +28,7 @@ export default async function IndexPage() {
 
   return (
     <ChatStoreProvider {...chat}>
-      <ChatHeader className="sticky top-0 z-50" isMobile={isMobile} isInbox />
+      <ChatHeader className="sticky top-0 z-50" isMobile={isMobile} />
       <Chat id={id} initialMessages={messages} />
     </ChatStoreProvider>
   )

@@ -42,7 +42,8 @@ export function RobotSidebar({ id, className, ...props }: RobotCardProps) {
     <div
       className={cn(
         id ? 'w-80' : 'w-0',
-        'flex overflow-hidden border-l bg-background transition-all',
+        'flex overflow-hidden border-l transition-all',
+        'bg-gradient-to-tr from-background/70 via-background/50 to-background/10 backdrop-blur-3xl',
         className
       )}
       {...props}

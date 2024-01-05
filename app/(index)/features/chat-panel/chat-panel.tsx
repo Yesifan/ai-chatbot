@@ -40,7 +40,6 @@ export function ChatPanel({
   className,
   ...props
 }: ChatPanelProps) {
-  const isInbox = useIsInbox()
   const chatStore = useChatStore()
   const [prompt, setPrompt] = useState(chatStore.pinPrompt ?? '')
   const { setPinPrompt, isPrompt, setIsPrompt, isPromptLoading } = usePrompt()
@@ -90,7 +89,7 @@ export function ChatPanel({
           className="ml-auto"
           checked={isPrompt}
           onCheckedChange={setIsPrompt}
-          disabled={isInbox}
+          disabled={!chatStore.isSaved}
         />
       </div>
       <PromptForm

@@ -33,12 +33,13 @@ export async function generateMetadata({
   } else if (!chatId) {
     if (robotId === INBOX_PATH) {
       redirect('/')
-    }
-    const chat = await getInboxChat(robotId)
-    if ('error' in chat) {
-      notFound()
     } else {
-      redirect(`/chat/${robotId}/${chat.id}`)
+      const chat = await getInboxChat(robotId)
+      if ('error' in chat) {
+        notFound()
+      } else {
+        redirect(`/chat/${robotId}/${chat.id}`)
+      }
     }
   } else {
     const title = await getChatTitle(chatId)

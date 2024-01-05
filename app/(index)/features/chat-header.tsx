@@ -13,16 +13,13 @@ import { Input, InputProps } from '@/components/ui/input'
 import { InboxAvatar, RobotAvatar } from '@/components/ui/avatar'
 import { SafeArea } from '@/components/ui/safe-area'
 import { Robot } from '@/types/database'
-import { JARVIS } from '@/lib/constants'
+import { DEFAULT_CHAT_NAME, JARVIS } from '@/lib/constants'
 
 interface ChatHeaderItemProps {
   robot?: Robot
-  isInbox?: boolean
   isMobile?: boolean
   className?: string
 }
-
-const DEFAULT_TITLE = 'AI Assistant'
 
 const TitleInput = ({
   className,
@@ -55,7 +52,7 @@ const TitleInput = ({
 
   const onCancel = () => {
     setEdit(false)
-    chat.setTitle?.(titleRef.current ?? DEFAULT_TITLE)
+    chat.setTitle?.(titleRef.current ?? DEFAULT_CHAT_NAME)
   }
 
   return isEdit ? (
@@ -88,7 +85,7 @@ const TitleInput = ({
         className="relative flex-1 select-none overflow-hidden text-ellipsis break-all"
         title={chat.title}
       >
-        {chat.title ?? DEFAULT_TITLE}
+        {chat.title ?? DEFAULT_CHAT_NAME}
       </h2>
     </span>
   )
@@ -96,7 +93,6 @@ const TitleInput = ({
 
 export function ChatHeader({
   robot,
-  isInbox,
   isMobile,
   className
 }: ChatHeaderItemProps) {
@@ -122,7 +118,7 @@ export function ChatHeader({
           <div className="flex text-lg">
             <span>{robot ? robot.name : JARVIS}</span>
             <span className="px-2">-</span>
-            <TitleInput disabled={isInbox} />
+            <TitleInput disabled={!chat.isSaved} />
           </div>
           <div className="">
             <Badge variant="secondary">{chat.model}</Badge>
