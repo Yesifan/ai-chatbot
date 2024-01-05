@@ -7,11 +7,11 @@ import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Markdown } from '@/components/markdown'
 import { RobotAvatar } from '@/components/ui/avatar'
-import { DEFAULT_ROBOT_TEMP } from '../[[...id]]/page'
 import { Button } from '@/components/ui/button'
 import { createRobot } from '@/app/actions/robot'
 import { useRouter } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
+import { DEFAULT_ROBOT_TEMP } from '@/lib/constants'
 
 interface RobotCardProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
   id?: string

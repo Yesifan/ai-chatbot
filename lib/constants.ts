@@ -1,3 +1,5 @@
+import { RobotTemplate } from '@/types/api'
+
 export const INBOX_PATH = 'inbox'
 export const TOKEN_COOKIE_KEY = 'jarvis.token'
 
@@ -53,4 +55,16 @@ export const enum SystemMessageKey {
   Logging = 'Logging',
   Error = 'Error',
   Warning = 'Warning'
+}
+
+// TODO: DELETE DEFAULT_ROBOT_TEMP
+export const DEFAULT_ROBOT_TEMP: RobotTemplate = {
+  id: 'you_ai_assiatnat',
+  name: 'You Ai Assistant',
+  // auth: 'Your ai assistant, to help you with anything.',
+  description: 'Your ai assistant, to help you with anything.',
+  // releaseDate: 'Your ai assistant, to help you with anything.',
+  pinPrompt:
+    'Take a deep breath and help the questioner solve the problem step by step.',
+  tags: ['Assistant']
 }
