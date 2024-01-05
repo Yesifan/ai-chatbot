@@ -1,7 +1,7 @@
 'use server'
 
 import { auth } from '@/app/actions/auth'
-import { DEFAULT_CHAT_NAME, INBOX_CHAT } from '@/lib/constants'
+import { INBOX_CHAT } from '@/lib/constants'
 import database from '@/lib/database'
 import { ActionErrorCode } from '@/lib/error'
 import { nanoid } from '@/lib/utils'
@@ -15,18 +15,15 @@ export async function getChats(robotId?: string) {
   }
 
   try {
-    const query = database
-      .selectFrom('chat')
-      .selectAll()
-      .where('chat.userId', '=', session.id)
-
+    let query = database.selectFrom('chat').selectAll()
     if (robotId) {
-      query.where('chat.robotId', '=', robotId)
+      query = query.where('robotId', '=', robotId)
     } else {
-      query.where('chat.robotId', 'is', null)
+      query = query.where('robotId', 'is', null)
     }
 
     return await query
+      .where('userId', '=', session.id)
       .orderBy('isSaved', 'asc')
       .orderBy('lastMessageAt', 'desc')
       .execute()
@@ -36,7 +33,7 @@ export async function getChats(robotId?: string) {
   }
 }
 
-export async function getInboxChat() {
+export async function getInboxChat(robotId?: string) {
   const session = await auth()
 
   if (!session) {
@@ -44,11 +41,15 @@ export async function getInboxChat() {
   }
 
   try {
-    let chat = await database
-      .selectFrom('chat')
-      .selectAll()
+    let query = database.selectFrom('chat').selectAll()
+
+    if (robotId) {
+      query = query.where('chat.robotId', '=', robotId)
+    } else {
+      query = query.where('chat.robotId', 'is', null)
+    }
+    let chat = await query
       .where('chat.userId', '=', session.id)
-      .where('chat.robotId', 'is', null)
       // Add this line to filter chats where isSaved is null or false
       .where('chat.isSaved', 'in', [null, false])
       .orderBy('createdAt', 'asc')
@@ -56,7 +57,7 @@ export async function getInboxChat() {
       .executeTakeFirst()
     if (!chat) {
       console.log('[getInboxChat] create new inbox chat')
-      const res = await createChat(INBOX_CHAT, undefined, false)
+      const res = await createChat(INBOX_CHAT, robotId, false)
       if ('error' in res) {
         console.error(`[ERROR][getInboxChat] ${res.error}`)
         return {

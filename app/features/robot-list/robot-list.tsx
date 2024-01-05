@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button'
 import { RemoveActions } from '@/components/remove-actions'
 import { RobotItem } from './robot-item'
 import type { Robot } from '@/types/database'
-import BubblesLoading from '@/components/ui/loading'
 import { useSession } from '@/lib/auth/provider'
 
 interface RobotListProps {
@@ -31,7 +30,7 @@ export function RobotList({ initalRobots, className }: RobotListProps) {
     return result
   }
 
-  const updateChats = async () => {
+  const reloadRobots = async () => {
     startTransition(async () => {
       const robots = await getRobots()
       if ('error' in robots) {
@@ -44,7 +43,7 @@ export function RobotList({ initalRobots, className }: RobotListProps) {
 
   useEffect(() => {
     if (status === 'authenticated' && session.id) {
-      updateChats()
+      reloadRobots()
     } else {
       setRobots([])
     }
@@ -64,12 +63,8 @@ export function RobotList({ initalRobots, className }: RobotListProps) {
 
   return (
     <div className={cn('flex flex-1 flex-col', className)}>
-      <Button className="mx-2" variant="outline" disabled={isLoading}>
-        {isLoading ? (
-          <BubblesLoading />
-        ) : (
-          <Link href="/robot">New Robot 🤖</Link>
-        )}
+      <Button className="mx-2" variant="outline" isLoading={isLoading} asChild>
+        <Link href="/robot">New Robot 🤖</Link>
       </Button>
       <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
         {robots.map(robot => (

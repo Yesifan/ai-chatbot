@@ -11,6 +11,7 @@ import {
   FavoriteActionProps
 } from '@/components/favorite-action'
 import { IconMessageaText } from '@/components/ui/icons'
+import { INBOX_PATH } from '@/lib/constants'
 
 interface ChatItemProps {
   chat: Chat
@@ -25,12 +26,11 @@ const Timestamp = dynamic(() => import('@/components/ui/timestamp'), {
 export function ChatItem({ chat, children, favorite }: ChatItemProps) {
   const { id } = useParams()
   const isActive = id ? id === chat.id : !chat.isSaved
+  const chatLink = chat.robotId
+    ? `/chat/${chat.robotId}/${chat.id}`
+    : `/chat/${INBOX_PATH}/${chat.id}`
 
   if (!chat?.id) return null
-
-  console.log(chat.title)
-  console.log(chat.createdAt)
-  console.log(chat.lastMessageAt)
 
   return (
     <div
@@ -40,7 +40,7 @@ export function ChatItem({ chat, children, favorite }: ChatItemProps) {
         isActive && 'bg-muted/50'
       )}
     >
-      <Link href={`/chat/${chat.id}`} className="flex w-full items-center">
+      <Link href={chatLink} className="flex w-full items-center">
         <div className="flex w-full min-w-full flex-col">
           <h4
             className="relative flex w-full flex-1 select-none items-center justify-between break-all"

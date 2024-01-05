@@ -32,7 +32,7 @@ export function HistoryChatList({
   const chatStore = useChatStore()
   const [chats, setChats] = useState<Chat[]>(initalChats ?? [])
 
-  const getChatList = useCallback(async () => {
+  const reloadChats = useCallback(async () => {
     starTransition(async () => {
       const chats = await getChats(robotId)
       setChats(chats)
@@ -63,11 +63,11 @@ export function HistoryChatList({
 
   useEffect(() => {
     if (status === 'authenticated' && session.id) {
-      getChatList()
+      reloadChats()
     } else {
       setChats([])
     }
-  }, [status, session?.id, getChatList])
+  }, [status, session?.id, reloadChats])
 
   if (status !== 'authenticated') {
     return (
@@ -92,7 +92,7 @@ export function HistoryChatList({
         robotId={robotId}
         isLoading={isLoading}
         className="mx-2 mb-2"
-        onClick={getChatList}
+        onClick={reloadChats}
       />
       {chatStore.id && !chatStore.isSaved && (
         <SaveChatButton chatId={chatStore.id} className="mx-2 mb-2" />

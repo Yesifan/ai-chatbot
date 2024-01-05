@@ -29,11 +29,11 @@ export function RobotSidebar({ id, className, ...props }: RobotCardProps) {
         toast.error('Create robot failed, please try again later.')
         return
       }
-      const [chatId] = res
+      const [chatId, robot] = res
       if (chatId) {
-        router.push(`/chat/${chatId}`)
+        router.push(`/chat/${robot.id}/${chatId}`)
       } else {
-        router.push(`/`)
+        router.push(`/chat/${robot.id}`)
         toast('Create robot success, but create chat failed.')
       }
     })

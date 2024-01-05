@@ -1,15 +1,18 @@
+'use client'
 import Link from 'next/link'
 
 import { cn } from '@/lib/utils'
 import { InboxAvatar } from '@/components/ui/avatar'
 import { buttonVariants } from '@/components/ui/button'
 import { JARVIS } from '@/lib/constants'
+import { usePathname } from 'next/navigation'
 
 interface ChatItemProps {
   className?: string
 }
 
 export function InboxItem({ className }: ChatItemProps) {
+  const path = usePathname()
   return (
     <div
       className={cn(

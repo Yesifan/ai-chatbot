@@ -1,6 +1,5 @@
 'use client'
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
 
 import { type Robot } from '@/types/database'
@@ -13,9 +12,9 @@ interface RobotItemProps {
   children?: React.ReactNode
 }
 
-const Timestamp = dynamic(() => import('@/components/ui/timestamp'), {
-  ssr: false
-})
+// const Timestamp = dynamic(() => import('@/components/ui/timestamp'), {
+//   ssr: false
+// })
 
 export function RobotItem({ robot, children }: RobotItemProps) {
   const { id } = useParams()

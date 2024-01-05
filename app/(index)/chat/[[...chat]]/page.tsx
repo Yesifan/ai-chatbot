@@ -5,15 +5,17 @@ import { auth } from '@/app/actions/auth'
 import { getChat, getChatTitle } from '@/app/actions'
 import { ChatStoreProvider } from '@/lib/store/chat'
 import { isMobileDevice } from '@/lib/utils/responsive.clint'
-import { Chat } from '../../features/chat'
-import { ChatHeader } from '../../features/chat-header'
+import { Chat } from '@/app/(index)/features/chat'
+import { ChatHeader } from '@/app/(index)/features/chat-header'
 import { getRobot } from '@/app/actions/robot'
+import { getInboxChat } from '@/app/actions/chat'
+import { INBOX_PATH } from '@/lib/constants'
 
 export const runtime = 'edge'
 
 export interface ChatPageProps {
   params: {
-    id: string
+    chat: [string, string]
   }
 }
 
@@ -21,27 +23,41 @@ export async function generateMetadata({
   params
 }: ChatPageProps): Promise<Metadata> {
   const session = await auth()
-
+  const [robotId, chatId] = params.chat
   if (!session) {
-    redirect(`/?next=/chat/${params.id}`)
+    redirect(`/?next=/chat/${robotId}/${chatId}`)
   }
 
-  const title = await getChatTitle(params.id)
+  if (!robotId) {
+    redirect('/')
+  } else if (!chatId) {
+    if (robotId === INBOX_PATH) {
+      redirect('/')
+    }
+    const chat = await getInboxChat(robotId)
+    if ('error' in chat) {
+      notFound()
+    } else {
+      redirect(`/chat/${robotId}/${chat.id}`)
+    }
+  } else {
+    const title = await getChatTitle(chatId)
 
-  if (typeof title === 'object' && 'error' in title) {
-    notFound()
-  }
+    if (typeof title === 'object' && 'error' in title) {
+      notFound()
+    }
 
-  return {
-    title: title
+    return {
+      title: title
+    }
   }
 }
 
 export default async function ChatPage({ params }: ChatPageProps) {
-  const id = params.id
+  const [_robotId, chatId] = params.chat
   const isMobile = isMobileDevice()
 
-  const chatAndMessage = await getChat(id)
+  const chatAndMessage = await getChat(chatId!)
 
   if (!chatAndMessage) {
     return null
@@ -58,7 +74,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
         isMobile={isMobile}
         className="sticky top-0 z-50"
       />
-      <Chat id={id} initialMessages={messages} />
+      <Chat id={chatId} initialMessages={messages} />
     </ChatStoreProvider>
   )
 }

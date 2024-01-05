@@ -9,12 +9,10 @@ export const useLogin = () => {
   const login = async (value: string) => {
     try {
       const res = await signIn(value)
-
       if (res?.error) {
         throw new Error('Login failed, Wrong access token!')
       } else {
         const session = await update()
-        console.log('session', session)
         return session
       }
     } catch (error: any) {

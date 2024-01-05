@@ -1,3 +1,4 @@
+export const INBOX_PATH = 'inbox'
 export const TOKEN_COOKIE_KEY = 'jarvis.token'
 
 export const JARVIS = 'Jarvis'

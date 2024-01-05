@@ -51,7 +51,7 @@ export async function getRobots(): Promise<ServerActionResult<Robot[]>> {
 
 export async function createRobot(
   template?: Partial<Pick<Robot, 'name' | 'pinPrompt' | 'input_template'>>
-) {
+): Promise<ServerActionResult<[string | undefined, Robot]>> {
   const pk = nanoid()
   const session = await auth()
 
