@@ -24,7 +24,8 @@ export interface RobotTable {
   userId: string
   name: string
   model?: GPT_Model
-  // json string
+  createdAt?: Date
+  description?: string
   pinPrompt?: string
   // chat gpt 参数
   maxToken?: number
@@ -38,7 +39,8 @@ export interface RobotTable {
   input_template?: string
 }
 
-export interface ChatTable extends Omit<RobotTable, 'id' | 'name'> {
+export interface ChatTable
+  extends Omit<RobotTable, 'id' | 'name' | 'description'> {
   id: string
   userId: string
   robotId?: string
