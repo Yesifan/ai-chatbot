@@ -6,6 +6,7 @@ import { auth } from '@/app/actions/auth'
 import { cn } from '@/lib/utils'
 import { fontMono, fontSans } from '@/lib/fonts'
 import { Providers } from '@/components/providers'
+import { TailwindPallette } from '@/components/tailwind-pallette'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
 
 import '@/app/globals.css'
@@ -63,6 +64,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <Providers attribute="class" defaultTheme="system" enableSystem>
           <SessionProvider session={session}>{children}</SessionProvider>
           <TailwindIndicator />
+          <TailwindPallette />
         </Providers>
       </body>
     </html>

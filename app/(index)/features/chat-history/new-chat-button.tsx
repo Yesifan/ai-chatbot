@@ -14,7 +14,12 @@ interface NewChatProps extends ButtonProps {
   isLoading?: boolean
 }
 
-export function NewChatButton({ isLoading, onClick, ...props }: NewChatProps) {
+export function NewChatButton({
+  robotId,
+  isLoading,
+  onClick,
+  ...props
+}: NewChatProps) {
   const route = useRouter()
   const [loading, starTransition] = useTransition()
 
@@ -22,7 +27,7 @@ export function NewChatButton({ isLoading, onClick, ...props }: NewChatProps) {
     HTMLButtonElement
   > = async event => {
     starTransition(async () => {
-      const chat = await createChat(DEFAULT_CHAT_NAME, props.robotId)
+      const chat = await createChat(DEFAULT_CHAT_NAME, robotId)
       if ('error' in chat) {
         toast(chat.error)
       } else {
