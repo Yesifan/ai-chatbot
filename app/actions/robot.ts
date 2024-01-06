@@ -8,11 +8,12 @@ import { Chat, Robot, ServerActionResult } from '@/types/database'
 import {
   DEFAULT_ROBOT_NAME,
   DEFAULT_ROBOT_TEMP,
+  ErrorCode,
   INBOX_CHAT
 } from '@/lib/constants'
 import { createChat } from './chat'
 import { RobotTemplate } from '@/types/api'
-import { getPromptDatabase } from '../api/notion'
+import { getPageMarkdown, getPromptDatabase } from '../api/notion'
 import { isNotionClientError } from '@notionhq/client'
 
 export async function getRobot(id: string): Promise<ServerActionResult<Robot>> {
@@ -140,7 +141,7 @@ export async function removeRobot(id: string): Promise<ServerActionResult> {
   if (!robot) {
     return {
       ok: false,
-      error: 'Not found'
+      error: ErrorCode.NotFound
     }
   }
 
@@ -150,7 +151,7 @@ export async function removeRobot(id: string): Promise<ServerActionResult> {
 }
 
 // --- ROBOT TEMPLATE ---
-export async function getRobotTemplates(page?: number) {
+export async function getRobotTemplates() {
   try {
     return await getPromptDatabase()
   } catch (e) {
@@ -160,5 +161,23 @@ export async function getRobotTemplates(page?: number) {
       console.error('[error][getPromptDatabase]', e)
     }
     return [DEFAULT_ROBOT_TEMP]
+  }
+}
+
+export async function getTemplatePrompt(
+  id: string
+): Promise<ServerActionResult<string>> {
+  try {
+    return getPageMarkdown(id)
+  } catch (e) {
+    if (isNotionClientError(e)) {
+      console.error('[error][notion][getTemplatePrompt]', e.message)
+    } else {
+      console.error('[error][getTemplatePrompt]', e)
+    }
+    return {
+      ok: false,
+      error: ErrorCode.InternalServerError
+    }
   }
 }

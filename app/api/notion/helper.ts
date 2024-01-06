@@ -1,14 +1,6 @@
-import { Client, isFullPage } from '@notionhq/client'
 import { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints'
-import { RobotTemplate } from '@/types/api'
-import { config } from '@/config/server'
 
-export const createNotion = () => {
-  const { NOTION_API_KEY } = config
-  return new Client({ auth: NOTION_API_KEY, fetch: fetch })
-}
-
-const getJarvisPromptProps = (page: PageObjectResponse) => {
+export const getJarvisPromptProps = (page: PageObjectResponse) => {
   const props = page.properties
   const icon =
     page.icon?.type === 'emoji'
@@ -56,37 +48,4 @@ const getJarvisPromptProps = (page: PageObjectResponse) => {
     lastEditedAt,
     published
   }
-}
-
-// https://www.notion.so/alan66/38762f011a4842a9a28145c466036d5f
-const promptDatabaseId = config.NOTION_PROMPT_DATABASE_ID
-export const getPromptDatabase = async () => {
-  if (!promptDatabaseId) return []
-
-  const notion = createNotion()
-  const res = await notion.databases.query({
-    database_id: promptDatabaseId,
-    filter: {
-      property: 'published',
-      checkbox: {
-        equals: true
-      }
-    },
-    sorts: [
-      {
-        timestamp: 'created_time',
-        direction: 'descending'
-      }
-    ]
-  })
-
-  return res.results
-    .filter(page => isFullPage(page))
-    .map(page => {
-      const props = getJarvisPromptProps(page as PageObjectResponse)
-      return {
-        id: page.id,
-        ...props
-      }
-    }) as RobotTemplate[]
 }
