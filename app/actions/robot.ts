@@ -5,9 +5,15 @@ import { auth } from '@/app/actions/auth'
 import { ActionErrorCode } from '@/lib/error'
 import { nanoid } from '@/lib/utils'
 import { Chat, Robot, ServerActionResult } from '@/types/database'
-import { DEFAULT_ROBOT_NAME, INBOX_CHAT } from '@/lib/constants'
+import {
+  DEFAULT_ROBOT_NAME,
+  DEFAULT_ROBOT_TEMP,
+  INBOX_CHAT
+} from '@/lib/constants'
 import { createChat } from './chat'
 import { RobotTemplate } from '@/types/api'
+import { getPromptDatabase } from '../api/notion'
+import { isNotionClientError } from '@notionhq/client'
 
 export async function getRobot(id: string): Promise<ServerActionResult<Robot>> {
   const session = await auth()
@@ -140,5 +146,19 @@ export async function removeRobot(id: string): Promise<ServerActionResult> {
 
   return {
     ok: true
+  }
+}
+
+// --- ROBOT TEMPLATE ---
+export async function getRobotTemplates(page?: number) {
+  try {
+    return await getPromptDatabase()
+  } catch (e) {
+    if (isNotionClientError(e)) {
+      console.error('[error][notion][getPromptDatabase]', e.message)
+    } else {
+      console.error('[error][getPromptDatabase]', e)
+    }
+    return [DEFAULT_ROBOT_TEMP]
   }
 }

@@ -13,9 +13,13 @@ export interface ChatBody {
 
 export interface RobotTemplate {
   id: string
+  icon?: string
+  cover?: string
   name: string
   description?: string
   pinPrompt?: string
   tags?: string[]
   input_template?: string
+  createdAt?: Date
+  lastEditedAt?: Date
 }

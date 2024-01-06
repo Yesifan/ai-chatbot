@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { RobotCard } from '../features/robot-card'
 import { RobotSidebar } from '../features/robot-sidebar'
 import { RobotHeader } from '../features/robot-header'
-import { DEFAULT_ROBOT_TEMP } from '@/lib/constants'
+import { getRobotTemplates } from '@/app/actions/robot'
 
 export const runtime = 'edge'
 
@@ -12,8 +12,8 @@ export default async function RobotPage({
   params: { id?: [string] }
 }) {
   const id = params.id ? params.id[0] : undefined
-
-  const robots = [DEFAULT_ROBOT_TEMP]
+  const robots = await getRobotTemplates()
+  const selectRobot = robots.find(robot => robot.id === id)
 
   return (
     <section className="flex h-screen flex-col bg-muted">
@@ -22,11 +22,13 @@ export default async function RobotPage({
         <div className="flex h-full flex-1 flex-wrap gap-4 overflow-y-auto p-6">
           {robots.map(template => (
             <Link href={`/robot/${template.id}`} key={template.id}>
-              <RobotCard template={template} />
+              <RobotCard template={template} isActive={template.id === id} />
             </Link>
           ))}
         </div>
-        {id && <RobotSidebar id={id} className="shrink-0" />}
+        {selectRobot && (
+          <RobotSidebar template={selectRobot} className="shrink-0" />
+        )}
       </div>
     </section>
   )

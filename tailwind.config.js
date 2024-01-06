@@ -66,6 +66,17 @@ module.exports = {
         md: `calc(var(--radius) - 2px)`,
         sm: 'calc(var(--radius) - 4px)'
       },
+      dropShadow: {
+        "text": [
+          '0 0 2px hsl(0 0% 100% / 0.6)',
+          '0 0 24px hsl(0 0% 100% / 0.3)'
+        ],
+        "text-dark": [
+          '0 0 2px hsl(240 10% 3.9% / 0.6)',
+          '0 0 24px hsl(240 10% 3.9% / 0.3)'
+        ],
+
+      },
       keyframes: {
         'accordion-down': {
           from: { height: 0 },
@@ -98,9 +109,16 @@ module.exports = {
           '100%': {
             transform: 'translateX(-100%)'
           }
+        },
+        'ping-sm': {
+          "75%, 100%": {
+            transform: "scale(1.1)",
+            opacity: 0,
+          }
         }
       },
       animation: {
+        'ping-sm': "ping-sm 1s cubic-bezier(0, 0, 0.2, 1) infinite",
         'slide-from-left':
           'slide-from-left 0.3s cubic-bezier(0.82, 0.085, 0.395, 0.895)',
         'slide-to-left':
