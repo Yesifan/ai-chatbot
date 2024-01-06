@@ -81,7 +81,8 @@ export async function getRobots(): Promise<
 }
 
 export async function createRobot(
-  template?: RobotTemplate
+  template?: RobotTemplate,
+  prompt?: string
 ): Promise<ServerActionResult<[string | undefined, Robot]>> {
   const pk = nanoid()
   const session = await auth()
@@ -102,7 +103,7 @@ export async function createRobot(
         createdAt: new Date(),
         description: template?.description,
         name: template?.name ?? DEFAULT_ROBOT_NAME,
-        pinPrompt: template?.pinPrompt,
+        pinPrompt: prompt,
         input_template: template?.input_template
       })
       .returningAll()

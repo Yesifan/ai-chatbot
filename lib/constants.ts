@@ -64,7 +64,7 @@ export const DEFAULT_ROBOT_TEMP: RobotTemplate = {
   // auth: 'Your ai assistant, to help you with anything.',
   description: 'Your ai assistant, to help you with anything.',
   // releaseDate: 'Your ai assistant, to help you with anything.',
-  pinPrompt:
-    'Take a deep breath and help the questioner solve the problem step by step.',
+  // pinPrompt:
+  // 'Take a deep breath and help the questioner solve the problem step by step.',
   tags: ['Assistant']
 }

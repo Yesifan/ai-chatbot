@@ -1,11 +1,12 @@
 'use server'
 
 import { auth } from '@/app/actions/auth'
-import { INBOX_CHAT } from '@/lib/constants'
+import { ErrorCode, INBOX_CHAT } from '@/lib/constants'
 import database from '@/lib/database'
 import { ActionErrorCode } from '@/lib/error'
 import { nanoid } from '@/lib/utils'
 import { Chat, ServerActionResult } from '@/types/database'
+import { getRobot } from './robot'
 
 export async function getChats(robotId?: string) {
   const session = await auth()
@@ -90,20 +91,44 @@ export const createChat = async (
       error: ActionErrorCode.Unauthorized
     }
   }
-  const chat = await database
-    .insertInto('chat')
-    .values({
-      id: pk,
-      userId: session.id,
-      robotId,
-      isSaved,
-      title: title,
-      createdAt: new Date()
-    })
-    .returningAll()
-    .executeTakeFirstOrThrow()
+  const query = database.insertInto('chat')
 
-  return chat
+  const values = {
+    id: pk,
+    userId: session.id,
+    isSaved,
+    title: title,
+    createdAt: new Date()
+  }
+  try {
+    if (robotId) {
+      const robot = await getRobot(robotId)
+      if ('error' in robot) {
+        return robot
+      } else {
+        return query
+          .values({
+            ...values,
+            robotId,
+            model: robot.model,
+            pinPrompt: robot.pinPrompt,
+            temperature: robot.temperature,
+            input_template: robot.input_template,
+            attachedMessagesCount: robot.attachedMessagesCount
+          })
+          .returningAll()
+          .executeTakeFirstOrThrow()
+      }
+    } else {
+      return await query.values(values).returningAll().executeTakeFirstOrThrow()
+    }
+  } catch (e) {
+    console.error('[error][createChat]', e)
+    return {
+      ok: false,
+      error: ErrorCode.InternalServerError
+    }
+  }
 }
 
 // TODO: auto set title use ai.

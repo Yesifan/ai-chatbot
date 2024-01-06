@@ -53,7 +53,7 @@ export function RobotSidebar({
 
   const createRobotHandler = async () => {
     startTransition(async () => {
-      const res = await createRobot(template)
+      const res = await createRobot(template, prompt)
       if ('error' in res) {
         console.error('[RobotSidebar] create robot', res.error)
         toast.error('Create robot failed, please try again later.')

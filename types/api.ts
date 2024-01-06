@@ -17,7 +17,6 @@ export interface RobotTemplate {
   cover?: string
   name: string
   description?: string
-  pinPrompt?: string
   tags?: string[]
   input_template?: string
   createdAt?: Date

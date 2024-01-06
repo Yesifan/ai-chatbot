@@ -26,21 +26,6 @@ export default async function RobotPage({
               <RobotCard template={template} isActive={template.id === id} />
             </Link>
           ))}
-          {robots.map(template => (
-            <Link href={`/robot/${template.id}`} key={template.id}>
-              <RobotCard template={template} isActive={template.id === id} />
-            </Link>
-          ))}
-          {robots.map(template => (
-            <Link href={`/robot/${template.id}`} key={template.id}>
-              <RobotCard template={template} isActive={template.id === id} />
-            </Link>
-          ))}
-          {robots.map(template => (
-            <Link href={`/robot/${template.id}`} key={template.id}>
-              <RobotCard template={template} isActive={template.id === id} />
-            </Link>
-          ))}
         </div>
         {selectRobot && (
           <RobotSidebar
