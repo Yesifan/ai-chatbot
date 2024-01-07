@@ -23,6 +23,8 @@ export interface RobotTable {
   id: string
   userId: string
   name: string
+  icon?: string
+  cover?: string
   model?: GPT_Model
   createdAt?: Date
   description?: string
@@ -40,7 +42,7 @@ export interface RobotTable {
 }
 
 export interface ChatTable
-  extends Omit<RobotTable, 'id' | 'name' | 'description'> {
+  extends Omit<RobotTable, 'id' | 'name' | 'icon' | 'cover' | 'description'> {
   id: string
   userId: string
   robotId?: string

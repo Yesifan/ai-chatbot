@@ -100,6 +100,8 @@ export async function createRobot(
       .values({
         id: pk,
         userId: session.id,
+        icon: template?.icon,
+        cover: template?.cover,
         createdAt: new Date(),
         description: template?.description,
         name: template?.name ?? DEFAULT_ROBOT_NAME,

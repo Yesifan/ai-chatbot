@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { useCallback, useEffect, useState, useTransition } from 'react'
+import { useCallback, useState, useTransition } from 'react'
 import toast from 'react-hot-toast'
 
 import { cn } from '@/lib/utils'
@@ -94,10 +94,10 @@ export function RobotSidebar({
         ) : (
           <RobotAvatar className="h-20 w-20 rounded bg-secondary/20 p-2 backdrop-blur " />
         )}
-        <h3 className="mt-5 text-xl font-semibold drop-shadow-text dark:drop-shadow-text-dark">
+        <h3 className="text-xl font-semibold drop-shadow-text dark:drop-shadow-text-dark">
           {name}
         </h3>
-        <div className="text-xs text-primary/80 drop-shadow-text dark:drop-shadow-text-dark">
+        <div className="text w-full text-primary drop-shadow-text dark:drop-shadow-text-dark">
           {description}
         </div>
         <div className="mt-2 h-[22px] w-full space-x-2">
@@ -113,8 +113,10 @@ export function RobotSidebar({
         </div>
       </div>
 
-      <p className="w-full px-2 text-start">Prompt</p>
-      <Separator className="mx-2" />
+      <div className="w-full pl-3">
+        <p className="py-1 text-start">Prompt</p>
+        <Separator />
+      </div>
       <div className="flex-1 px-2">
         {isPromptLoading ? (
           <BubblesLoading />
