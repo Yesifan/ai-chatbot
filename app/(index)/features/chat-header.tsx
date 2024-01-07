@@ -105,7 +105,7 @@ export function ChatHeader({
         className
       )}
     >
-      {isMobile && <SafeArea className="bg-transparent" />}
+      <SafeArea className="bg-transparent" />
       <div className="flex h-16 w-full items-center px-4 py-1">
         {robot ? (
           <Button variant="ghost" className="mr-2 h-14 px-2">

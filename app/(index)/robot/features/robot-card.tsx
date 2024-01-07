@@ -16,12 +16,15 @@ export function RobotCard({
 }: RobotCardProps) {
   const { name, icon, cover, description, tags } = template
   return (
-    <div className={cn('relative w-72 cursor-pointer ', className)} {...props}>
+    <div
+      className={cn('relative h-full max-w-72 cursor-pointer', className)}
+      {...props}
+    >
       {isActive && (
         <span className="absolute inline-flex h-full w-full animate-ping-sm rounded-lg bg-primary opacity-75" />
       )}
       <div
-        className="relative flex flex-col gap-2 rounded-lg bg-background bg-cover bg-center p-4 transition-transform hover:scale-105"
+        className="relative flex h-full flex-col gap-2 rounded-lg bg-background bg-cover bg-center p-4 transition-transform hover:scale-105"
         style={{
           backgroundImage: cover ? `url(${cover})` : undefined
         }}
@@ -41,7 +44,7 @@ export function RobotCard({
         <p className="line-clamp-2 h-10 text-sm text-primary/90 drop-shadow-text dark:drop-shadow-text-dark">
           {description}
         </p>
-        <div className="h-[22px] space-x-2">
+        <div className="flex flex-wrap gap-2">
           {tags?.map(tag => (
             <Badge
               key={tag}

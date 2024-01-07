@@ -51,6 +51,9 @@ export function RobotList({ initalRobots, className }: RobotListProps) {
   if (status !== 'authenticated' || error) {
     return (
       <div className={cn('flex flex-1 flex-col', className)}>
+        <Button className="mx-2" variant="outline" asChild>
+          <Link href="/robot"> Discover Robot 🤖</Link>
+        </Button>
         <div className="p-8 text-center">
           <p className="text-sm text-muted-foreground">
             {error ?? 'Please login in first'}

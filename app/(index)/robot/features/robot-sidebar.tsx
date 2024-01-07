@@ -126,16 +126,17 @@ export function RobotSidebar({
           <TryAgain onClick={getPrompt} />
         )}
       </div>
-      <div className="space-y-6 px-4 pb-8 ">
+      <div className="flex w-full gap-2 px-4 pb-8">
         <Button
-          size="full"
+          size="lg"
+          className="flex-1 px-0"
           variant="highlight"
           isLoading={isLoading}
           onClick={createRobotHandler}
         >
           Creat The Robot
         </Button>
-        <Button size="full" variant="secondary" asChild>
+        <Button size="lg" variant="secondary" asChild>
           <Link href="/robot">Cancel</Link>
         </Button>
       </div>

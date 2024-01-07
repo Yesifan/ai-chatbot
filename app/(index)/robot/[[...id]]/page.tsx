@@ -20,12 +20,14 @@ export default async function RobotPage({
     <section className="flex h-screen flex-col bg-muted">
       <RobotHeader className="sticky top-0 z-50" />
       <div className="relative flex h-1 flex-1">
-        <div className="flex h-full flex-1 flex-wrap gap-6 overflow-y-auto p-6">
-          {robots.map(template => (
-            <Link href={`/robot/${template.id}`} key={template.id}>
-              <RobotCard template={template} isActive={template.id === id} />
-            </Link>
-          ))}
+        <div className="h-full flex-1 overflow-y-auto p-6">
+          <div className="mx-auto grid w-full grid-cols-1 flex-wrap gap-6 md:max-w-2xl lg:max-w-3xl lg:grid-cols-2 xl:max-w-5xl xl:grid-cols-3">
+            {robots.map(template => (
+              <Link href={`/robot/${template.id}`} key={template.id}>
+                <RobotCard template={template} isActive={template.id === id} />
+              </Link>
+            ))}
+          </div>
         </div>
         {selectRobot && (
           <RobotSidebar
