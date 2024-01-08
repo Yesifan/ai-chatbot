@@ -5,8 +5,10 @@ import { ErrorCode, INBOX_CHAT } from '@/lib/constants'
 import database from '@/lib/database'
 import { ActionErrorCode } from '@/lib/error'
 import { nanoid } from '@/lib/utils'
-import { Chat, ServerActionResult } from '@/types/database'
+import { Chat, Message, ServerActionResult } from '@/types/database'
 import { getRobot } from './robot'
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 
 export async function getChats(robotId?: string) {
   const session = await auth()
@@ -330,4 +332,87 @@ export async function removeChat(id: string): Promise<ServerActionResult> {
       error: 'InternetError'
     }
   }
+}
+export async function getChat(id: string): Promise<[Chat, Message[]] | null> {
+  const session = await auth()
+
+  if (!session) {
+    return null
+  }
+
+  try {
+    const chat = await database
+      .selectFrom('chat')
+      .selectAll()
+      .where('chat.id', '=', id)
+      .where('chat.userId', '=', session.id)
+      .executeTakeFirst()
+
+    if (!chat) {
+      return null
+    }
+
+    const messageList = await database
+      .selectFrom('message')
+      .selectAll()
+      .where('message.chatId', '=', id)
+      .execute()
+
+    return [chat, messageList]
+  } catch (error) {
+    console.error(`[ERROR][getChats] ${error}`)
+    return null
+  }
+}
+
+export async function getChatTitle(id: string) {
+  const session = await auth()
+
+  if (!session) {
+    return { error: ActionErrorCode.Unauthorized }
+  }
+
+  const chat = await database
+    .selectFrom('chat')
+    .select('chat.title')
+    .where('chat.id', '=', id)
+    .where('chat.userId', '=', session.id)
+    .executeTakeFirst()
+
+  if (!chat) {
+    return { error: ActionErrorCode.NotFound }
+  }
+
+  return chat.title
+}
+// TODO: 使用 robot id 为 key 进行删除，favorite 的不删除。
+
+export async function clearChats(): Promise<ServerActionResult> {
+  const session = await auth()
+
+  if (!session) {
+    return {
+      ok: false,
+      error: 'Unauthorized'
+    }
+  }
+
+  const chats = await database
+    .selectFrom('chat')
+    .select('chat.id')
+    .where('userId', '=', session.id)
+    .execute()
+  chats.forEach(async chat => {
+    await database
+      .deleteFrom('message')
+      .where('chatId', '=', chat.id)
+      .executeTakeFirst()
+    await database
+      .deleteFrom('chat')
+      .where('id', '=', chat.id)
+      .executeTakeFirst()
+  })
+
+  revalidatePath('/')
+  return redirect('/')
 }

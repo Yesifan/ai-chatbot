@@ -4,7 +4,7 @@ import { useCallback, useState, useTransition } from 'react'
 
 import { cn } from '@/lib/utils'
 import { getChats } from '@/app/actions/chat'
-import { clearChats } from '@/app/actions'
+import { clearChats } from '@/app/actions/chat'
 import { removeChat } from '@/app/actions/chat'
 import { updateChat } from '@/app/actions/chat'
 import { RemoveActions } from '@/components/remove-actions'

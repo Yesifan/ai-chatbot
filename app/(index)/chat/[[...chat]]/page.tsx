@@ -2,7 +2,7 @@ import { type Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 
 import { auth } from '@/app/actions/auth'
-import { getChat, getChatTitle } from '@/app/actions'
+import { getChat, getChatTitle } from '@/app/actions/chat'
 import { ChatStoreProvider } from '@/lib/store/chat'
 import { isMobileDevice } from '@/lib/utils/responsive.clint'
 import { Chat } from '@/app/(index)/features/chat'

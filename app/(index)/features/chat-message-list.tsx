@@ -3,7 +3,7 @@ import toast from 'react-hot-toast'
 import { Separator } from '@/components/ui/separator'
 import { ChatMessage } from './chat-message/index'
 import { UseChatHelpers } from '@/types/ai'
-import { removeMessage } from '@/app/actions'
+import { removeMessage } from '@/app/actions/message'
 import { Role } from '@/lib/constants'
 
 export interface ChatMessageListProps
