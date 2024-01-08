@@ -2,6 +2,7 @@
 import database from '@/lib/database'
 import { Message, ServerActionResult } from '@/types/database'
 import { auth } from './auth'
+import { ErrorCode } from '@/lib/constants'
 
 export async function getMessages(
   id: string
@@ -19,6 +20,7 @@ export async function getMessages(
     .orderBy('createdAt')
     .execute()
 }
+
 // TODO: Ownership verification.
 export async function removeMessage(id: string): Promise<ServerActionResult> {
   const session = await auth()
@@ -30,19 +32,33 @@ export async function removeMessage(id: string): Promise<ServerActionResult> {
     }
   }
 
-  const message = await database
-    .deleteFrom('message')
-    .where('message.id', '=', id)
-    .executeTakeFirst()
+  const chat = await database
+    .selectFrom('chat')
+    .where('chat.userId', '=', session.id)
+    .leftJoin('message', join =>
+      join.onRef('chat.id', '=', 'message.chatId').on('message.id', '=', id)
+    )
+    .select(['chat.id', 'chat.title'])
+    .executeTakeFirstOrThrow()
 
-  if (!message) {
+  if (chat.id) {
+    const message = await database
+      .deleteFrom('message')
+      .where('message.id', '=', id)
+      .executeTakeFirst()
+    if (!message) {
+      return {
+        ok: false,
+        error: ErrorCode.NotFound
+      }
+    }
+    return {
+      ok: true
+    }
+  } else {
     return {
       ok: false,
-      error: 'Not found'
+      error: ErrorCode.NotFound
     }
-  }
-
-  return {
-    ok: true
   }
 }
