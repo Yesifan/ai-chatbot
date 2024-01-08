@@ -72,7 +72,7 @@ export function RobotSidebar({
   return (
     <div
       className={cn(
-        'absolute w-full min-w-80 lg:relative lg:w-80',
+        'absolute w-full min-w-80 lg:relative lg:w-96',
         'flex h-full flex-col items-center gap-2 overflow-auto border-l transition-all',
         'bg-gradient-to-tr from-background/70 via-background/50 to-background/10 backdrop-blur-3xl',
         className

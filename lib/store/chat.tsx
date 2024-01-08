@@ -30,6 +30,7 @@ export const ChatStoreProvider = ({
   pinPrompt: _pinPrompt,
   model: _model,
   temperature: _temperature,
+  attachedMessagesCount: _attachedMessagesCount,
   children,
   ...chat
 }: Partial<Chat> & PropsWithChildren) => {
@@ -40,7 +41,7 @@ export const ChatStoreProvider = ({
   const [model, setModel] = useState(_model ?? GPT_Model.GPT_3_5_TURBO)
   const [temperature, setTemperature] = useState(_temperature ?? TEMPERATURE)
   const [attachedMessagesCount, setAttachedMessagesCount] = useState(
-    chat.attachedMessagesCount ?? 5
+    _attachedMessagesCount ?? 5
   )
 
   const update = (chat: Partial<Chat>) => {
