@@ -41,7 +41,7 @@ export function ClearHistory({ clearChats }: ClearHistoryProps) {
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
             This will permanently delete your chat history and remove your data
-            from our servers.
+            from our servers. In addition to the favorite chat history.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -4,10 +4,8 @@ import { useCallback, useState, useTransition } from 'react'
 
 import { cn } from '@/lib/utils'
 import { getChats } from '@/app/actions/chat'
-import { clearChats } from '@/app/actions/chat'
-import { removeChat } from '@/app/actions/chat'
-import { updateChat } from '@/app/actions/chat'
 import { RemoveActions } from '@/components/remove-actions'
+import { clearRobotChats, removeChat, updateChat } from '@/app/actions/chat'
 import { ChatItem } from './chat-item'
 import type { Chat } from '@/types/database'
 import { NewChatButton } from './new-chat-button'
@@ -33,6 +31,14 @@ export function HistoryChatList({ robotId, className }: HistoryChatListProps) {
       setChats(chats)
     })
   }, [starTransition, robotId])
+
+  const clearChatHandle = () => {
+    if (robotId) {
+      return clearRobotChats(robotId)
+    } else {
+      return Promise.reject({ ok: false, error: 'Not Found' })
+    }
+  }
 
   const favoriteChatHandler = async (id: string, isFavourite: boolean) => {
     const result = await updateChat(id, { isFavourite })
@@ -99,7 +105,7 @@ export function HistoryChatList({ robotId, className }: HistoryChatListProps) {
         ))}
       </div>
       <div className={cn('flex items-center p-4')}>
-        <ClearHistory clearChats={clearChats} />
+        <ClearHistory clearChats={clearChatHandle} />
       </div>
     </div>
   )

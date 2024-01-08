@@ -11,7 +11,7 @@ import {
   ErrorCode,
   INBOX_CHAT
 } from '@/lib/constants'
-import { createChat, getChats, removeChats } from './chat'
+import { clearRobotChats, createChat, getChats } from './chat'
 import { RobotTemplate } from '@/types/api'
 import { getPageMarkdown, getPromptDatabase } from '../api/notion'
 import { isNotionClientError } from '@notionhq/client'
@@ -136,10 +136,9 @@ export async function removeRobot(id: string): Promise<ServerActionResult> {
   }
 
   try {
-    const chats = await getChats(id)
-    const delChatRows = await removeChats(...chats.map(chat => chat.id))
+    const res = await clearRobotChats(id)
 
-    if (typeof delChatRows !== 'bigint') {
+    if (res.ok === false) {
       console.error('[removeRobot] DELETE CHAT ERROR')
       return {
         ok: false,

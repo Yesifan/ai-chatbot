@@ -26,10 +26,11 @@ import toast from 'react-hot-toast'
 
 interface RemoveActionsProps {
   id: string
+  desc?: string
   remove: (id: string) => ServerActionResult
 }
 
-export function RemoveActions({ id, remove }: RemoveActionsProps) {
+export function RemoveActions({ id, desc, remove }: RemoveActionsProps) {
   const params = useParams()
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
   const [isRemovePending, startRemoveTransition] = React.useTransition()
@@ -73,14 +74,13 @@ export function RemoveActions({ id, remove }: RemoveActionsProps) {
         </Tooltip>
       </div>
 
-      {/* TODO: 修改为按钮二次确认，而不是弹窗二次确认。 */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete your chat message and remove your
-              data from our servers.
+              {desc ??
+                'This will permanently delete your chat message and remove your data from our servers.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

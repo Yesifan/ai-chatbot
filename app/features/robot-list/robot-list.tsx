@@ -16,6 +16,9 @@ interface RobotListProps {
   className?: string
 }
 
+const removeDesc =
+  'This will permanently delete this Roobt and associated Chat record and remove your data from our servers. And Favorite chat records will be moved to the inbox.'
+
 export function RobotList({ initalRobots, className }: RobotListProps) {
   const [error, setError] = useState<string>()
   const [isLoading, startTransition] = useTransition()
@@ -71,7 +74,11 @@ export function RobotList({ initalRobots, className }: RobotListProps) {
       <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
         {robots.map(robot => (
           <RobotItem key={robot?.id} robot={robot}>
-            <RemoveActions id={robot.id} remove={removeRobotHandler} />
+            <RemoveActions
+              id={robot.id}
+              desc={removeDesc}
+              remove={removeRobotHandler}
+            />
           </RobotItem>
         ))}
       </div>

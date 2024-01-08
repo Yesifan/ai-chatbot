@@ -2,7 +2,7 @@ import { type Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 
 import { auth } from '@/app/actions/auth'
-import { getChat, getChatTitle } from '@/app/actions/chat'
+import { getChatWithMessage, getChat } from '@/app/actions/chat'
 import { ChatStoreProvider } from '@/lib/store/chat'
 import { isMobileDevice } from '@/lib/utils/responsive.clint'
 import { Chat } from '@/app/(index)/features/chat'
@@ -42,14 +42,14 @@ export async function generateMetadata({
       }
     }
   } else {
-    const title = await getChatTitle(chatId)
+    const chat = await getChat(chatId)
 
-    if (typeof title === 'object' && 'error' in title) {
+    if ('error' in chat) {
       notFound()
     }
 
     return {
-      title: title
+      title: chat.title
     }
   }
 }
@@ -58,7 +58,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
   const [_robotId, chatId] = params.chat
   const isMobile = isMobileDevice()
 
-  const chatAndMessage = await getChat(chatId!)
+  const chatAndMessage = await getChatWithMessage(chatId!)
 
   if (!chatAndMessage) {
     return null

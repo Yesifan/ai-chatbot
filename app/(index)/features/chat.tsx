@@ -9,7 +9,7 @@ import { ChatMessageList } from './chat-message-list'
 import { ChatPanel } from './chat-panel/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
-import { getChat } from '@/app/actions/chat'
+import { getChatWithMessage } from '@/app/actions/chat'
 import { getMessages } from '@/app/actions/message'
 import { getInboxChat } from '@/app/actions/chat'
 import { Separator } from '@/components/ui/separator'
@@ -70,7 +70,7 @@ export function Chat({ initialMessages, className }: ChatProps) {
   const reloadChat = useCallback(async () => {
     try {
       if (chatStore.id) {
-        const chatAndMessage = await getChat(chatStore.id)
+        const chatAndMessage = await getChatWithMessage(chatStore.id)
         if (chatAndMessage) {
           const [chat, message] = chatAndMessage
           chatStore.update?.(chat)

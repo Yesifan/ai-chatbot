@@ -21,7 +21,6 @@ export async function getMessages(
     .execute()
 }
 
-// TODO: Ownership verification.
 export async function removeMessage(id: string): Promise<ServerActionResult> {
   const session = await auth()
 

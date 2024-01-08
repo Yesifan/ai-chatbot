@@ -7,33 +7,26 @@ import { ActionErrorCode } from '@/lib/error'
 import { nanoid } from '@/lib/utils'
 import { Chat, Message, ServerActionResult } from '@/types/database'
 import { getRobot } from './robot'
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 
-export async function getChats(robotId?: string) {
+export async function getChat(id: string): Promise<ServerActionResult<Chat>> {
   const session = await auth()
 
   if (!session) {
-    return []
+    return { ok: false, error: ActionErrorCode.Unauthorized }
   }
 
-  try {
-    let query = database.selectFrom('chat').selectAll()
-    if (robotId) {
-      query = query.where('robotId', '=', robotId)
-    } else {
-      query = query.where('robotId', 'is', null)
-    }
+  const chat = await database
+    .selectFrom('chat')
+    .selectAll()
+    .where('chat.id', '=', id)
+    .where('chat.userId', '=', session.id)
+    .executeTakeFirst()
 
-    return await query
-      .where('userId', '=', session.id)
-      .orderBy('isSaved', 'asc')
-      .orderBy('lastMessageAt', 'desc')
-      .execute()
-  } catch (error) {
-    console.error(`[ERROR][getChats] ${error}`)
-    return []
+  if (!chat) {
+    return { ok: false, error: ActionErrorCode.NotFound }
   }
+
+  return chat
 }
 
 export async function getInboxChat(robotId?: string) {
@@ -76,6 +69,66 @@ export async function getInboxChat(robotId?: string) {
     return {
       error: ActionErrorCode.InternetError
     }
+  }
+}
+
+export async function getChatWithMessage(
+  id: string
+): Promise<[Chat, Message[]] | null> {
+  const session = await auth()
+
+  if (!session) {
+    return null
+  }
+
+  try {
+    const chat = await database
+      .selectFrom('chat')
+      .selectAll()
+      .where('chat.id', '=', id)
+      .where('chat.userId', '=', session.id)
+      .executeTakeFirst()
+
+    if (!chat) {
+      return null
+    }
+
+    const messageList = await database
+      .selectFrom('message')
+      .selectAll()
+      .where('message.chatId', '=', id)
+      .execute()
+
+    return [chat, messageList]
+  } catch (error) {
+    console.error(`[ERROR][getChats] ${error}`)
+    return null
+  }
+}
+
+export async function getChats(robotId?: string) {
+  const session = await auth()
+
+  if (!session) {
+    return []
+  }
+
+  try {
+    let query = database.selectFrom('chat').selectAll()
+    if (robotId) {
+      query = query.where('robotId', '=', robotId)
+    } else {
+      query = query.where('robotId', 'is', null)
+    }
+
+    return await query
+      .where('userId', '=', session.id)
+      .orderBy('isSaved', 'asc')
+      .orderBy('lastMessageAt', 'desc')
+      .execute()
+  } catch (error) {
+    console.error(`[ERROR][getChats] ${error}`)
+    return []
   }
 }
 
@@ -135,7 +188,7 @@ export const createChat = async (
 
 // TODO: auto set title use ai.
 // save default chat to a topic
-export async function saveChat(chatId: string): Promise<ServerActionResult> {
+export async function saveChat(id: string): Promise<ServerActionResult> {
   const session = await auth()
 
   if (!session) {
@@ -146,18 +199,10 @@ export async function saveChat(chatId: string): Promise<ServerActionResult> {
   }
 
   try {
-    const chat = await database
-      .selectFrom('chat')
-      .select(['chat.robotId', 'chat.isSaved'])
-      .where('chat.id', '=', chatId)
-      .where('chat.userId', '=', session.id)
-      .executeTakeFirst()
+    const chat = await getChat(id)
 
-    if (!chat) {
-      return {
-        ok: false,
-        error: ActionErrorCode.NotFound
-      }
+    if ('error' in chat) {
+      return chat
     }
 
     if (chat.isSaved) {
@@ -168,12 +213,7 @@ export async function saveChat(chatId: string): Promise<ServerActionResult> {
       }
     }
 
-    await database
-      .updateTable('chat')
-      .set({ isSaved: true })
-      .where('chat.id', '=', chatId)
-      .where('chat.userId', '=', session.id)
-      .execute()
+    await updateChat(id, { isSaved: true })
 
     await createChat(INBOX_CHAT, chat.robotId, false)
     return {
@@ -235,62 +275,8 @@ export async function updateChat(
 }
 
 /**
- * Delete chats and that chats message.
- * @param ids chat ids
- * @returns deleted chat number
- */
-export async function removeChats(
-  ...ids: string[]
-): Promise<ServerActionResult<bigint>> {
-  const session = await auth()
-
-  if (!session) {
-    return {
-      ok: false,
-      error: ActionErrorCode.Unauthorized
-    }
-  }
-
-  try {
-    const chats = await database
-      .selectFrom('chat')
-      .select('id')
-      .where('id', 'in', ids)
-      .where('userId', '=', session.id)
-      .execute()
-
-    if (chats.length === 0) {
-      return {
-        ok: false,
-        error: ActionErrorCode.NotFound
-      }
-    }
-
-    const chatIds = chats.map(item => item.id)
-
-    await database
-      .deleteFrom('message')
-      .where('message.chatId', 'in', chatIds)
-      .executeTakeFirstOrThrow()
-
-    const returning = await database
-      .deleteFrom('chat')
-      .where('chat.id', 'in', chatIds)
-      .executeTakeFirstOrThrow()
-
-    return returning.numDeletedRows
-  } catch (e) {
-    console.error('[REMOVE CHAT]', e)
-    return {
-      ok: false,
-      error: ActionErrorCode.InternetError
-    }
-  }
-}
-
-/**
  * Delete chat and the chat messages.
- * @param ids chat id
+ * @param id chat id
  * @returns ServerActionResult
  */
 export async function removeChat(id: string): Promise<ServerActionResult> {
@@ -304,23 +290,18 @@ export async function removeChat(id: string): Promise<ServerActionResult> {
   }
 
   try {
-    const chat = await database
-      .deleteFrom('chat')
-      .where('chat.id', '=', id)
-      .where('chat.userId', '=', session.id)
-      .executeTakeFirstOrThrow()
-
-    if (chat.numDeletedRows === BigInt(0)) {
-      return {
-        ok: false,
-        error: ActionErrorCode.NotFound
-      }
+    const chat = await getChat(id)
+    if ('error' in chat) {
+      return chat
     }
-
     await database
       .deleteFrom('message')
-      .where('message.chatId', '=', id)
-      .executeTakeFirstOrThrow()
+      .where('chatId', '=', chat.id)
+      .executeTakeFirst()
+    await database
+      .deleteFrom('chat')
+      .where('id', '=', chat.id)
+      .executeTakeFirst()
 
     return {
       ok: true
@@ -333,61 +314,17 @@ export async function removeChat(id: string): Promise<ServerActionResult> {
     }
   }
 }
-export async function getChat(id: string): Promise<[Chat, Message[]] | null> {
-  const session = await auth()
 
-  if (!session) {
-    return null
-  }
-
-  try {
-    const chat = await database
-      .selectFrom('chat')
-      .selectAll()
-      .where('chat.id', '=', id)
-      .where('chat.userId', '=', session.id)
-      .executeTakeFirst()
-
-    if (!chat) {
-      return null
-    }
-
-    const messageList = await database
-      .selectFrom('message')
-      .selectAll()
-      .where('message.chatId', '=', id)
-      .execute()
-
-    return [chat, messageList]
-  } catch (error) {
-    console.error(`[ERROR][getChats] ${error}`)
-    return null
-  }
-}
-
-export async function getChatTitle(id: string) {
-  const session = await auth()
-
-  if (!session) {
-    return { error: ActionErrorCode.Unauthorized }
-  }
-
-  const chat = await database
-    .selectFrom('chat')
-    .select('chat.title')
-    .where('chat.id', '=', id)
-    .where('chat.userId', '=', session.id)
-    .executeTakeFirst()
-
-  if (!chat) {
-    return { error: ActionErrorCode.NotFound }
-  }
-
-  return chat.title
-}
-// TODO: 使用 robot id 为 key 进行删除，favorite 的不删除。
-
-export async function clearChats(): Promise<ServerActionResult> {
+/**
+ * 清除这个 robot id 下所有没有加星的 chat
+ * @param robotId robot id
+ * @param isRobotDel 如果为 true，则会把 favourite 的 chat 移动到 inbox。
+ * @returns
+ */
+export async function clearRobotChats(
+  robotId: string,
+  isRobotDel?: boolean
+): Promise<ServerActionResult> {
   const session = await auth()
 
   if (!session) {
@@ -397,22 +334,39 @@ export async function clearChats(): Promise<ServerActionResult> {
     }
   }
 
-  const chats = await database
-    .selectFrom('chat')
-    .select('chat.id')
-    .where('userId', '=', session.id)
-    .execute()
-  chats.forEach(async chat => {
-    await database
-      .deleteFrom('message')
-      .where('chatId', '=', chat.id)
-      .executeTakeFirst()
-    await database
-      .deleteFrom('chat')
-      .where('id', '=', chat.id)
-      .executeTakeFirst()
-  })
+  try {
+    const chats = await database
+      .selectFrom('chat')
+      .select(['chat.id', 'chat.isFavourite'])
+      .where('userId', '=', session.id)
+      .where('chat.robotId', '=', robotId)
+      .execute()
 
-  revalidatePath('/')
-  return redirect('/')
+    chats.forEach(async chat => {
+      if (chat.isFavourite) {
+        if (isRobotDel) {
+          await updateChat(chat.id, { robotId: null as any, isSaved: true })
+        }
+      } else {
+        await database
+          .deleteFrom('message')
+          .where('chatId', '=', chat.id)
+          .executeTakeFirst()
+        await database
+          .deleteFrom('chat')
+          .where('id', '=', chat.id)
+          .executeTakeFirst()
+      }
+    })
+
+    return {
+      ok: true
+    }
+  } catch (e) {
+    console.error('[clearRobotChats]', e)
+    return {
+      ok: false,
+      error: ErrorCode.InternalServerError
+    }
+  }
 }
