@@ -231,3 +231,103 @@ export async function updateChat(
     }
   }
 }
+
+/**
+ * Delete chats and that chats message.
+ * @param ids chat ids
+ * @returns deleted chat number
+ */
+export async function removeChats(
+  ...ids: string[]
+): Promise<ServerActionResult<bigint>> {
+  const session = await auth()
+
+  if (!session) {
+    return {
+      ok: false,
+      error: ActionErrorCode.Unauthorized
+    }
+  }
+
+  try {
+    const chats = await database
+      .selectFrom('chat')
+      .select('id')
+      .where('id', 'in', ids)
+      .where('userId', '=', session.id)
+      .execute()
+
+    if (chats.length === 0) {
+      return {
+        ok: false,
+        error: ActionErrorCode.NotFound
+      }
+    }
+
+    const chatIds = chats.map(item => item.id)
+
+    await database
+      .deleteFrom('message')
+      .where('message.chatId', 'in', chatIds)
+      .executeTakeFirstOrThrow()
+
+    const returning = await database
+      .deleteFrom('chat')
+      .where('chat.id', 'in', chatIds)
+      .executeTakeFirstOrThrow()
+
+    return returning.numDeletedRows
+  } catch (e) {
+    console.error('[REMOVE CHAT]', e)
+    return {
+      ok: false,
+      error: ActionErrorCode.InternetError
+    }
+  }
+}
+
+/**
+ * Delete chat and the chat messages.
+ * @param ids chat id
+ * @returns ServerActionResult
+ */
+export async function removeChat(id: string): Promise<ServerActionResult> {
+  const session = await auth()
+
+  if (!session) {
+    return {
+      ok: false,
+      error: ActionErrorCode.Unauthorized
+    }
+  }
+
+  try {
+    const chat = await database
+      .deleteFrom('chat')
+      .where('chat.id', '=', id)
+      .where('chat.userId', '=', session.id)
+      .executeTakeFirstOrThrow()
+
+    if (chat.numDeletedRows === BigInt(0)) {
+      return {
+        ok: false,
+        error: ActionErrorCode.NotFound
+      }
+    }
+
+    await database
+      .deleteFrom('message')
+      .where('message.chatId', '=', id)
+      .executeTakeFirstOrThrow()
+
+    return {
+      ok: true
+    }
+  } catch (e) {
+    console.error('[REMOVE CHAT]', e)
+    return {
+      ok: false,
+      error: 'InternetError'
+    }
+  }
+}

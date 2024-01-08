@@ -9,7 +9,7 @@ const withPWA = nextPWA({
     skipWaiting: true,
   },
   cacheStartUrl: true,
-  dynamicStartUrl: true,
+  // dynamicStartUrl: true,
 });
 
 

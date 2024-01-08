@@ -11,7 +11,7 @@ import {
   ErrorCode,
   INBOX_CHAT
 } from '@/lib/constants'
-import { createChat } from './chat'
+import { createChat, getChats, removeChats } from './chat'
 import { RobotTemplate } from '@/types/api'
 import { getPageMarkdown, getPromptDatabase } from '../api/notion'
 import { isNotionClientError } from '@notionhq/client'
@@ -135,21 +135,40 @@ export async function removeRobot(id: string): Promise<ServerActionResult> {
     }
   }
 
-  const robot = await db
-    .deleteFrom('robot')
-    .where('robot.id', '=', id)
-    .where('userId', '=', session.id)
-    .executeTakeFirst()
+  try {
+    const chats = await getChats(id)
+    const delChatRows = await removeChats(...chats.map(chat => chat.id))
 
-  if (!robot) {
+    if (typeof delChatRows !== 'bigint') {
+      console.error('[removeRobot] DELETE CHAT ERROR')
+      return {
+        ok: false,
+        error: ErrorCode.InternalServerError
+      }
+    }
+
+    const robot = await db
+      .deleteFrom('robot')
+      .where('robot.id', '=', id)
+      .where('userId', '=', session.id)
+      .executeTakeFirst()
+
+    if (!robot) {
+      return {
+        ok: false,
+        error: ErrorCode.NotFound
+      }
+    }
+
+    return {
+      ok: true
+    }
+  } catch (e) {
+    console.error('[removeRobot]', e)
     return {
       ok: false,
-      error: ErrorCode.NotFound
+      error: ActionErrorCode.InternalServerError
     }
-  }
-
-  return {
-    ok: true
   }
 }
 

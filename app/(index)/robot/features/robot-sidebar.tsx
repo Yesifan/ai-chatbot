@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
 import { RobotTemplate } from '@/types/api'
 import BubblesLoading from '@/components/ui/loading'
+import { useSession } from '@/lib/auth/provider'
 
 interface RobotCardProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
   prompt?: string
@@ -35,6 +36,7 @@ export function RobotSidebar({
   ...props
 }: RobotCardProps) {
   const router = useRouter()
+  const { status } = useSession()
   const [prompt, setPrompt] = useState(_prompt)
   const [isLoading, startTransition] = useTransition()
   const [isPromptLoading, startPTransition] = useTransition()
@@ -52,21 +54,25 @@ export function RobotSidebar({
   }, [id])
 
   const createRobotHandler = async () => {
-    startTransition(async () => {
-      const res = await createRobot(template, prompt)
-      if ('error' in res) {
-        console.error('[RobotSidebar] create robot', res.error)
-        toast.error('Create robot failed, please try again later.')
-        return
-      }
-      const [chatId, robot] = res
-      if (chatId) {
-        router.push(`/chat/${robot.id}/${chatId}`)
-      } else {
-        router.push(`/chat/${robot.id}`)
-        toast('Create robot success, but create chat failed.')
-      }
-    })
+    if (status === 'authenticated') {
+      startTransition(async () => {
+        const res = await createRobot(template, prompt)
+        if ('error' in res) {
+          console.error('[RobotSidebar] create robot', res.error)
+          toast.error('Create robot failed, please try again later.')
+          return
+        }
+        const [chatId, robot] = res
+        if (chatId) {
+          router.push(`/chat/${robot.id}/${chatId}`)
+        } else {
+          router.push(`/chat/${robot.id}`)
+          toast('Create robot success, but create chat failed.')
+        }
+      })
+    } else {
+      router.push('/')
+    }
   }
 
   return (
@@ -117,7 +123,7 @@ export function RobotSidebar({
         <p className="py-1 text-start">Prompt</p>
         <Separator />
       </div>
-      <div className="flex-1 px-2">
+      <div className="flex-1 px-4">
         {isPromptLoading ? (
           <BubblesLoading />
         ) : prompt ? (
@@ -134,7 +140,7 @@ export function RobotSidebar({
           isLoading={isLoading}
           onClick={createRobotHandler}
         >
-          Creat The Robot
+          {status === 'authenticated' ? 'Creat The Robot' : 'Login First'}
         </Button>
         <Button size="lg" variant="secondary" asChild>
           <Link href="/robot">Cancel</Link>

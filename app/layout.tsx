@@ -8,9 +8,9 @@ import { fontMono, fontSans } from '@/lib/fonts'
 import { Providers } from '@/components/providers'
 import { TailwindPallette } from '@/components/tailwind-pallette'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
+import { SessionProvider } from '@/lib/auth/provider'
 
 import '@/app/globals.css'
-import { SessionProvider } from '@/lib/auth/provider'
 
 const title = 'Jarvis - AI Assistant'
 

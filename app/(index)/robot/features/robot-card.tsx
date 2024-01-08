@@ -17,7 +17,10 @@ export function RobotCard({
   const { name, icon, cover, description, tags } = template
   return (
     <div
-      className={cn('relative h-full max-w-72 cursor-pointer', className)}
+      className={cn(
+        'relative mx-auto h-full max-w-72 cursor-pointer',
+        className
+      )}
       {...props}
     >
       {isActive && (

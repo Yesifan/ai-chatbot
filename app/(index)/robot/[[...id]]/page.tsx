@@ -18,7 +18,7 @@ export default async function RobotPage({
   const prompt = typeof promptRes === 'string' ? promptRes : undefined
   return (
     <section className="flex h-screen flex-col bg-muted">
-      <RobotHeader className="sticky top-0 z-50" />
+      <RobotHeader />
       <div className="relative flex h-1 flex-1">
         <div className="h-full flex-1 overflow-y-auto p-6">
           <div className="mx-auto grid w-full grid-cols-1 flex-wrap gap-6 md:max-w-2xl lg:max-w-3xl lg:grid-cols-2 xl:max-w-5xl xl:grid-cols-3">

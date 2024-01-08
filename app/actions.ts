@@ -26,6 +26,7 @@ export async function getMessages(
     .execute()
 }
 
+// TODO: Ownership verification.
 export async function removeMessage(id: string): Promise<ServerActionResult> {
   const session = await auth()
 
@@ -106,67 +107,7 @@ export async function getChatTitle(id: string) {
   return chat.title
 }
 
-export const createChat = async () => {
-  const pk = nanoid()
-  const session = await auth()
-  if (!session) {
-    return {
-      error: ActionErrorCode.Unauthorized
-    }
-  }
-  return await db
-    .insertInto('chat')
-    .values({
-      id: pk,
-      userId: session.id,
-      title: 'New Chat',
-      createdAt: new Date()
-    })
-    .returning(['id', 'userId', 'title', 'createdAt'])
-    .executeTakeFirstOrThrow()
-}
-
-export async function removeChat(id: string): Promise<ServerActionResult> {
-  const session = await auth()
-
-  if (!session) {
-    return {
-      ok: false,
-      error: ActionErrorCode.Unauthorized
-    }
-  }
-
-  try {
-    const chat = await db
-      .deleteFrom('chat')
-      .where('chat.id', '=', id)
-      .where('chat.userId', '=', session.id)
-      .executeTakeFirstOrThrow()
-
-    if (chat.numDeletedRows === BigInt(0)) {
-      return {
-        ok: false,
-        error: ActionErrorCode.NotFound
-      }
-    }
-
-    await db
-      .deleteFrom('message')
-      .where('message.chatId', '=', id)
-      .executeTakeFirstOrThrow()
-
-    return {
-      ok: true
-    }
-  } catch (e) {
-    console.error('[REMOVE CHAT]', e)
-    return {
-      ok: false,
-      error: 'InternetError'
-    }
-  }
-}
-
+// TODO: 使用 robot id 为 key 进行删除，favorite 的不删除。
 export async function clearChats(): Promise<ServerActionResult> {
   const session = await auth()
 
