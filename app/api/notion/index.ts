@@ -12,12 +12,15 @@ export const createNotion = () => {
 
 // https://www.notion.so/alan66/38762f011a4842a9a28145c466036d5f
 const promptDatabaseId = config.NOTION_PROMPT_DATABASE_ID
-export const getPromptDatabase = async () => {
+export const getPromptDatabase = async (cursor?: string) => {
   if (!promptDatabaseId) return []
 
   const notion = createNotion()
   const res = await notion.databases.query({
+    archived: false,
     database_id: promptDatabaseId,
+    start_cursor: cursor,
+    page_size: 20,
     filter: {
       property: 'published',
       checkbox: {
