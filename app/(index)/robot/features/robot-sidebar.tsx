@@ -123,7 +123,7 @@ export function RobotSidebar({
         <p className="py-1 text-start">Prompt</p>
         <Separator />
       </div>
-      <div className="flex-1 px-4">
+      <div className="w-full flex-1 px-4">
         {isPromptLoading ? (
           <BubblesLoading />
         ) : prompt ? (
