@@ -8,14 +8,13 @@ import { isMobileDevice } from '@/lib/utils/responsive.clint'
 import { Chat } from '@/app/(index)/features/chat'
 import { ChatHeader } from '@/app/(index)/features/chat-header'
 import { getRobot } from '@/app/actions/robot'
-import { getInboxChat } from '@/app/actions/chat'
-import { INBOX_PATH } from '@/lib/constants'
 
 export const runtime = 'edge'
 
 export interface ChatPageProps {
   params: {
-    chat: [string, string]
+    chat: string
+    robot: string
   }
 }
 
@@ -23,39 +22,24 @@ export async function generateMetadata({
   params
 }: ChatPageProps): Promise<Metadata> {
   const session = await auth()
-  const [robotId, chatId] = params.chat
+  const { robot, chat: chatId } = params
   if (!session) {
-    redirect(`/?next=/chat/${robotId}/${chatId}`)
+    redirect(`/?next=/chat/${robot}/${chatId}`)
   }
 
-  if (!robotId) {
-    redirect('/')
-  } else if (!chatId) {
-    if (robotId === INBOX_PATH) {
-      redirect('/')
-    } else {
-      const chat = await getInboxChat(robotId)
-      if ('error' in chat) {
-        notFound()
-      } else {
-        redirect(`/chat/${robotId}/${chat.id}`)
-      }
-    }
-  } else {
-    const chat = await getChat(chatId)
+  const chat = await getChat(chatId)
 
-    if ('error' in chat) {
-      notFound()
-    }
+  if ('error' in chat) {
+    notFound()
+  }
 
-    return {
-      title: chat.title
-    }
+  return {
+    title: chat.title
   }
 }
 
 export default async function ChatPage({ params }: ChatPageProps) {
-  const [_robotId, chatId] = params.chat
+  const { chat: chatId } = params
   const isMobile = isMobileDevice()
 
   const chatAndMessage = await getChatWithMessage(chatId!)

@@ -29,7 +29,7 @@ export function ClearHistory({ clearChats }: ClearHistoryProps) {
   const [isPending, startTransition] = React.useTransition()
   const router = useRouter()
   const params = useParams()
-  const robotId = params.chat?.[0]
+  const robotId = params.robot
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>

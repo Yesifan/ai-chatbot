@@ -21,8 +21,8 @@ const Timestamp = dynamic(() => import('@/components/ui/timestamp'), {
 })
 
 export function RobotItem({ robot, children }: RobotItemProps) {
-  const { chat } = useParams()
-  const id = chat?.[0]
+  const prarams = useParams()
+  const id = prarams.robot
 
   const isActive = id === robot.id
 

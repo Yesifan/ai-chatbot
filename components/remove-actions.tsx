@@ -32,6 +32,7 @@ interface RemoveActionsProps {
 
 export function RemoveActions({ id, desc, remove }: RemoveActionsProps) {
   const params = useParams()
+  const chatId = params.chat
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
   const [isRemovePending, startRemoveTransition] = React.useTransition()
   const router = useRouter()
@@ -44,7 +45,7 @@ export function RemoveActions({ id, desc, remove }: RemoveActionsProps) {
       const result = await remove(id)
       if (result.ok) {
         setDeleteDialogOpen(false)
-        if (params?.id === id) {
+        if (chatId === id) {
           router.push('/')
         }
         toast.success(`Chat and ${result} messages deleted `)

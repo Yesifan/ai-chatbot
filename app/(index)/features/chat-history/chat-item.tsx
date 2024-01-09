@@ -25,7 +25,7 @@ const Timestamp = dynamic(() => import('@/components/ui/timestamp'), {
 
 export function ChatItem({ chat, children, favorite }: ChatItemProps) {
   const params = useParams()
-  const id = params.chat?.[1]
+  const id = params.chat
 
   const isActive = id ? id === chat.id : !chat.isSaved
   const chatLink = chat.robotId
