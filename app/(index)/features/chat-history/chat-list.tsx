@@ -3,16 +3,18 @@ import toast from 'react-hot-toast'
 import { useCallback, useState, useTransition } from 'react'
 
 import { cn } from '@/lib/utils'
-import { getChats } from '@/app/actions/chat'
+import { createChat, getChats } from '@/app/actions/chat'
 import { RemoveActions } from '@/components/remove-actions'
 import { clearRobotChats, removeChat, updateChat } from '@/app/actions/chat'
 import { ChatItem } from './chat-item'
 import type { Chat } from '@/types/database'
-import { NewChatButton } from './new-chat-button'
 import { ClearHistory } from './clear-history'
 import { SaveChatButton } from './save-chat-button'
 import { useChatStore } from '@/lib/store/chat'
 import { useSessionStatusEffect } from '@/lib/hooks/use-login'
+import { useRouter } from 'next/navigation'
+import { DEFAULT_CHAT_NAME } from '@/lib/constants'
+import { Button } from '@/components/ui/button'
 
 interface HistoryChatListProps {
   robotId?: string
@@ -20,6 +22,7 @@ interface HistoryChatListProps {
 }
 
 export function HistoryChatList({ robotId, className }: HistoryChatListProps) {
+  const route = useRouter()
   const [isLoading, starTransition] = useTransition()
 
   const chatStore = useChatStore()
@@ -31,6 +34,18 @@ export function HistoryChatList({ robotId, className }: HistoryChatListProps) {
       setChats(chats)
     })
   }, [starTransition, robotId])
+
+  const createChatHndler = () => {
+    starTransition(async () => {
+      const chat = await createChat(DEFAULT_CHAT_NAME, robotId, true)
+      if ('error' in chat) {
+        toast(chat.error)
+      } else {
+        route.push(`/chat/${robotId}/${chat.id}`)
+        await reloadChats()
+      }
+    })
+  }
 
   const clearChatHandle = () => {
     if (robotId) {
@@ -88,12 +103,13 @@ export function HistoryChatList({ robotId, className }: HistoryChatListProps) {
       )}
     >
       <h4 className="mx-2 pb-2 text-sm">Chat List</h4>
-      <NewChatButton
-        robotId={robotId}
+      <Button
+        variant="outline"
         isLoading={isLoading}
-        className="mx-2 mb-2"
-        onClick={reloadChats}
-      />
+        onClick={createChatHndler}
+      >
+        New Chat 💬
+      </Button>
       {chatStore.id && !chatStore.isSaved && (
         <SaveChatButton chatId={chatStore.id} className="mx-2 mb-2" />
       )}

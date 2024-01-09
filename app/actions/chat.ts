@@ -214,8 +214,7 @@ export async function saveChat(id: string): Promise<ServerActionResult> {
     }
 
     await updateChat(id, { isSaved: true })
-
-    await createChat(INBOX_CHAT, chat.robotId, false)
+    await getInboxChat(chat.robotId)
     return {
       ok: true
     }
