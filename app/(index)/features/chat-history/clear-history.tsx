@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 
 import { ServerActionResult } from '@/types/database'
@@ -18,6 +18,7 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 import { IconSpinner } from '@/components/ui/icons'
+import { INBOX_PATH } from '@/lib/constants'
 
 interface ClearHistoryProps {
   clearChats: () => Promise<ServerActionResult>
@@ -27,6 +28,8 @@ export function ClearHistory({ clearChats }: ClearHistoryProps) {
   const [open, setOpen] = React.useState(false)
   const [isPending, startTransition] = React.useTransition()
   const router = useRouter()
+  const params = useParams()
+  const robotId = params.chat?.[0]
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -59,7 +62,11 @@ export function ClearHistory({ clearChats }: ClearHistoryProps) {
                 }
 
                 setOpen(false)
-                router.push('/')
+                if (robotId && robotId !== INBOX_PATH) {
+                  router.push(`/${robotId}`)
+                } else {
+                  router.push('/')
+                }
               })
             }}
           >

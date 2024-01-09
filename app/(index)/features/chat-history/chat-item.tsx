@@ -72,7 +72,7 @@ export function ChatItem({ chat, children, favorite }: ChatItemProps) {
           </div>
         </div>
       </Link>
-      {children && chat.isSaved && (
+      {children && (
         <div
           className={cn(
             'absolute right-2 top-1 opacity-0 group-hover:opacity-100',

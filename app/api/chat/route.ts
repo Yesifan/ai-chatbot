@@ -49,6 +49,9 @@ export async function POST(req: NextRequest) {
     const stream = OpenAIStream(res, {
       async onCompletion(answer) {
         recordConversation(answer, now, chatJson)
+      },
+      onFinal(completion) {
+        console.log('[OPENAI CHAT][onFinal]', completion)
       }
     })
     return new StreamingTextResponse(stream)

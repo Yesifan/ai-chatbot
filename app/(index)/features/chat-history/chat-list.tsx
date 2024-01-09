@@ -3,7 +3,7 @@ import toast from 'react-hot-toast'
 import { useCallback, useState, useTransition } from 'react'
 
 import { cn } from '@/lib/utils'
-import { createChat, getChats } from '@/app/actions/chat'
+import { createChat, getChats, saveChat } from '@/app/actions/chat'
 import { RemoveActions } from '@/components/remove-actions'
 import { clearRobotChats, removeChat, updateChat } from '@/app/actions/chat'
 import { ChatItem } from './chat-item'
@@ -12,9 +12,10 @@ import { ClearHistory } from './clear-history'
 import { SaveChatButton } from './save-chat-button'
 import { useChatStore } from '@/lib/store/chat'
 import { useSessionStatusEffect } from '@/lib/hooks/use-login'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { DEFAULT_CHAT_NAME } from '@/lib/constants'
 import { Button } from '@/components/ui/button'
+import { SaveAction } from '@/components/save-action'
 
 interface HistoryChatListProps {
   robotId?: string
@@ -22,7 +23,7 @@ interface HistoryChatListProps {
 }
 
 export function HistoryChatList({ robotId, className }: HistoryChatListProps) {
-  const route = useRouter()
+  const router = useRouter()
   const [isLoading, starTransition] = useTransition()
 
   const chatStore = useChatStore()
@@ -41,7 +42,7 @@ export function HistoryChatList({ robotId, className }: HistoryChatListProps) {
       if ('error' in chat) {
         toast(chat.error)
       } else {
-        route.push(`/chat/${robotId}/${chat.id}`)
+        router.push(`/chat/${robotId}/${chat.id}`)
         await reloadChats()
       }
     })
@@ -52,6 +53,17 @@ export function HistoryChatList({ robotId, className }: HistoryChatListProps) {
       return clearRobotChats(robotId)
     } else {
       return Promise.reject({ ok: false, error: 'Not Found' })
+    }
+  }
+
+  const saveChatHandler = async (id: string) => {
+    const result = await saveChat(id)
+    if (result.ok) {
+      router.push(`/chat/${robotId}/${id}`)
+      return true
+    } else {
+      toast.error(result.error || 'Failed to update chat')
+      return false
     }
   }
 
@@ -105,6 +117,7 @@ export function HistoryChatList({ robotId, className }: HistoryChatListProps) {
       <h4 className="mx-2 pb-2 text-sm">Chat List</h4>
       <Button
         variant="outline"
+        className="mx-2 mb-2"
         isLoading={isLoading}
         onClick={createChatHndler}
       >
@@ -116,7 +129,11 @@ export function HistoryChatList({ robotId, className }: HistoryChatListProps) {
       <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
         {chats.map(chat => (
           <ChatItem key={chat?.id} chat={chat} favorite={favoriteChatHandler}>
-            <RemoveActions id={chat.id} remove={removeChatHandler} />
+            {chat.isSaved ? (
+              <RemoveActions id={chat.id} remove={removeChatHandler} />
+            ) : (
+              <SaveAction id={chat.id} save={saveChatHandler} />
+            )}
           </ChatItem>
         ))}
       </div>
