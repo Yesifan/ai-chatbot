@@ -101,7 +101,7 @@ export function RobotSidebar({
             src={icon.startsWith('http') ? icon : undefined}
           />
         ) : (
-          <RobotAvatar className="h-20 w-20 rounded bg-secondary/20 p-2 backdrop-blur " />
+          <RobotAvatar className="h-20 w-20 rounded bg-secondary/20 p-2 backdrop-blur" />
         )}
         <h3 className="text-xl font-semibold drop-shadow-text dark:drop-shadow-text-dark">
           {name}
@@ -112,8 +112,8 @@ export function RobotSidebar({
         <div className="mt-2 h-[22px] w-full space-x-2">
           {tags?.map(tag => (
             <Badge
-              variant="secondary"
               key={tag}
+              variant="secondary"
               className="bg-secondary/30 backdrop-blur"
             >
               {tag}

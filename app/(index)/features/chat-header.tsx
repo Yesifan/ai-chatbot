@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { IconHisotry } from '@/components/ui/icons'
 import { Input, InputProps } from '@/components/ui/input'
-import { InboxAvatar, RobotAvatar } from '@/components/ui/avatar'
+import Avatar, { InboxAvatar } from '@/components/ui/avatar'
 import { SafeArea } from '@/components/ui/safe-area'
 import { Robot } from '@/types/database'
 import { DEFAULT_CHAT_NAME, JARVIS } from '@/lib/constants'
@@ -109,7 +109,13 @@ export function ChatHeader({
       <div className="flex h-16 w-full items-center px-4 py-1">
         {robot ? (
           <Button variant="ghost" className="mr-2 h-14 px-2">
-            <RobotAvatar className="w-10 text-4xl" />
+            <Avatar
+              className="h-10 w-10 text-4xl"
+              fallback={
+                robot.icon?.startsWith('http') ? '🤖' : robot.icon ?? '🤖'
+              }
+              src={robot.icon?.startsWith('http') ? robot.icon : undefined}
+            />
           </Button>
         ) : (
           <InboxAvatar className="mx-2 mr-4 w-10 text-4xl" />

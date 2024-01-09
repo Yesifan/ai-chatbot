@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
-import { RobotAvatar } from '@/components/ui/avatar'
+import Avatar, { RobotAvatar } from '@/components/ui/avatar'
 import { Chat, Robot } from '@/types/database'
 
 export type RobotWithLastMessage = Robot &
@@ -37,7 +37,11 @@ export function RobotItem({ robot, children }: RobotItemProps) {
       )}
     >
       <Link href={`/chat/${robot.id}`} className="flex w-full items-center">
-        <RobotAvatar className="mr-1 h-14 w-14 shrink-0 p-2 text-4xl" />
+        <Avatar
+          className="mr-1 h-14 w-14 shrink-0 rounded p-2 text-4xl"
+          fallback={robot.icon?.startsWith('http') ? '🤖' : robot.icon ?? '🤖'}
+          src={robot.icon?.startsWith('http') ? robot.icon : undefined}
+        />
         <div className="flex w-full min-w-full flex-col pr-14">
           <h4
             className="relative flex w-full flex-1 select-none items-center justify-between break-all"
