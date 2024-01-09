@@ -167,12 +167,13 @@ export function Chat({ initialMessages, className }: ChatProps) {
 
         <ChatScrollAnchor trackVisibility={isLoading || isEditing} />
       </section>
-      <section className="sticky bottom-0 mt-auto">
+      <section className="sticky bottom-0 mt-auto flex justify-center bg-background">
         {status != 'authenticated' ? (
           <ChatLoginPanel setMessages={props.setMessages} />
         ) : (
           <ChatPanel
-            className="h-56"
+            height={240}
+            className="w-full md:max-w-2xl"
             noPause={!isLoading}
             id={chatStore.id}
             messages={messages}

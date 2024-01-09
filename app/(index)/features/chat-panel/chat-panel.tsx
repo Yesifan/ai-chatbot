@@ -28,6 +28,7 @@ export interface ChatPanelProps
     | 'setLoading'
   > {
   id?: string
+  height?: number
   className?: string
   noPause?: boolean
 }
@@ -35,6 +36,7 @@ export interface ChatPanelProps
 export function ChatPanel({
   id,
   input,
+  height = 240,
   isLoading,
   setInput,
   className,
@@ -71,10 +73,8 @@ export function ChatPanel({
   }
 
   return (
-    <div
-      className={cn('flex flex-col bg-background pt-2 shadow-lg', className)}
-    >
-      <div className={'flex items-center px-4 pb-2'}>
+    <div className={cn('flex flex-col shadow-lg', className)}>
+      <div className={'flex h-10 items-center px-4'}>
         <div
           className={cn(
             'flex space-x-4 transition-transform',
@@ -93,6 +93,7 @@ export function ChatPanel({
         />
       </div>
       <PromptForm
+        height={height - 40}
         onSubmit={submit}
         input={isPrompt ? prompt : input}
         setInput={isPrompt ? setPrompt : setInput}

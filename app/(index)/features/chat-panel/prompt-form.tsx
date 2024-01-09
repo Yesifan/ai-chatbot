@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { UseChatHelpers } from 'ai/react'
-import Textarea from 'react-textarea-autosize'
 
 import { Button } from '@/components/ui/button'
 import { IconArrowElbow, IconPause } from '@/components/ui/icons'
@@ -41,15 +40,17 @@ export function EnterButton(props: {
 
 export interface PromptProps
   extends Pick<UseChatHelpers, 'input' | 'setInput' | 'stop'> {
-  onSubmit: (value: string) => Promise<void>
+  height?: number
   noPause?: boolean
   isLoading: boolean
   placeholder?: string
   isClearAfterSubmit?: boolean
+  onSubmit: (value: string) => Promise<void>
 }
 
 export function PromptForm({
   input,
+  height = 200,
   stop,
   onSubmit,
   setInput,
@@ -94,18 +95,17 @@ export function PromptForm({
     <form
       ref={formRef}
       onSubmit={submit}
-      className="relative flex w-full flex-1 flex-col bg-background"
+      className="relative flex w-full flex-1 flex-col"
     >
-      <div className="overflow-y-scroll px-4 pb-1">
-        <Textarea
+      <div className="flex justify-center overflow-hidden px-4 pb-1">
+        <textarea
           ref={inputRef}
           tabIndex={0}
-          onKeyDown={onKeyDown2}
-          minRows={4}
           value={input}
+          onKeyDown={onKeyDown2}
           onChange={e => setInput(e.target.value)}
           placeholder={placeholder ?? 'Send a message.'}
-          spellCheck={false}
+          style={{ height: `${height}px` }}
           className="w-full resize-none bg-transparent focus-within:outline-none sm:text-sm"
         />
       </div>
