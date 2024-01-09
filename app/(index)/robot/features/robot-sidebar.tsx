@@ -14,6 +14,8 @@ import { Separator } from '@/components/ui/separator'
 import { RobotTemplate } from '@/types/api'
 import BubblesLoading from '@/components/ui/loading'
 import { useSession } from '@/lib/auth/provider'
+import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard'
+import { IconCheck, IconCopy } from '@/components/ui/icons'
 
 interface RobotCardProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
   prompt?: string
@@ -40,6 +42,7 @@ export function RobotSidebar({
   const [prompt, setPrompt] = useState(_prompt)
   const [isLoading, startTransition] = useTransition()
   const [isPromptLoading, startPTransition] = useTransition()
+  const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
   const { id, name, icon, cover, description, tags } = template
 
   const getPrompt = useCallback(async () => {
@@ -119,11 +122,20 @@ export function RobotSidebar({
         </div>
       </div>
 
-      <div className="w-full pl-3">
-        <p className="py-1 text-start">Prompt</p>
-        <Separator />
+      <div className="relative mt-4 flex w-full justify-center px-3">
+        <Separator className="absolute top-1/2" />
+        <Badge
+          variant="secondary"
+          className="relative cursor-pointer"
+          onClick={() => copyToClipboard(prompt)}
+        >
+          Prompt
+          <span className="ml-2">
+            {isCopied ? <IconCheck /> : <IconCopy />}
+          </span>
+        </Badge>
       </div>
-      <div className="w-full flex-1 px-4">
+      <div className="relative w-full flex-1 p-4">
         {isPromptLoading ? (
           <BubblesLoading />
         ) : prompt ? (
