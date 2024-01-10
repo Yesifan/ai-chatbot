@@ -9,25 +9,28 @@ import { clearRobotChats, removeChat, updateChat } from '@/app/actions/chat'
 import { ChatItem } from './chat-item'
 import type { Chat } from '@/types/database'
 import { ClearHistory } from './clear-history'
-import { SaveChatButton } from './save-chat-button'
-import { useChatStore } from '@/lib/store/chat'
-import { useSessionStatusEffect } from '@/lib/hooks/use-login'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { DEFAULT_CHAT_NAME } from '@/lib/constants'
 import { Button } from '@/components/ui/button'
 import { SaveAction } from '@/components/save-action'
+import { useGlobalStore } from '@/lib/store/global'
 
 interface HistoryChatListProps {
-  robotId?: string
+  chats?: Chat[]
   className?: string
 }
 
-export function HistoryChatList({ robotId, className }: HistoryChatListProps) {
+export function ChatSidebar({
+  chats: _chats,
+  className
+}: HistoryChatListProps) {
   const router = useRouter()
+  const { isChatSidebar: isShowHistory } = useGlobalStore()
+  const { robot: robotId } = useParams<{ robot?: string }>()
+
   const [isLoading, starTransition] = useTransition()
 
-  const chatStore = useChatStore()
-  const [chats, setChats] = useState<Chat[]>([])
+  const [chats, setChats] = useState<Chat[] | undefined>(_chats)
 
   const reloadChats = useCallback(async () => {
     starTransition(async () => {
@@ -71,7 +74,7 @@ export function HistoryChatList({ robotId, className }: HistoryChatListProps) {
     const result = await updateChat(id, { isFavourite })
     if (result.ok) {
       setChats(chats =>
-        chats.map(chat => (chat.id === id ? { ...chat, isFavourite } : chat))
+        chats?.map(chat => (chat.id === id ? { ...chat, isFavourite } : chat))
       )
       return true
     } else {
@@ -83,34 +86,17 @@ export function HistoryChatList({ robotId, className }: HistoryChatListProps) {
   const removeChatHandler = async (id: string) => {
     const result = await removeChat(id)
     if (result.ok) {
-      setChats(chats => chats.filter(chat => chat.id !== id))
+      setChats(chats => chats?.filter(chat => chat.id !== id))
     }
     return result
   }
 
-  const status = useSessionStatusEffect(() => {
-    if (status === 'authenticated') {
-      reloadChats()
-    } else {
-      setChats([])
-    }
-  }, true)
-
-  if (status !== 'authenticated') {
-    return (
-      <div className={cn('flex flex-1 flex-col', className)}>
-        <h4 className="mx-2 pb-2 text-sm">Chat List</h4>
-        <div className="p-8 text-center">
-          <p className="text-sm text-muted-foreground">Please login in first</p>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div
+    <aside
       className={cn(
-        'flex w-80 flex-1 flex-col bg-gradient-to-br from-background/80 via-background/50 to-background/10 pt-4 backdrop-blur-xl',
+        'flex flex-col border-l bg-background pt-4 transition-transform',
+        'fixed inset-y-0 right-0 z-10 h-screen w-full',
+        'md:sticky md:top-0 md:w-80',
         className
       )}
     >
@@ -123,23 +109,25 @@ export function HistoryChatList({ robotId, className }: HistoryChatListProps) {
       >
         New Chat 💬
       </Button>
-      {chatStore.id && !chatStore.isSaved && (
-        <SaveChatButton chatId={chatStore.id} className="mx-2 mb-2" />
-      )}
+
       <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
-        {chats.map(chat => (
-          <ChatItem key={chat?.id} chat={chat} favorite={favoriteChatHandler}>
-            {chat.isSaved ? (
-              <RemoveActions id={chat.id} remove={removeChatHandler} />
-            ) : (
-              <SaveAction id={chat.id} save={saveChatHandler} />
-            )}
-          </ChatItem>
-        ))}
+        {chats ? (
+          chats.map(chat => (
+            <ChatItem key={chat?.id} chat={chat} favorite={favoriteChatHandler}>
+              {chat.isSaved ? (
+                <RemoveActions id={chat.id} remove={removeChatHandler} />
+              ) : (
+                <SaveAction id={chat.id} save={saveChatHandler} />
+              )}
+            </ChatItem>
+          ))
+        ) : (
+          <div> retry get chats. </div>
+        )}
       </div>
       <div className={cn('flex items-center p-4')}>
         <ClearHistory clearChats={clearChatHandle} />
       </div>
-    </div>
+    </aside>
   )
 }

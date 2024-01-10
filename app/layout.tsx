@@ -8,7 +8,6 @@ import { fontMono, fontSans } from '@/lib/fonts'
 import { Providers } from '@/components/providers'
 import { TailwindPallette } from '@/components/tailwind-pallette'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
-import { SessionProvider } from '@/lib/auth/provider'
 
 import '@/app/globals.css'
 
@@ -61,8 +60,8 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         )}
       >
         <Toaster />
-        <Providers attribute="class" defaultTheme="system" enableSystem>
-          <SessionProvider session={session}>{children}</SessionProvider>
+        <Providers session={session}>
+          {children}
           <TailwindIndicator />
           <TailwindPallette />
         </Providers>

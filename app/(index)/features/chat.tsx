@@ -25,7 +25,6 @@ import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { ButtonReload } from '@/components/reload-button'
 import { Button } from '@/components/ui/button'
 import { IconMessages } from '@/components/ui/icons'
-import { HistoryChatList } from './chat-history/chat-list'
 import type { Chat, Message } from '@/types/database'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
@@ -127,30 +126,7 @@ export function Chat({ initialMessages, className }: ChatProps) {
         {status === 'authenticated' && messages.length === 0 && (
           <EmptyScreen setInput={props.setInput} />
         )}
-        {status === 'authenticated' && (
-          <HistoryChatList
-            robotId={chatStore.robotId}
-            className={cn(
-              'bottom-0 w-full md:bottom-56 md:w-80',
-              'top-[calc(4rem+env(safe-area-inset-top))]',
-              'fixed right-0 z-10 transition-transform',
-              hasHistory ? ' translate-x-0' : 'translate-x-full'
-            )}
-          />
-        )}
-        {status === 'authenticated' && (
-          <div className="fixed bottom-60 right-2 z-20 flex flex-col space-y-4">
-            <Button
-              size="icon"
-              variant={hasHistory ? 'highlight' : 'board'}
-              onClick={() => setHasHistory(!hasHistory)}
-            >
-              <IconMessages />
-            </Button>
-            <ButtonReload onClick={reloadChat} isLoading={isInitialize} />
-            <ButtonScrollToBottom />
-          </div>
-        )}
+
         <div className="relative mx-auto w-screen px-1 md:max-w-2xl md:px-4">
           <ChatMessageList
             messages={messages}
@@ -164,16 +140,34 @@ export function Chat({ initialMessages, className }: ChatProps) {
             </>
           )}
         </div>
-
         <ChatScrollAnchor trackVisibility={isLoading || isEditing} />
+
+        {status === 'authenticated' && (
+          <div className="sticky bottom-60 flex flex-row-reverse p-2">
+            <div className="flex flex-col space-y-4">
+              <Button
+                size="icon"
+                variant={hasHistory ? 'highlight' : 'board'}
+                onClick={() => setHasHistory(!hasHistory)}
+              >
+                <IconMessages />
+              </Button>
+              <ButtonReload onClick={reloadChat} isLoading={isInitialize} />
+              <ButtonScrollToBottom />
+            </div>
+          </div>
+        )}
       </section>
       <section className="sticky bottom-0 mt-auto flex justify-center bg-background">
         {status != 'authenticated' ? (
-          <ChatLoginPanel setMessages={props.setMessages} />
+          <ChatLoginPanel
+            className="w-full md:max-w-2xl"
+            setMessages={props.setMessages}
+          />
         ) : (
           <ChatPanel
             height={240}
-            className="w-full md:max-w-2xl"
+            className="w-full"
             noPause={!isLoading}
             id={chatStore.id}
             messages={messages}

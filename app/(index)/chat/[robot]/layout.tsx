@@ -1,4 +1,5 @@
-import { cn } from '@/lib/utils'
+import { ChatSidebar } from '../../features/chat-history/chat-sidebar'
+import { getChats } from '@/app/actions/chat'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -7,6 +8,13 @@ interface LayoutProps {
   }
 }
 
-export default async function RootLayout({ children }: LayoutProps) {
-  return <div className={cn('flex flex-col')}>{children}</div>
+export default async function Layout({ children, params }: LayoutProps) {
+  const { robot } = params
+  const chats = await getChats(robot)
+  return (
+    <div className="flex">
+      <div className="relative flex flex-1 flex-col">{children}</div>
+      <ChatSidebar chats={chats} />
+    </div>
+  )
 }
