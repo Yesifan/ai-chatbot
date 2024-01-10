@@ -1,3 +1,4 @@
+import { INBOX_PATH } from '@/lib/constants'
 import { ChatSidebar } from '../../features/chat-history/chat-sidebar'
 import { getChats } from '@/app/actions/chat'
 
@@ -10,11 +11,11 @@ interface LayoutProps {
 
 export default async function Layout({ children, params }: LayoutProps) {
   const { robot } = params
-  const chats = await getChats(robot)
+  const chats = await getChats(robot === INBOX_PATH ? undefined : robot)
   return (
-    <div className="flex">
-      <div className="relative flex flex-1 flex-col">{children}</div>
-      <ChatSidebar chats={chats} />
-    </div>
+    <>
+      <div className="relative flex w-full flex-1 flex-col">{children}</div>
+      <ChatSidebar chats={chats} className="z-20" />
+    </>
   )
 }

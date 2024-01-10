@@ -16,8 +16,8 @@ export default async function RootLayout({ children }: LayoutProps) {
       )}
       <main
         className={cn(
-          'relative flex min-h-screen flex-1 flex-col bg-muted/50',
-          isMobile ? 'w-screen' : 'pl-[300px]'
+          'relative flex min-h-screen w-screen flex-1 bg-muted/50',
+          isMobile ? '' : 'pl-[300px]'
         )}
       >
         {children}

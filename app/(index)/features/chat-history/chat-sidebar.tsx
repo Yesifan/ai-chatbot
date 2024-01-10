@@ -104,14 +104,13 @@ export function ChatSidebar({
     <section
       className={cn(
         'overflow-hidden border-l bg-background transition-all',
-        'fixed inset-y-0 right-0 z-10 h-screen w-full',
-        'md:sticky md:top-0 md:w-80',
+        'fixed right-0 z-10 h-screen w-full md:sticky md:top-0 md:w-80',
         isChatSidebar && status !== 'unauthenticated' ? '' : 'w-0 md:w-0',
         className
       )}
     >
       {status !== 'unauthenticated' && (
-        <aside className="flex h-full w-80 flex-col">
+        <aside className="flex h-full w-full flex-col md:w-80">
           <h4 className="mb-2 flex h-16 items-center px-2 pb-2 text-sm">
             Chat List
           </h4>

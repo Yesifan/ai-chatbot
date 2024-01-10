@@ -121,14 +121,14 @@ export function Chat({ initialMessages, className }: ChatProps) {
 
   return (
     <>
-      <section className={cn('pt-4', className)}>
+      <section className={cn('w-full pt-4', className)}>
         {status != 'authenticated' && <NotLogin />}
         {chatStore.pinPrompt && <PinPrompt content={chatStore.pinPrompt} />}
         {status === 'authenticated' && messages.length === 0 && (
           <EmptyScreen setInput={props.setInput} />
         )}
 
-        <div className="relative mx-auto w-screen px-1 md:max-w-2xl md:px-4">
+        <div className="relative mx-auto w-full px-1 md:max-w-2xl md:px-4">
           <ChatMessageList
             messages={messages}
             isLoading={isLoading}

@@ -30,13 +30,11 @@ export default async function IndexPage() {
 
   return (
     <ChatStoreProvider {...chat}>
-      <div className="flex">
-        <div className="relative flex flex-1 flex-col">
-          <ChatHeader className="sticky top-0 z-50" isMobile={isMobile} />
-          <Chat id={id} initialMessages={messages} />
-        </div>
-        <ChatSidebar chats={chats} />
+      <div className="relative flex flex-1 flex-col">
+        <ChatHeader className="sticky top-0 z-50" isMobile={isMobile} />
+        <Chat id={id} initialMessages={messages} />
       </div>
+      <ChatSidebar chats={chats} />
     </ChatStoreProvider>
   )
 }

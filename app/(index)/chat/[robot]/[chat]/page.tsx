@@ -57,7 +57,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
       <ChatHeader
         robot={robot}
         isMobile={isMobile}
-        className="sticky top-0 z-50"
+        className="sticky top-0 z-10"
       />
       <Chat id={chatId} initialMessages={messages} />
     </ChatStoreProvider>
