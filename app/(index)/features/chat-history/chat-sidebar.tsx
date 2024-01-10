@@ -14,6 +14,7 @@ import { DEFAULT_CHAT_NAME } from '@/lib/constants'
 import { Button } from '@/components/ui/button'
 import { SaveAction } from '@/components/save-action'
 import { useGlobalStore } from '@/lib/store/global'
+import { useSessionStatusEffect } from '@/lib/hooks/use-login'
 
 interface HistoryChatListProps {
   chats?: Chat[]
@@ -25,7 +26,7 @@ export function ChatSidebar({
   className
 }: HistoryChatListProps) {
   const router = useRouter()
-  const { isChatSidebar: isShowHistory } = useGlobalStore()
+  const { isChatSidebar } = useGlobalStore()
   const { robot: robotId } = useParams<{ robot?: string }>()
 
   const [isLoading, starTransition] = useTransition()
@@ -91,43 +92,62 @@ export function ChatSidebar({
     return result
   }
 
+  const status = useSessionStatusEffect(() => {
+    if (status === 'authenticated') {
+      reloadChats()
+    } else {
+      setChats([])
+    }
+  })
+
   return (
-    <aside
+    <section
       className={cn(
-        'flex flex-col border-l bg-background pt-4 transition-transform',
+        'overflow-hidden border-l bg-background transition-all',
         'fixed inset-y-0 right-0 z-10 h-screen w-full',
         'md:sticky md:top-0 md:w-80',
+        isChatSidebar && status !== 'unauthenticated' ? '' : 'w-0 md:w-0',
         className
       )}
     >
-      <h4 className="mx-2 pb-2 text-sm">Chat List</h4>
-      <Button
-        variant="outline"
-        className="mx-2 mb-2"
-        isLoading={isLoading}
-        onClick={createChatHndler}
-      >
-        New Chat 💬
-      </Button>
+      {status !== 'unauthenticated' && (
+        <aside className="flex h-full w-80 flex-col">
+          <h4 className="mb-2 flex h-16 items-center px-2 pb-2 text-sm">
+            Chat List
+          </h4>
+          <Button
+            variant="outline"
+            className="mx-2 mb-2"
+            isLoading={isLoading}
+            onClick={createChatHndler}
+          >
+            New Chat 💬
+          </Button>
 
-      <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
-        {chats ? (
-          chats.map(chat => (
-            <ChatItem key={chat?.id} chat={chat} favorite={favoriteChatHandler}>
-              {chat.isSaved ? (
-                <RemoveActions id={chat.id} remove={removeChatHandler} />
-              ) : (
-                <SaveAction id={chat.id} save={saveChatHandler} />
-              )}
-            </ChatItem>
-          ))
-        ) : (
-          <div> retry get chats. </div>
-        )}
-      </div>
-      <div className={cn('flex items-center p-4')}>
-        <ClearHistory clearChats={clearChatHandle} />
-      </div>
-    </aside>
+          <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
+            {chats ? (
+              chats.map(chat => (
+                <ChatItem
+                  key={chat?.id}
+                  chat={chat}
+                  favorite={favoriteChatHandler}
+                >
+                  {chat.isSaved ? (
+                    <RemoveActions id={chat.id} remove={removeChatHandler} />
+                  ) : (
+                    <SaveAction id={chat.id} save={saveChatHandler} />
+                  )}
+                </ChatItem>
+              ))
+            ) : (
+              <div> retry get chats. </div>
+            )}
+          </div>
+          <div className={cn('flex items-center p-4')}>
+            <ClearHistory clearChats={clearChatHandle} />
+          </div>
+        </aside>
+      )}
+    </section>
   )
 }

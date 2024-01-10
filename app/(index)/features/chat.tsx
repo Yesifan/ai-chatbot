@@ -26,6 +26,7 @@ import { ButtonReload } from '@/components/reload-button'
 import { Button } from '@/components/ui/button'
 import { IconMessages } from '@/components/ui/icons'
 import type { Chat, Message } from '@/types/database'
+import { useGlobalStore } from '@/lib/store/global'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
@@ -35,8 +36,8 @@ export function Chat({ initialMessages, className }: ChatProps) {
   const router = useRouter()
   const pathname = usePathname()
   const search = useSearchParams()
+  const { isChatSidebar, setShowChatSidebar } = useGlobalStore()
   const [isEditing, setIsEditing] = useState(false)
-  const [hasHistory, setHasHistory] = useState(false)
   const [isInitialize, startTransition] = useTransition()
 
   const chatStore = useChatStore()
@@ -147,8 +148,8 @@ export function Chat({ initialMessages, className }: ChatProps) {
             <div className="flex flex-col space-y-4">
               <Button
                 size="icon"
-                variant={hasHistory ? 'highlight' : 'board'}
-                onClick={() => setHasHistory(!hasHistory)}
+                variant={isChatSidebar ? 'highlight' : 'board'}
+                onClick={() => setShowChatSidebar(!isChatSidebar)}
               >
                 <IconMessages />
               </Button>
