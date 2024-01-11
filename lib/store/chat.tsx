@@ -61,24 +61,24 @@ export const ChatStoreProvider = ({
     setTitle(undefined)
   }
 
-  const setTitleHandle = (value?: string) => {
-    if (value) {
-      setTitle(value)
-      setChatList(list => {
-        if (list) {
-          return list.map(item => {
-            if (item.id === id) {
-              item.title = value
-            }
-            return item
-          })
-        }
-        return list
-      })
-    }
-  }
-
   const store = useMemo<ChatStore>(() => {
+    const setTitleHandle = (value?: string) => {
+      if (value) {
+        setTitle(value)
+        setChatList(list => {
+          if (list) {
+            return list.map(item => {
+              if (item.id === id) {
+                item.title = value
+              }
+              return item
+            })
+          }
+          return list
+        })
+      }
+    }
+
     return {
       id,
       title,
@@ -95,7 +95,21 @@ export const ChatStoreProvider = ({
       setTemperature,
       setAttachedMessagesCount
     }
-  }, [attachedMessagesCount, chat, id, model, pinPrompt, temperature, title])
+  }, [
+    attachedMessagesCount,
+    chat,
+    id,
+    model,
+    pinPrompt,
+    setChatList,
+    setModel,
+    setPinPrompt,
+    setTemperature,
+    setTitle,
+    setAttachedMessagesCount,
+    temperature,
+    title
+  ])
 
   return (
     <ChatStoreContext.Provider value={store}>

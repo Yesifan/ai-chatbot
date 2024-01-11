@@ -8,7 +8,7 @@ import { useSetAtom } from 'jotai'
 import { chatSidebarToogleAtom } from '@/lib/store/global'
 
 export function ChatSidebarHeader({ className }: { className?: string }) {
-  const setShowChatSidebar = useSetAtom(chatSidebarToogleAtom)
+  const toogleChatSidebar = useSetAtom(chatSidebarToogleAtom)
   return (
     <header
       className={cn(
@@ -21,7 +21,7 @@ export function ChatSidebarHeader({ className }: { className?: string }) {
         <Button
           variant="highlight"
           className="-ml-2 h-9 w-9 p-0"
-          onClick={() => setShowChatSidebar(false)}
+          onClick={toogleChatSidebar}
         >
           <IconSidebar className="h-6 w-6" />
           <span className="sr-only">Toggle Chat Sidebar</span>
