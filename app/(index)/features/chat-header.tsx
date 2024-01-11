@@ -58,7 +58,7 @@ const TitleInput = ({
   }
 
   return isEdit ? (
-    <div className="flex h-7 w-full space-x-2">
+    <div className="flex h-7 w-full items-center space-x-2">
       <Input
         ref={inputRef}
         value={chat.title}
@@ -66,13 +66,17 @@ const TitleInput = ({
         className={cn('h-7', className)}
         onKeyDown={onKeyDown}
       />
-      <Button ref={submitRef} className="h-7 shrink-0" onClick={onSubmit}>
+      <Button
+        ref={submitRef}
+        className="h-6 px-2 text-sm md:text-base"
+        onClick={onSubmit}
+      >
         Ok
       </Button>
       <Button
         ref={cancelRef}
         variant="secondary"
-        className="h-7 shrink-0"
+        className="h-6 px-2 text-sm md:text-base"
         onClick={onCancel}
       >
         Cancel
@@ -123,10 +127,14 @@ export function ChatHeader({
         ) : (
           <InboxAvatar className="mx-2 mr-4 w-10 text-4xl" />
         )}
-        <div className="flex w-full flex-1 flex-col justify-between pr-6">
+        <div className="flex w-full flex-1 flex-col justify-between pr-1">
           <div className="flex text-lg">
-            <span className="shrink-0">{robot ? robot.name : JARVIS}</span>
-            <span className="px-2">-</span>
+            {!isMobile && (
+              <>
+                <span className="shrink-0">{robot ? robot.name : JARVIS}</span>
+                <span className="px-2">-</span>
+              </>
+            )}
             <TitleInput disabled={!chat.isSaved} />
           </div>
           <div className="">
@@ -134,13 +142,13 @@ export function ChatHeader({
           </div>
         </div>
         <div className="ml-auto space-x-1">
-          {isMobile ? (
+          {isMobile && (
             <Button variant="ghost" size="icon" asChild>
               <Link href="/history">
-                <IconHisotry className="h-6 w-6" />
+                <IconHisotry />
               </Link>
             </Button>
-          ) : null}
+          )}
           <Button
             variant={isChatSidebar ? 'highlight' : 'ghost'}
             size="icon"
