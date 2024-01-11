@@ -15,7 +15,7 @@ export default async function Layout({ children, params }: LayoutProps) {
   return (
     <>
       <div className="relative flex w-full flex-1 flex-col">{children}</div>
-      <ChatSidebar chats={chats} className="z-20" />
+      <ChatSidebar initialChats={chats} className="z-20" />
     </>
   )
 }

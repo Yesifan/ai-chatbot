@@ -9,6 +9,8 @@ import {
   useState
 } from 'react'
 import { GPT_Model, TEMPERATURE } from '../constants'
+import { useSetAtom } from 'jotai'
+import { chatListAtom } from './global'
 
 export interface ChatStore extends Partial<Chat> {
   id?: string
@@ -44,6 +46,8 @@ export const ChatStoreProvider = ({
     _attachedMessagesCount ?? 5
   )
 
+  const setChatList = useSetAtom(chatListAtom)
+
   const update = (chat: Partial<Chat>) => {
     setId(chat.id)
     setTitle(chat.title)
@@ -57,6 +61,23 @@ export const ChatStoreProvider = ({
     setTitle(undefined)
   }
 
+  const setTitleHandle = (value?: string) => {
+    if (value) {
+      setTitle(value)
+      setChatList(list => {
+        if (list) {
+          return list.map(item => {
+            if (item.id === id) {
+              item.title = value
+            }
+            return item
+          })
+        }
+        return list
+      })
+    }
+  }
+
   const store = useMemo<ChatStore>(() => {
     return {
       id,
@@ -68,7 +89,7 @@ export const ChatStoreProvider = ({
       ...chat,
       clear,
       update,
-      setTitle,
+      setTitle: setTitleHandle,
       setModel,
       setPinPrompt,
       setTemperature,

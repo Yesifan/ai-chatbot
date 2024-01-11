@@ -122,7 +122,7 @@ export function ChatHeader({
         )}
         <div className="flex w-full flex-1 flex-col justify-between pr-6">
           <div className="flex text-lg">
-            <span>{robot ? robot.name : JARVIS}</span>
+            <span className="shrink-0">{robot ? robot.name : JARVIS}</span>
             <span className="px-2">-</span>
             <TitleInput disabled={!chat.isSaved} />
           </div>

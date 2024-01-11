@@ -1,6 +1,7 @@
 'use client'
 import toast from 'react-hot-toast'
-import { useAtomValue } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
+import { useHydrateAtoms } from 'jotai/utils'
 import { useCallback, useState, useTransition } from 'react'
 
 import { cn } from '@/lib/utils'
@@ -14,33 +15,33 @@ import { useParams, useRouter } from 'next/navigation'
 import { DEFAULT_CHAT_NAME } from '@/lib/constants'
 import { Button } from '@/components/ui/button'
 import { SaveAction } from '@/components/save-action'
-import { chatSidebarStateAtom } from '@/lib/store/global'
+import { chatListAtom, chatSidebarStateAtom } from '@/lib/store/global'
 import { useSessionStatusEffect } from '@/lib/hooks/use-login'
 import { ChatSidebarHeader } from './chat-sidebar-header'
 
 interface HistoryChatListProps {
-  chats?: Chat[]
+  initialChats?: Chat[]
   className?: string
 }
 
-export function ChatSidebar({
-  chats: _chats,
-  className
-}: HistoryChatListProps) {
+export function ChatSidebar({ initialChats, className }: HistoryChatListProps) {
+  useHydrateAtoms([[chatListAtom, initialChats]])
+
   const router = useRouter()
+  const [chats, setChats] = useAtom(chatListAtom)
   const isChatSidebar = useAtomValue(chatSidebarStateAtom)
   const { robot: robotId } = useParams<{ robot?: string }>()
 
   const [isLoading, starTransition] = useTransition()
 
-  const [chats, setChats] = useState<Chat[] | undefined>(_chats)
+  // const [chats, setChats] = useState<Chat[] | undefined>(_chats)
 
   const reloadChats = useCallback(async () => {
     starTransition(async () => {
       const chats = await getChats(robotId)
       setChats(chats)
     })
-  }, [starTransition, robotId])
+  }, [robotId, setChats])
 
   const createChatHndler = () => {
     starTransition(async () => {

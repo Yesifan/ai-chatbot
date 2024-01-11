@@ -34,7 +34,7 @@ export default async function IndexPage() {
         <ChatHeader className="sticky top-0 z-10" isMobile={isMobile} />
         <Chat id={id} initialMessages={messages} />
       </div>
-      <ChatSidebar chats={chats} className="z-20" />
+      <ChatSidebar initialChats={chats} className="z-20" />
     </ChatStoreProvider>
   )
 }
