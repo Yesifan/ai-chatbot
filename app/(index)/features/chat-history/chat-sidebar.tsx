@@ -18,6 +18,7 @@ import { SaveAction } from '@/components/save-action'
 import { chatListAtom, chatSidebarToogleAtom } from '@/lib/store/global'
 import { useSessionStatusEffect } from '@/lib/hooks/use-login'
 import { ChatSidebarHeader } from './chat-sidebar-header'
+import { ButtonReload } from '@/components/reload-button'
 
 interface HistoryChatListProps {
   initialChats?: Chat[]
@@ -140,10 +141,13 @@ export function ChatSidebar({ initialChats, className }: HistoryChatListProps) {
                 </ChatItem>
               ))
             ) : (
-              <div> retry get chats. </div>
+              <Button variant="ghost" onClick={reloadChats}>
+                Retry get chats.
+              </Button>
             )}
           </div>
-          <div className={cn('flex items-center p-4')}>
+          <div className="flex items-center gap-2 p-4">
+            <ButtonReload onClick={reloadChats} isLoading={isLoading} />
             <ClearHistory clearChats={clearChatHandle} />
           </div>
         </aside>

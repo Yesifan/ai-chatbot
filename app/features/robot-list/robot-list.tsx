@@ -10,6 +10,7 @@ import { RemoveActions } from '@/components/remove-actions'
 import { RobotItem, RobotWithLastMessage } from './robot-item'
 import type { Robot } from '@/types/database'
 import { useSessionStatusEffect } from '@/lib/hooks/use-login'
+import { ButtonReload } from '@/components/reload-button'
 
 interface RobotListProps {
   initalRobots?: RobotWithLastMessage[]
@@ -22,12 +23,12 @@ const removeDesc =
 export function RobotList({ initalRobots, className }: RobotListProps) {
   const [error, setError] = useState<string>()
   const [isLoading, startTransition] = useTransition()
-  const [robots, setRobots] = useState<Robot[]>(initalRobots ?? [])
+  const [robots, setRobots] = useState<Robot[] | undefined>(initalRobots)
 
   const removeRobotHandler = async (id: string) => {
     const result = await removeRobot(id)
     if (typeof result === 'bigint') {
-      setRobots(chats => chats.filter(chat => chat.id !== id))
+      setRobots(chats => chats?.filter(chat => chat.id !== id))
     }
     return result
   }
@@ -72,15 +73,26 @@ export function RobotList({ initalRobots, className }: RobotListProps) {
         <Link href="/robot">New Robot 🤖</Link>
       </Button>
       <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
-        {robots.map(robot => (
-          <RobotItem key={robot?.id} robot={robot}>
-            <RemoveActions
-              id={robot.id}
-              desc={removeDesc}
-              remove={removeRobotHandler}
-            />
-          </RobotItem>
-        ))}
+        {robots ? (
+          <>
+            {robots.map(robot => (
+              <RobotItem key={robot?.id} robot={robot}>
+                <RemoveActions
+                  id={robot.id}
+                  desc={removeDesc}
+                  remove={removeRobotHandler}
+                />
+              </RobotItem>
+            ))}
+            <ButtonReload size="full" className="mt-12">
+              Reload Robots
+            </ButtonReload>
+          </>
+        ) : (
+          <Button variant="ghost" onClick={reloadRobots}>
+            Retry get robots.
+          </Button>
+        )}
       </div>
     </div>
   )
