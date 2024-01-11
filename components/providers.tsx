@@ -7,7 +7,7 @@ import { ThemeProviderProps } from 'next-themes/dist/types'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { SessionProvider } from '@/lib/auth/provider'
 import { User } from '@/types/database'
-import { GlobalStoreProvider } from '@/lib/store/global'
+import { Provider } from 'jotai'
 
 interface ProviderProps extends ThemeProviderProps {
   session?: User
@@ -29,9 +29,7 @@ export function Providers({
     >
       <SessionProvider session={session}>
         <TooltipProvider>
-          <GlobalStoreProvider isChatSidebar={isShowHistory}>
-            {children}
-          </GlobalStoreProvider>
+          <Provider>{children}</Provider>
         </TooltipProvider>
       </SessionProvider>
     </NextThemesProvider>

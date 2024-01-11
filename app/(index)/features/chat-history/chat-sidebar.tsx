@@ -1,5 +1,6 @@
 'use client'
 import toast from 'react-hot-toast'
+import { useAtomValue } from 'jotai'
 import { useCallback, useState, useTransition } from 'react'
 
 import { cn } from '@/lib/utils'
@@ -13,8 +14,9 @@ import { useParams, useRouter } from 'next/navigation'
 import { DEFAULT_CHAT_NAME } from '@/lib/constants'
 import { Button } from '@/components/ui/button'
 import { SaveAction } from '@/components/save-action'
-import { useGlobalStore } from '@/lib/store/global'
+import { chatSidebarAtom } from '@/lib/store/global'
 import { useSessionStatusEffect } from '@/lib/hooks/use-login'
+import { ChatSidebarHeader } from './chat-sidebar-header'
 
 interface HistoryChatListProps {
   chats?: Chat[]
@@ -26,7 +28,7 @@ export function ChatSidebar({
   className
 }: HistoryChatListProps) {
   const router = useRouter()
-  const { isChatSidebar } = useGlobalStore()
+  const isChatSidebar = useAtomValue(chatSidebarAtom)
   const { robot: robotId } = useParams<{ robot?: string }>()
 
   const [isLoading, starTransition] = useTransition()
@@ -111,9 +113,7 @@ export function ChatSidebar({
     >
       {status !== 'unauthenticated' && (
         <aside className="flex h-full w-full flex-col md:w-80">
-          <h4 className="mb-2 flex h-16 items-center px-2 pb-2 text-sm">
-            Chat List
-          </h4>
+          <ChatSidebarHeader className="mb-2" />
           <Button
             variant="outline"
             className="mx-2 mb-2"

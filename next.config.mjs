@@ -10,6 +10,9 @@ const withPWA = nextPWA({
   },
   cacheStartUrl: true,
   dynamicStartUrl: true,
+  experimental: {
+    swcPlugins: [['@swc-jotai/react-refresh', {}]],
+  }
 });
 
 
