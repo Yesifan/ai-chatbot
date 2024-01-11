@@ -1,5 +1,4 @@
 'use client'
-
 import { atom } from 'jotai'
 
-export const chatSidebarAtom = atom(false)
+export const chatSidebarStateAtom = atom(false)

@@ -26,7 +26,7 @@ import { ButtonReload } from '@/components/reload-button'
 import { Button } from '@/components/ui/button'
 import { IconMessages } from '@/components/ui/icons'
 import type { Chat, Message } from '@/types/database'
-import { chatSidebarAtom } from '@/lib/store/global'
+import { chatSidebarStateAtom } from '@/lib/store/global'
 import { useAtom } from 'jotai'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
@@ -39,7 +39,7 @@ export function Chat({ initialMessages, className }: ChatProps) {
   const search = useSearchParams()
   const [isEditing, setIsEditing] = useState(false)
   const [isInitialize, startTransition] = useTransition()
-  const [isChatSidebar, setShowChatSidebar] = useAtom(chatSidebarAtom)
+  const [isChatSidebar, setShowChatSidebar] = useAtom(chatSidebarStateAtom)
 
   const chatStore = useChatStore()
 

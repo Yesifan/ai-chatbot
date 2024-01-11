@@ -5,10 +5,10 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { IconSidebar } from '@/components/ui/icons'
 import { useSetAtom } from 'jotai'
-import { chatSidebarAtom } from '@/lib/store/global'
+import { chatSidebarStateAtom } from '@/lib/store/global'
 
 export function ChatSidebarHeader({ className }: { className?: string }) {
-  const setShowChatSidebar = useSetAtom(chatSidebarAtom)
+  const setShowChatSidebar = useSetAtom(chatSidebarStateAtom)
   return (
     <header
       className={cn(
