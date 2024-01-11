@@ -15,7 +15,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { DEFAULT_CHAT_NAME } from '@/lib/constants'
 import { Button } from '@/components/ui/button'
 import { SaveAction } from '@/components/save-action'
-import { chatListAtom, chatSidebarStateAtom } from '@/lib/store/global'
+import { chatListAtom, chatSidebarToogleAtom } from '@/lib/store/global'
 import { useSessionStatusEffect } from '@/lib/hooks/use-login'
 import { ChatSidebarHeader } from './chat-sidebar-header'
 
@@ -29,7 +29,7 @@ export function ChatSidebar({ initialChats, className }: HistoryChatListProps) {
 
   const router = useRouter()
   const [chats, setChats] = useAtom(chatListAtom)
-  const isChatSidebar = useAtomValue(chatSidebarStateAtom)
+  const isChatSidebar = useAtomValue(chatSidebarToogleAtom)
   const { robot: robotId } = useParams<{ robot?: string }>()
 
   const [isLoading, starTransition] = useTransition()

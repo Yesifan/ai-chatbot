@@ -8,12 +8,14 @@ import { useChatStore } from '@/lib/store/chat'
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { IconHisotry } from '@/components/ui/icons'
+import { IconHisotry, IconMessages } from '@/components/ui/icons'
 import { Input, InputProps } from '@/components/ui/input'
 import Avatar, { InboxAvatar } from '@/components/ui/avatar'
 import { SafeArea } from '@/components/ui/safe-area'
 import { Robot } from '@/types/database'
 import { DEFAULT_CHAT_NAME, JARVIS } from '@/lib/constants'
+import { useAtom } from 'jotai'
+import { chatSidebarToogleAtom } from '@/lib/store/global'
 
 interface ChatHeaderItemProps {
   robot?: Robot
@@ -97,6 +99,7 @@ export function ChatHeader({
   className
 }: ChatHeaderItemProps) {
   const chat = useChatStore()
+  const [isChatSidebar, tooglyChatSidebar] = useAtom(chatSidebarToogleAtom)
 
   return (
     <header
@@ -132,12 +135,19 @@ export function ChatHeader({
         </div>
         <div className="ml-auto space-x-1">
           {isMobile ? (
-            <Button variant="ghost" className="h-8 w-8 p-1" asChild>
+            <Button variant="ghost" size="icon" asChild>
               <Link href="/history">
                 <IconHisotry className="h-6 w-6" />
               </Link>
             </Button>
           ) : null}
+          <Button
+            variant={isChatSidebar ? 'highlight' : 'ghost'}
+            size="icon"
+            onClick={tooglyChatSidebar}
+          >
+            <IconMessages />
+          </Button>
         </div>
       </div>
     </header>

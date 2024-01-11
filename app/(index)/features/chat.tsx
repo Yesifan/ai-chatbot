@@ -23,11 +23,7 @@ import { ChatMessage } from './chat-message'
 import { ChatLoginPanel } from './chat-panel/chat-login-panel'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { ButtonReload } from '@/components/reload-button'
-import { Button } from '@/components/ui/button'
-import { IconMessages } from '@/components/ui/icons'
 import type { Chat, Message } from '@/types/database'
-import { chatSidebarStateAtom } from '@/lib/store/global'
-import { useAtom } from 'jotai'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
@@ -39,7 +35,6 @@ export function Chat({ initialMessages, className }: ChatProps) {
   const search = useSearchParams()
   const [isEditing, setIsEditing] = useState(false)
   const [isInitialize, startTransition] = useTransition()
-  const [isChatSidebar, setShowChatSidebar] = useAtom(chatSidebarStateAtom)
 
   const chatStore = useChatStore()
 
@@ -147,13 +142,6 @@ export function Chat({ initialMessages, className }: ChatProps) {
         {status === 'authenticated' && (
           <div className="sticky bottom-60 flex flex-row-reverse p-2">
             <div className="flex flex-col space-y-4">
-              <Button
-                size="icon"
-                variant={isChatSidebar ? 'highlight' : 'board'}
-                onClick={() => setShowChatSidebar(!isChatSidebar)}
-              >
-                <IconMessages />
-              </Button>
               <ButtonReload onClick={reloadChat} isLoading={isInitialize} />
               <ButtonScrollToBottom />
             </div>
