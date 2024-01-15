@@ -2,23 +2,24 @@
 import toast from 'react-hot-toast'
 import { useAtom, useAtomValue } from 'jotai'
 import { useHydrateAtoms } from 'jotai/utils'
-import { useCallback, useState, useTransition } from 'react'
+import { useCallback, useTransition } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 
 import { cn } from '@/lib/utils'
-import { createChat, getChats, saveChat } from '@/app/actions/chat'
-import { RemoveActions } from '@/components/remove-actions'
-import { clearRobotChats, removeChat, updateChat } from '@/app/actions/chat'
-import { ChatItem } from './chat-item'
-import type { Chat } from '@/types/database'
-import { ClearHistory } from './clear-history'
-import { useParams, useRouter } from 'next/navigation'
 import { DEFAULT_CHAT_NAME } from '@/lib/constants'
+import { useSessionStatusEffect } from '@/lib/hooks/use-login'
+import { chatListAtom, chatSidebarToogleAtom } from '@/lib/store/global'
+import { createChat, getChats, saveChat } from '@/app/actions/chat'
+import { clearRobotChats, removeChat, updateChat } from '@/app/actions/chat'
+import { RemoveActions } from '@/components/remove-actions'
+
 import { Button } from '@/components/ui/button'
 import { SaveAction } from '@/components/save-action'
-import { chatListAtom, chatSidebarToogleAtom } from '@/lib/store/global'
-import { useSessionStatusEffect } from '@/lib/hooks/use-login'
-import { ChatSidebarHeader } from './chat-sidebar-header'
 import { ButtonReload } from '@/components/reload-button'
+import { ChatItem } from './chat-item'
+import { ClearHistory } from './clear-history'
+import { ChatSidebarHeader } from './chat-sidebar-header'
+import type { Chat } from '@/types/database'
 
 interface HistoryChatListProps {
   initialChats?: Chat[]
@@ -34,8 +35,6 @@ export function ChatSidebar({ initialChats, className }: HistoryChatListProps) {
   const { robot: robotId } = useParams<{ robot?: string }>()
 
   const [isLoading, starTransition] = useTransition()
-
-  // const [chats, setChats] = useState<Chat[] | undefined>(_chats)
 
   const reloadChats = useCallback(async () => {
     starTransition(async () => {
@@ -104,54 +103,54 @@ export function ChatSidebar({ initialChats, className }: HistoryChatListProps) {
     }
   })
 
+  if (status === 'unauthenticated') return null
+
   return (
     <section
       className={cn(
         'overflow-hidden border-l bg-background transition-all',
-        'fixed right-0 z-10 h-screen w-full md:sticky md:top-0 md:w-80',
-        isChatSidebar && status !== 'unauthenticated' ? '' : 'w-0 md:w-0',
+        'fixed right-0 z-10 h-screen w-full md:top-0 md:w-80 lg:sticky',
+        isChatSidebar ? '' : 'w-0 md:w-0',
         className
       )}
     >
-      {status !== 'unauthenticated' && (
-        <aside className="flex h-full w-full flex-col md:w-80">
-          <ChatSidebarHeader className="mb-2" />
-          <Button
-            variant="outline"
-            className="mx-2 mb-2"
-            isLoading={isLoading}
-            onClick={createChatHndler}
-          >
-            New Chat 💬
-          </Button>
+      <aside className="flex h-full w-full flex-col md:w-80">
+        <ChatSidebarHeader className="mb-2" />
+        <Button
+          variant="outline"
+          className="mx-2 mb-2"
+          isLoading={isLoading}
+          onClick={createChatHndler}
+        >
+          New Chat 💬
+        </Button>
 
-          <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
-            {chats ? (
-              chats.map(chat => (
-                <ChatItem
-                  key={chat?.id}
-                  chat={chat}
-                  favorite={favoriteChatHandler}
-                >
-                  {chat.isSaved ? (
-                    <RemoveActions id={chat.id} remove={removeChatHandler} />
-                  ) : (
-                    <SaveAction id={chat.id} save={saveChatHandler} />
-                  )}
-                </ChatItem>
-              ))
-            ) : (
-              <Button variant="ghost" onClick={reloadChats}>
-                Retry get chats.
-              </Button>
-            )}
-          </div>
-          <div className="flex items-center gap-2 p-4">
-            <ButtonReload onClick={reloadChats} isLoading={isLoading} />
-            <ClearHistory clearChats={clearChatHandle} />
-          </div>
-        </aside>
-      )}
+        <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
+          {chats ? (
+            chats.map(chat => (
+              <ChatItem
+                key={chat?.id}
+                chat={chat}
+                favorite={favoriteChatHandler}
+              >
+                {chat.isSaved ? (
+                  <RemoveActions id={chat.id} remove={removeChatHandler} />
+                ) : (
+                  <SaveAction id={chat.id} save={saveChatHandler} />
+                )}
+              </ChatItem>
+            ))
+          ) : (
+            <Button variant="ghost" onClick={reloadChats}>
+              Retry get chats.
+            </Button>
+          )}
+        </div>
+        <div className="flex items-center gap-2 p-4">
+          <ButtonReload onClick={reloadChats} isLoading={isLoading} />
+          <ClearHistory clearChats={clearChatHandle} />
+        </div>
+      </aside>
     </section>
   )
 }
