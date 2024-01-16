@@ -1,8 +1,7 @@
 'use client'
+import React from 'react'
 import toast from 'react-hot-toast'
 import { useAtom, useAtomValue } from 'jotai'
-import { useHydrateAtoms } from 'jotai/utils'
-import { useCallback, useTransition } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
 import { cn } from '@/lib/utils'
@@ -27,16 +26,18 @@ interface HistoryChatListProps {
 }
 
 export function ChatSidebar({ initialChats, className }: HistoryChatListProps) {
-  useHydrateAtoms([[chatListAtom, initialChats]])
-
   const router = useRouter()
   const [chats, setChats] = useAtom(chatListAtom)
   const isChatSidebar = useAtomValue(chatSidebarToogleAtom)
   const { robot: robotId } = useParams<{ robot?: string }>()
 
-  const [isLoading, starTransition] = useTransition()
+  const [isLoading, starTransition] = React.useTransition()
 
-  const reloadChats = useCallback(async () => {
+  React.useEffect(() => {
+    setChats(initialChats)
+  }, [initialChats, setChats])
+
+  const reloadChats = React.useCallback(async () => {
     starTransition(async () => {
       const chats = await getChats(robotId)
       setChats(chats)

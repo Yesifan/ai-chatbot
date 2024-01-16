@@ -10,8 +10,8 @@ import { ChatSidebar } from './features/chat-history/chat-sidebar'
 export const runtime = 'edge'
 
 export default async function IndexPage() {
-  const chat = await getInboxChat()
   const isMobile = isMobileDevice()
+  const chat = await getInboxChat()
 
   if ('error' in chat && chat.error !== ActionErrorCode.Unauthorized) {
     console.error('[IndexPage] get chat', chat.error)
