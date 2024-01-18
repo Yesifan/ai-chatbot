@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import toast from 'react-hot-toast'
 import { useState, useTransition } from 'react'
 
 import { cn } from '@/lib/utils'
@@ -30,7 +31,7 @@ export function RobotList({ initalRobots, className }: RobotListProps) {
     if (typeof result === 'bigint') {
       setRobots(chats => chats?.filter(chat => chat.id !== id))
     }
-    return result
+    toast.success('Robot and chats removed.')
   }
 
   const reloadRobots = async () => {

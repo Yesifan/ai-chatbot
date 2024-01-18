@@ -29,11 +29,13 @@ export async function getChat(id: string): Promise<ServerActionResult<Chat>> {
   return chat
 }
 
-export async function getInboxChat(robotId?: string) {
+export async function getInboxChat(
+  robotId?: string
+): Promise<ServerActionResult<Chat>> {
   const session = await auth()
 
   if (!session) {
-    return { error: ActionErrorCode.Unauthorized }
+    return { ok: false, error: ActionErrorCode.Unauthorized }
   }
 
   try {
@@ -57,6 +59,7 @@ export async function getInboxChat(robotId?: string) {
       if ('error' in res) {
         console.error(`[ERROR][getInboxChat] ${res.error}`)
         return {
+          ok: false,
           error: ActionErrorCode.InternetError
         }
       } else {
@@ -67,6 +70,7 @@ export async function getInboxChat(robotId?: string) {
   } catch (error) {
     console.error(`[ERROR][getInboxChat] ${error}`)
     return {
+      ok: false,
       error: ActionErrorCode.InternetError
     }
   }
@@ -146,37 +150,35 @@ export const createChat = async (
       error: ActionErrorCode.Unauthorized
     }
   }
-  const query = database.insertInto('chat')
+  let query = database.insertInto('chat')
 
   const values = {
     id: pk,
     userId: session.id,
     isSaved,
     title: title,
-    createdAt: new Date()
+    createdAt: new Date(),
+    lastMessageAt: new Date()
+  }
+  if (robotId) {
+    const robot = await getRobot(robotId)
+    if ('error' in robot) {
+      return robot
+    }
+    query = query.values({
+      ...values,
+      robotId,
+      model: robot.model,
+      pinPrompt: robot.pinPrompt,
+      temperature: robot.temperature,
+      input_template: robot.input_template,
+      attachedMessagesCount: robot.attachedMessagesCount
+    })
+  } else {
+    query = query.values(values)
   }
   try {
-    if (robotId) {
-      const robot = await getRobot(robotId)
-      if ('error' in robot) {
-        return robot
-      } else {
-        return query
-          .values({
-            ...values,
-            robotId,
-            model: robot.model,
-            pinPrompt: robot.pinPrompt,
-            temperature: robot.temperature,
-            input_template: robot.input_template,
-            attachedMessagesCount: robot.attachedMessagesCount
-          })
-          .returningAll()
-          .executeTakeFirstOrThrow()
-      }
-    } else {
-      return await query.values(values).returningAll().executeTakeFirstOrThrow()
-    }
+    return await query.returningAll().executeTakeFirstOrThrow()
   } catch (e) {
     console.error('[error][createChat]', e)
     return {
@@ -188,7 +190,7 @@ export const createChat = async (
 
 // TODO: auto set title use ai.
 // save default chat to a topic
-export async function saveChat(id: string): Promise<ServerActionResult> {
+export async function saveChat(id: string): Promise<ServerActionResult<Chat>> {
   const session = await auth()
 
   if (!session) {
@@ -214,10 +216,8 @@ export async function saveChat(id: string): Promise<ServerActionResult> {
     }
 
     await updateChat(id, { isSaved: true })
-    await getInboxChat(chat.robotId)
-    return {
-      ok: true
-    }
+    const inboxChat = await getInboxChat(chat.robotId)
+    return inboxChat
   } catch (error) {
     console.error(`[ERROR][saveChat] ${error}`)
     return {

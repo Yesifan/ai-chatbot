@@ -5,16 +5,16 @@ import { useAtom, useAtomValue } from 'jotai'
 import { useParams, useRouter } from 'next/navigation'
 
 import { cn } from '@/lib/utils'
-import { DEFAULT_CHAT_NAME } from '@/lib/constants'
+import { DEFAULT_CHAT_NAME, INBOX_PATH } from '@/lib/constants'
 import { useSessionStatusEffect } from '@/lib/hooks/use-login'
 import { chatListAtom, chatSidebarToogleAtom } from '@/lib/store/global'
 import { createChat, getChats, saveChat } from '@/app/actions/chat'
 import { clearRobotChats, removeChat, updateChat } from '@/app/actions/chat'
-import { RemoveActions } from '@/components/remove-actions'
 
 import { Button } from '@/components/ui/button'
 import { SaveAction } from '@/components/save-action'
 import { ButtonReload } from '@/components/reload-button'
+import { RemoveActions } from '@/components/remove-actions'
 import { ChatItem } from './chat-item'
 import { ClearHistory } from './clear-history'
 import { ChatSidebarHeader } from './chat-sidebar-header'
@@ -27,9 +27,13 @@ interface HistoryChatListProps {
 
 export function ChatSidebar({ initialChats, className }: HistoryChatListProps) {
   const router = useRouter()
+
   const [chats, setChats] = useAtom(chatListAtom)
   const isChatSidebar = useAtomValue(chatSidebarToogleAtom)
-  const { robot: robotId } = useParams<{ robot?: string }>()
+  const { robot: robotId, chat: chatId } = useParams<{
+    robot?: string
+    chat?: string
+  }>()
 
   const [isLoading, starTransition] = React.useTransition()
 
@@ -50,8 +54,16 @@ export function ChatSidebar({ initialChats, className }: HistoryChatListProps) {
       if ('error' in chat) {
         toast(chat.error)
       } else {
-        router.push(`/chat/${robotId}/${chat.id}`)
-        await reloadChats()
+        const robot = robotId ?? INBOX_PATH
+        router.push(`/chat/${robot}/${chat.id}`)
+        setChats(chats => {
+          if (chats) {
+            const [chatIndex, ...otherChats] = chats
+            return [chatIndex, chat, ...otherChats]
+          } else {
+            return [chat]
+          }
+        })
       }
     })
   }
@@ -66,12 +78,20 @@ export function ChatSidebar({ initialChats, className }: HistoryChatListProps) {
 
   const saveChatHandler = async (id: string) => {
     const result = await saveChat(id)
-    if (result.ok) {
-      router.push(`/chat/${robotId}/${id}`)
-      return true
-    } else {
+    if ('error' in result) {
       toast.error(result.error || 'Failed to update chat')
       return false
+    } else {
+      const robot = robotId ?? INBOX_PATH
+      router.push(`/chat/${robot}/${id}`)
+      setChats(chats => {
+        const oldChat =
+          chats?.map(chat =>
+            chat.id === id ? { ...chat, isSaved: true } : chat
+          ) ?? []
+        return [result, ...oldChat]
+      })
+      return true
     }
   }
 
@@ -92,8 +112,13 @@ export function ChatSidebar({ initialChats, className }: HistoryChatListProps) {
     const result = await removeChat(id)
     if (result.ok) {
       setChats(chats => chats?.filter(chat => chat.id !== id))
+      if (chatId === id) {
+        router.push(robotId ? `/chat/${robotId}` : '/')
+      }
+      toast.success('Chat and messages deleted')
+    } else {
+      toast.error(result.error || 'Failed to remove chat')
     }
-    return result
   }
 
   const status = useSessionStatusEffect(() => {

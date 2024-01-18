@@ -44,14 +44,10 @@ const Svg = () => (
 
 const BubblesLoading = forwardRef<
   HTMLDivElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ className, style }, ref) => {
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
   return (
-    <div
-      ref={ref}
-      className={cn('fill-primary', className)}
-      style={style ? style : { height: 24, width: 32 }}
-    >
+    <div ref={ref} className={cn('h-6 w-8 fill-primary', className)} {...props}>
       <Svg />
     </div>
   )

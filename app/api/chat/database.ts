@@ -27,18 +27,6 @@ export const recordConversation = async (
   const now = new Date()
   const question = chatBody.messages[chatBody.messages.length - 1].content
 
-  database
-    .updateTable('chat')
-    .set({
-      lastMessage: question,
-      lastMessageAt: questionAt
-    })
-    .where('chat.id', '=', chatBody.id)
-    .executeTakeFirst()
-    .catch(e => {
-      console.error('[update chat error]', e?.message)
-    })
-
   const questionMessage = {
     id: chatBody.questionId,
     chatId: chatBody.id,
@@ -58,15 +46,25 @@ export const recordConversation = async (
   }
 
   try {
-    const res = await database
+    await database
       .insertInto('message')
       .values(
         chatBody.isReload ? [answerMessage] : [questionMessage, answerMessage]
       )
       .executeTakeFirstOrThrow()
-    console.log('[record conversation]', res)
   } catch (error) {
-    console.error('[record conversation][OPENAI CHAT ERROR]', error)
-    console.error('[record conversation][OPENAI CHAT ERROR]', chatBody)
+    console.error('[record conversation][error]', error)
+    console.error('[record conversation][chat body]', chatBody)
   }
+  await database
+    .updateTable('chat')
+    .set({
+      lastMessage: question,
+      lastMessageAt: questionAt
+    })
+    .where('chat.id', '=', chatBody.id)
+    .executeTakeFirstOrThrow()
+    .catch(e => {
+      console.error('[update chat error]', e?.message)
+    })
 }

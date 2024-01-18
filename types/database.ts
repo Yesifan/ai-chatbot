@@ -86,11 +86,10 @@ export type ServerActionResult<
   R = {
     ok: true
   }
-> = Promise<
+> =
   | R
   | {
       ok: false
       error: string
       message?: string
     }
->

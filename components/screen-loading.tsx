@@ -11,7 +11,7 @@ const ScreenLoading = forwardRef<
     <div
       ref={ref}
       className={cn(
-        'flex h-full w-full flex-1 flex-col items-center justify-center',
+        'flex h-full w-full flex-1 flex-col items-center justify-center p-16',
         className
       )}
       {...props}

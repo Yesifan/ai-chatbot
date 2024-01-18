@@ -1,9 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useParams, useRouter } from 'next/navigation'
 
-import { ServerActionResult } from '@/types/database'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,37 +20,23 @@ import {
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip'
-import toast from 'react-hot-toast'
 
 interface RemoveActionsProps {
   id: string
   desc?: string
-  remove: (id: string) => ServerActionResult
+  remove: (id: string) => Promise<void>
 }
 
 export function RemoveActions({ id, desc, remove }: RemoveActionsProps) {
-  const params = useParams()
-  const chatId = params.chat
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
   const [isRemovePending, startRemoveTransition] = React.useTransition()
-  const router = useRouter()
 
   const removeChatHandler: React.MouseEventHandler<
     HTMLButtonElement
   > = event => {
     event.preventDefault()
     startRemoveTransition(async () => {
-      const result = await remove(id)
-      if (result.ok) {
-        setDeleteDialogOpen(false)
-        if (chatId === id) {
-          router.push('/')
-        }
-        toast.success(`Chat and ${result} messages deleted `)
-      } else {
-        toast.error(result.error)
-        return
-      }
+      await remove(id)
     })
   }
 
