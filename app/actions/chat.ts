@@ -321,7 +321,7 @@ export async function removeChat(id: string): Promise<ServerActionResult> {
  * @returns
  */
 export async function clearRobotChats(
-  robotId: string,
+  robotId?: string,
   isRobotDel?: boolean
 ): Promise<ServerActionResult> {
   const session = await auth()
@@ -334,12 +334,17 @@ export async function clearRobotChats(
   }
 
   try {
-    const chats = await database
+    let query = database
       .selectFrom('chat')
       .select(['chat.id', 'chat.isFavourite'])
       .where('userId', '=', session.id)
-      .where('chat.robotId', '=', robotId)
-      .execute()
+
+    if (robotId) {
+      query = query.where('chat.robotId', '=', robotId)
+    } else {
+      query = query.where('chat.robotId', 'is', null)
+    }
+    const chats = await query.execute()
 
     chats.forEach(async chat => {
       if (chat.isFavourite) {
@@ -357,7 +362,6 @@ export async function clearRobotChats(
           .executeTakeFirst()
       }
     })
-
     return {
       ok: true
     }

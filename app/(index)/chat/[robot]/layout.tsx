@@ -11,7 +11,8 @@ interface LayoutProps {
 
 export default async function Layout({ children, params }: LayoutProps) {
   const { robot } = params
-  const chats = await getChats(robot === INBOX_PATH ? undefined : robot)
+  const robotId = robot === INBOX_PATH ? undefined : robot
+  const chats = await getChats(robotId)
   return (
     <>
       <div className="relative flex w-full flex-1 flex-col">{children}</div>

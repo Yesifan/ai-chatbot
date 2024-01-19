@@ -30,10 +30,11 @@ export function ChatSidebar({ initialChats, className }: HistoryChatListProps) {
 
   const [chats, setChats] = useAtom(chatListAtom)
   const isChatSidebar = useAtomValue(chatSidebarToogleAtom)
-  const { robot: robotId, chat: chatId } = useParams<{
+  const { robot: _robotId, chat: chatId } = useParams<{
     robot?: string
     chat?: string
   }>()
+  const robotId = _robotId === INBOX_PATH ? undefined : _robotId
 
   const [isLoading, starTransition] = React.useTransition()
 
