@@ -4,10 +4,11 @@ import { OpenAIStream, StreamingTextResponse } from 'ai'
 
 import { ChatBody } from '@/types/api'
 import { auth } from '@/app/actions/auth'
+import { getChat } from '@/app/actions/chat'
 import { ActionErrorCode } from '@/lib/error'
 import { GPT_Model, TEMPERATURE } from '@/lib/constants'
 import { createOpenai } from './openai'
-import { getChat, recordConversation } from './database'
+import { recordConversation } from './database'
 
 export const runtime = 'edge'
 
@@ -31,8 +32,7 @@ export async function POST(req: NextRequest) {
     })
   }
 
-  const userId = session.id
-  const chat = await getChat(id, userId)
+  const chat = await getChat(id)
 
   if (!chat) {
     return new Response(ActionErrorCode.BadRequest, {

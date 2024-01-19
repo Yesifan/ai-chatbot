@@ -1,23 +1,6 @@
 import database from '@/lib/database'
-import { NewChat } from '@/types/database'
 import { Role } from '@/lib/constants'
 import { ChatBody } from '@/types/api'
-
-export const getChat = async (
-  id: string,
-  userId: string
-): Promise<NewChat | null> => {
-  const chat = await database
-    .selectFrom('chat')
-    .selectAll()
-    .where('id', '=', id)
-    .executeTakeFirst()
-
-  if (chat?.userId != userId) {
-    return null
-  }
-  return chat
-}
 
 export const recordConversation = async (
   answer: string,
@@ -44,7 +27,6 @@ export const recordConversation = async (
     model: chatBody.model,
     createdAt: now
   }
-
   try {
     await database
       .insertInto('message')
@@ -52,6 +34,11 @@ export const recordConversation = async (
         chatBody.isReload ? [answerMessage] : [questionMessage, answerMessage]
       )
       .executeTakeFirstOrThrow()
+    console.log(
+      '[record conversation][success]',
+      chatBody.questionId,
+      chatBody.replyId
+    )
   } catch (error) {
     console.error('[record conversation][error]', error)
     console.error('[record conversation][chat body]', chatBody)
