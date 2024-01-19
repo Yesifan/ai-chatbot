@@ -56,9 +56,7 @@ const AllToken = React.memo(function AllToken({
     const historyMessageContent = historyMessages
       ?.map(item => item.content)
       .join(';')
-    console.log(
-      (chatStore.pinPrompt ?? '') + input + (historyMessageContent ?? '')
-    )
+
     return (chatStore.pinPrompt ?? '') + input + (historyMessageContent ?? '')
   }, [chatStore.attachedMessagesCount, chatStore.pinPrompt, input, messages])
   return <Token variant="secondary" className="h-6" input={content} />

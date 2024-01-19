@@ -10,7 +10,7 @@ export const Tooltip = ({
   desc,
   children,
   ...props
-}: TooltipProps & { desc: string }) => {
+}: TooltipProps & { desc: string | JSX.Element }) => {
   return (
     <TooltipPrimitive>
       <TooltipTrigger {...props}>{children}</TooltipTrigger>

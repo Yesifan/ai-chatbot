@@ -17,6 +17,8 @@ export const TEMPERATURE = 0.9
 export const ATTACHED_MESSAGES_COUNT = 6
 export const INFINITE_ATTACHED_MESSAGES_COUNT = 31
 
+export const OPENAI_PRICING_URL = 'https://openai.com/pricing'
+
 // [openai models](https://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbo)
 /**
  * ID of the model to use. See the [model endpoint](https://platform.openai.com/docs/models/model-endpoint-compatibility)
