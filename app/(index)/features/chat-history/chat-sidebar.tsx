@@ -69,12 +69,19 @@ export function ChatSidebar({ initialChats, className }: HistoryChatListProps) {
     })
   }
 
-  const clearChatHandle = () => {
-    if (robotId) {
-      return clearRobotChats(robotId)
+  const clearChatHandle = async () => {
+    const result = await clearRobotChats(robotId)
+    if ('error' in result) {
+      toast.error(result.error || 'Failed to clear chats')
     } else {
-      return Promise.reject({ ok: false, error: 'Not Found' })
+      setChats(chats =>
+        chats?.filter(chat => !chat.isSaved || chat.isFavourite)
+      )
+      if (!chats?.find(item => item.id === chatId)) {
+        router.push(robotId ? `/chat/${robotId}` : '/')
+      }
     }
+    return result
   }
 
   const saveChatHandler = async (id: string) => {

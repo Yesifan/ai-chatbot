@@ -336,7 +336,7 @@ export async function clearRobotChats(
   try {
     let query = database
       .selectFrom('chat')
-      .select(['chat.id', 'chat.isFavourite'])
+      .select(['chat.id', 'chat.isFavourite', 'chat.isSaved'])
       .where('userId', '=', session.id)
 
     if (robotId) {
@@ -351,15 +351,10 @@ export async function clearRobotChats(
         if (isRobotDel) {
           await updateChat(chat.id, { robotId: null as any, isSaved: true })
         }
+      } else if (chat.isSaved === false && isRobotDel) {
+        await removeChat(chat.id)
       } else {
-        await database
-          .deleteFrom('message')
-          .where('chatId', '=', chat.id)
-          .executeTakeFirst()
-        await database
-          .deleteFrom('chat')
-          .where('id', '=', chat.id)
-          .executeTakeFirst()
+        await removeChat(chat.id)
       }
     })
     return {
