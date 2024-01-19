@@ -16,6 +16,7 @@ import BubblesLoading from '@/components/ui/loading'
 import { useSession } from '@/lib/auth/provider'
 import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard'
 import { IconCheck, IconCopy } from '@/components/ui/icons'
+import { Token } from '@/components/token-badge'
 
 interface RobotCardProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
   prompt?: string
@@ -110,6 +111,7 @@ export function RobotSidebar({
           {description}
         </div>
         <div className="mt-2 h-[22px] w-full space-x-2">
+          {prompt && <Token variant="secondary" input={prompt} />}
           {tags?.map(tag => (
             <Badge
               key={tag}

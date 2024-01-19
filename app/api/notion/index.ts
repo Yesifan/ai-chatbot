@@ -1,9 +1,9 @@
-import { Client, isFullPage } from '@notionhq/client'
-import { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints'
-import { RobotTemplate } from '@/types/api'
-import { config } from '@/config/server'
-import { getJarvisPromptProps } from './helper'
 import { NotionToMarkdown } from 'notion-to-md'
+import { Client, isFullPage } from '@notionhq/client'
+import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints'
+import { config } from '@/config/server'
+import type { RobotTemplate } from '@/types/api'
+import { getJarvisPromptProps } from './helper'
 
 export const createNotion = () => {
   const { NOTION_API_KEY } = config

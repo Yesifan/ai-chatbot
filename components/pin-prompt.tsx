@@ -2,10 +2,10 @@
 
 import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard'
 import { Markdown } from './markdown'
-import { Button } from './ui/button'
-import { IconCheck, IconCopy } from './ui/icons'
 import { useInView } from 'react-intersection-observer'
 import { cn } from '@/lib/utils'
+import { Token } from './token-badge'
+import { ButtonCopy } from './copy-button'
 
 export function PinPrompt({ content }: { content: string }) {
   const { ref, inView } = useInView({
@@ -31,11 +31,11 @@ export function PinPrompt({ content }: { content: string }) {
       <div ref={ref} className="mx-auto mb-2 max-w-2xl px-4">
         <div className="flex flex-col rounded-lg border bg-background pb-8 pt-4">
           <div className="flex items-center px-6">
-            <span className="mr-auto text-primary/60">Prompt</span>
-            <Button variant="ghost" size="icon" onClick={onCopy}>
-              {isCopied ? <IconCheck /> : <IconCopy />}
-              <span className="sr-only">Copy message</span>
-            </Button>
+            <div className="flex flex-1 items-center space-x-2">
+              <span className="text-primary/60">Prompt</span>
+              <Token input={content} variant="outline" />
+            </div>
+            <ButtonCopy content={content} />
           </div>
           <div className="px-8">
             <Markdown content={content} />
