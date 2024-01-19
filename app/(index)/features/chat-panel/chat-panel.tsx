@@ -1,18 +1,21 @@
 'use client'
-import { useState } from 'react'
+import React, { useState } from 'react'
 
-import { cn, nanoid } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { useChatStore } from '@/lib/store/chat'
+import { Token } from '@/components/token-badge'
+import { usePrompt } from '@/lib/hooks/use-prompt'
+import {
+  ATTACHED_MESSAGES_COUNT,
+  INFINITE_ATTACHED_MESSAGES_COUNT
+} from '@/lib/constants'
 import { PromptForm } from './prompt-form'
 import { Temperature } from './temperature'
 import { SelectModel } from './select-model'
 import { PromptSwitch } from './prompt-switch'
 import { MessagesCount } from './messages-count'
-
-import { Role } from '@/lib/constants'
-import { useIsInbox } from '@/lib/hooks/use-inbox'
-import { usePrompt } from '@/lib/hooks/use-prompt'
 import type { UseChatHelpers } from '@/types/ai'
+import type { Message } from '@/types/database'
 
 export interface ChatPanelProps
   extends Pick<
@@ -33,9 +36,38 @@ export interface ChatPanelProps
   noPause?: boolean
 }
 
+const AllToken = React.memo(function AllToken({
+  input,
+  messages
+}: {
+  input: string
+  messages: Message[]
+}) {
+  const chatStore = useChatStore()
+  const content = React.useMemo(() => {
+    const historyMessages =
+      chatStore.attachedMessagesCount === INFINITE_ATTACHED_MESSAGES_COUNT
+        ? messages
+        : chatStore.attachedMessagesCount === 0
+        ? undefined
+        : messages.slice(
+            -(chatStore.attachedMessagesCount ?? ATTACHED_MESSAGES_COUNT)
+          )
+    const historyMessageContent = historyMessages
+      ?.map(item => item.content)
+      .join(';')
+    console.log(
+      (chatStore.pinPrompt ?? '') + input + (historyMessageContent ?? '')
+    )
+    return (chatStore.pinPrompt ?? '') + input + (historyMessageContent ?? '')
+  }, [chatStore.attachedMessagesCount, chatStore.pinPrompt, input, messages])
+  return <Token variant="secondary" className="h-6" input={content} />
+})
+
 export function ChatPanel({
   id,
   input,
+  messages,
   height = 240,
   isLoading,
   setInput,
@@ -44,19 +76,14 @@ export function ChatPanel({
 }: ChatPanelProps) {
   const chatStore = useChatStore()
   const [prompt, setPrompt] = useState(chatStore.pinPrompt ?? '')
-  const { setPinPrompt, isPrompt, setIsPrompt, isPromptLoading } = usePrompt()
+  const { getPrompt, setPinPrompt, isPrompt, setIsPrompt, isPromptLoading } =
+    usePrompt()
   const placeholder = isPrompt
     ? 'Please enter role prompt. Define a custom ai assistant.'
     : 'Send a message.'
 
   const chat = async (value: string) => {
-    const pinPrompt = chatStore.pinPrompt
-      ? {
-          id: nanoid(),
-          role: Role.System,
-          content: chatStore.pinPrompt
-        }
-      : null
+    const pinPrompt = getPrompt()
     await props.append(
       value,
       chatStore.attachedMessagesCount,
@@ -84,6 +111,7 @@ export function ChatPanel({
           <SelectModel className="h-6 w-6" />
           <MessagesCount className="h-6 w-6" />
           <Temperature className="h-6 w-6" />
+          <AllToken messages={messages} input={input} />
         </div>
         <PromptSwitch
           className="ml-auto"
