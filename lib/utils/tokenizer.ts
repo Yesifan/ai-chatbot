@@ -10,7 +10,7 @@ export const encodeAsync = async (str: string) => {
         }
         return 1.3
       } else if (/^[0-9]+$/.test(w)) {
-        return 1
+        return w.length * 0.33
       } else {
         return w.length * 1.05
       }
