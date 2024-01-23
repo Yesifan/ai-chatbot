@@ -3,6 +3,8 @@ import database from '@/lib/database'
 import { Message, ServerActionResult } from '@/types/database'
 import { auth } from './auth'
 import { ErrorCode } from '@/lib/constants'
+import { isMessageOwner } from './helper'
+import { knowledgeManagementAssistant } from '../api/chat/assistants'
 
 export async function getMessages(
   id: string
@@ -22,25 +24,9 @@ export async function getMessages(
 }
 
 export async function removeMessage(id: string): Promise<ServerActionResult> {
-  const session = await auth()
+  const isOwner = await isMessageOwner(id)
 
-  if (!session) {
-    return {
-      ok: false,
-      error: 'Unauthorized'
-    }
-  }
-
-  const chat = await database
-    .selectFrom('chat')
-    .where('chat.userId', '=', session.id)
-    .leftJoin('message', join =>
-      join.onRef('chat.id', '=', 'message.chatId').on('message.id', '=', id)
-    )
-    .select(['chat.id', 'chat.title'])
-    .executeTakeFirstOrThrow()
-
-  if (chat.id) {
+  if (isOwner) {
     const message = await database
       .deleteFrom('message')
       .where('message.id', '=', id)
@@ -55,9 +41,42 @@ export async function removeMessage(id: string): Promise<ServerActionResult> {
       ok: true
     }
   } else {
-    return {
-      ok: false,
-      error: ErrorCode.NotFound
+    return isOwner
+  }
+}
+
+export async function favouriteMessage(
+  id: string
+): Promise<ServerActionResult> {
+  const isOwner = await isMessageOwner(id)
+
+  if (isOwner) {
+    try {
+      const result = await database
+        .updateTable('message')
+        .set({
+          isFavourite: true
+        })
+        .returning(['content'])
+        .where('message.id', '=', id)
+        .executeTakeFirstOrThrow()
+
+      knowledgeManagementAssistant(result.content).then(res => {
+        console.log('knowledgeManagementAssistant', res)
+      })
+
+      console.log('Favorite Success!')
+      return {
+        ok: true
+      }
+    } catch (e) {
+      console.error('[favoriteMessage][error]', e)
+      return {
+        ok: false,
+        error: ErrorCode.InternalServerError
+      }
     }
+  } else {
+    return isOwner
   }
 }

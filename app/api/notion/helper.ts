@@ -1,4 +1,63 @@
+import { Client, isFullPage } from '@notionhq/client'
 import { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints'
+import { config } from '@/config/server'
+import { NotionToMarkdown } from 'notion-to-md'
+
+export const createNotion = () => {
+  const { NOTION_API_KEY } = config
+  return new Client({ auth: NOTION_API_KEY, fetch: fetch })
+}
+
+export const notion2Markdown = async (id: string) => {
+  const notion = createNotion()
+  const n2m = new NotionToMarkdown({
+    notionClient: notion,
+    config: { parseChildPages: false }
+  })
+  const mdblocks = await n2m.pageToMarkdown(id)
+  const mdString = n2m.toMarkdownString(mdblocks)
+
+  return mdString.parent
+}
+
+export const getJarvisPromptDatabase = async (cursor?: string) => {
+  const notion = createNotion()
+
+  const promptDatabaseId = config.NOTION_PROMPT_DATABASE_ID
+  if (!promptDatabaseId) return undefined
+  return await notion.databases.query({
+    archived: false,
+    database_id: promptDatabaseId,
+    start_cursor: cursor,
+    page_size: 20,
+    filter: {
+      property: 'published',
+      checkbox: {
+        equals: true
+      }
+    },
+    sorts: [
+      {
+        timestamp: 'created_time',
+        direction: 'descending'
+      }
+    ]
+  })
+}
+
+export const isJarvisPromptPage = async (id: string) => {
+  const notion = createNotion()
+  const page = await notion.pages.retrieve({ page_id: id })
+  if (
+    isFullPage(page) &&
+    page.parent.type === 'database_id' &&
+    page.parent.database_id === config.NOTION_PROMPT_DATABASE_ID
+  ) {
+    return true
+  } else {
+    return false
+  }
+}
 
 export const getJarvisPromptProps = (page: PageObjectResponse) => {
   const props = page.properties
@@ -47,5 +106,21 @@ export const getJarvisPromptProps = (page: PageObjectResponse) => {
     createdAt,
     lastEditedAt,
     published
+  }
+}
+
+export const getJarvisMessageTags = async () => {
+  const notion = createNotion()
+
+  const messageDatabaseId = config.NOTION_MESSAGES_DATABASE_ID
+  if (!messageDatabaseId) return undefined
+  const response = await notion.databases.retrieve({
+    database_id: messageDatabaseId
+  })
+
+  if (response.properties.tags.type === 'multi_select') {
+    return response.properties.tags.multi_select.options
+  } else {
+    return []
   }
 }

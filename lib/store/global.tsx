@@ -1,4 +1,3 @@
-'use client'
 import { atom } from 'jotai'
 import { Chat } from '@/types/database'
 

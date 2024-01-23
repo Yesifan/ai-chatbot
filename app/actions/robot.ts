@@ -13,8 +13,9 @@ import {
 } from '@/lib/constants'
 import { clearRobotChats, createChat, getChats } from './chat'
 import { RobotTemplate } from '@/types/api'
-import { getPageMarkdown, getPromptDatabase } from '../api/notion'
+import { getPromptMarkdown, getPromptDatabase } from '../api/notion'
 import { isNotionClientError } from '@notionhq/client'
+import { getJarvisMessageTags } from '../api/notion/helper'
 
 export async function getRobot(id: string): Promise<ServerActionResult<Robot>> {
   const session = await auth()
@@ -189,7 +190,7 @@ export async function getTemplatePrompt(
   id: string
 ): Promise<ServerActionResult<string>> {
   try {
-    return getPageMarkdown(id)
+    return getPromptMarkdown(id)
   } catch (e) {
     if (isNotionClientError(e)) {
       console.error('[error][notion][getTemplatePrompt]', e.message)

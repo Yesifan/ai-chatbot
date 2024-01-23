@@ -5,6 +5,7 @@ import {
   IconCheck,
   IconCopy,
   IconRefresh,
+  IconStar,
   IconTrash
 } from '@/components/ui/icons'
 import { cn } from '@/lib/utils'
@@ -20,6 +21,7 @@ export interface ChatMessageActionsProps
   id?: string
   onDelete?: (id: string) => void
   onReload?: (id: string) => void
+  onFavourite?: (id: string) => void
 }
 
 export function ChatMessageActions({
@@ -43,6 +45,10 @@ export function ChatMessageActions({
     props.onReload?.(id)
   }
 
+  const onFavourite = (id: string) => {
+    props.onFavourite?.(id)
+  }
+
   return (
     <div
       className={cn(
@@ -50,6 +56,12 @@ export function ChatMessageActions({
         className
       )}
     >
+      {id && (
+        <Button variant="ghost" size="icon" onClick={() => onFavourite(id)}>
+          <IconStar />
+          <span className="sr-only">Favourite the message</span>
+        </Button>
+      )}
       {id && props.role === Role.User && props.onReload && (
         <Button variant="ghost" size="icon" onClick={() => onReload(id)}>
           {isReload ? <IconCheck /> : <IconRefresh />}

@@ -41,11 +41,15 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const res = await openai.createChatCompletion(messages as any, {
-      model: model ?? GPT_Model.GPT_3_5_TURBO,
-      temperature: temperature ?? TEMPERATURE,
-      stream: true
-    })
+    const res = await openai.chat.completions.create(
+      {
+        messages: messages as any,
+        model: model ?? GPT_Model.GPT_3_5_TURBO,
+        temperature: temperature ?? TEMPERATURE,
+        stream: true
+      },
+      { headers: { Accept: '*/*' } }
+    )
     const stream = OpenAIStream(res, {
       async onCompletion(answer) {
         recordConversation(answer, now, chatJson)
