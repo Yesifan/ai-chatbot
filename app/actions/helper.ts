@@ -4,7 +4,7 @@ import { ServerActionResult } from '@/types/database'
 
 export async function isMessageOwner(
   id: string
-): Promise<ServerActionResult<true>> {
+): Promise<ServerActionResult<string>> {
   const session = await auth()
 
   if (!session) {
@@ -23,7 +23,7 @@ export async function isMessageOwner(
     .executeTakeFirst()
 
   if (chat?.id) {
-    return true
+    return session.id
   } else {
     return {
       ok: false,

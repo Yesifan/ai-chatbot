@@ -9,7 +9,7 @@ import { Role } from '@/lib/constants'
 export interface ChatMessageListProps
   extends Pick<
     UseChatHelpers,
-    'messages' | 'reload' | 'remove' | 'isLoading' | 'streamData'
+    'messages' | 'reload' | 'remove' | 'isLoading' | 'streamData' | 'favor'
   > {}
 
 /**
@@ -17,23 +17,6 @@ export interface ChatMessageListProps
  * @param messages
  */
 export function ChatMessageList({ messages, ...props }: ChatMessageListProps) {
-  const onReload = useCallback(
-    async (id: string) => {
-      props.reload(id)
-    },
-    [props]
-  )
-  const onDelete = useCallback(
-    async (id: string) => {
-      props.remove(id)
-      const res = await removeMessage(id)
-      if (res.ok !== true) {
-        toast.error(res.error ?? 'delete message failed')
-      }
-    },
-    [props]
-  )
-
   if (!messages.length) {
     return null
   }
@@ -42,7 +25,7 @@ export function ChatMessageList({ messages, ...props }: ChatMessageListProps) {
     <>
       {messages.map((message, index) => (
         <section key={index}>
-          <ChatMessage {...message} onDelete={onDelete} onReload={onReload} />
+          <ChatMessage {...message} {...props} />
           {index < messages.length - 1 && <Separator className="my-1" />}
         </section>
       ))}

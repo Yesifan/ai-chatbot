@@ -38,12 +38,14 @@ export function ChatMessageContainer({
 }: React.PropsWithChildren & ChatMessageProps) {
   return (
     <div
-      className={cn('group relative mb-8 flex flex-col items-start lg:-ml-12')}
+      className={cn(
+        'group/message relative mb-8 flex flex-col items-start lg:-ml-12'
+      )}
     >
       <div className="flex w-full items-center px-1 lg:px-0">
         <ChatAvatar role={props.role} className="block lg:hidden" />
         <ChatMessageActions
-          className="mr-2 flex-1 group-hover:opacity-100 md:opacity-0"
+          className="mr-2 flex-1 group-hover/message:opacity-100 md:opacity-0"
           {...props}
         />
         <Timestamp full date={props.createdAt} className="text-primary/50" />

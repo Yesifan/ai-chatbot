@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Button } from '@/components/ui/button'
+import { Button, ButtonProps } from '@/components/ui/button'
 
 import { IconStar } from '@/components/ui/icons'
 import {
@@ -11,17 +11,21 @@ import {
 } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 
-export interface FavoriteActionProps {
+export interface FavoriteButtonProps extends ButtonProps {
   id: string
+  desc?: string
   isFavorite?: boolean
-  favorite?: (id: string, isFavorite: boolean) => Promise<boolean>
+  favorite?: (id: string, isFavorite: boolean) => Promise<any>
 }
 
-export function FavoriteAction({
+export function FavoriteButton({
   id,
+  desc,
   favorite,
-  isFavorite
-}: FavoriteActionProps) {
+  isFavorite,
+  className,
+  ...props
+}: FavoriteButtonProps) {
   const [isPending, starTransition] = React.useTransition()
 
   const favoriteHandler: React.MouseEventHandler<HTMLButtonElement> = event => {
@@ -37,9 +41,11 @@ export function FavoriteAction({
       <TooltipTrigger asChild>
         <Button
           variant="ghost"
-          className="group/fav mr-1 h-6 w-6 p-0 hover:bg-transparent"
+          size="icon"
+          className={cn('group/fav', className)}
           disabled={isPending}
           onClick={favoriteHandler}
+          {...props}
         >
           <IconStar
             className={cn(
@@ -52,7 +58,7 @@ export function FavoriteAction({
           <span className="sr-only">Favorite</span>
         </Button>
       </TooltipTrigger>
-      <TooltipContent>Favorite The Chat</TooltipContent>
+      <TooltipContent>{desc ?? 'Favorite The Chat'}</TooltipContent>
     </Tooltip>
   )
 }

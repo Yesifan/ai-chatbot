@@ -5,7 +5,6 @@ import {
   IconCheck,
   IconCopy,
   IconRefresh,
-  IconStar,
   IconTrash
 } from '@/components/ui/icons'
 import { cn } from '@/lib/utils'
@@ -13,22 +12,23 @@ import { Role } from '@/lib/constants'
 import { useDelayStatus } from '@/lib/hooks/use-delay-status'
 import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard'
 import { Message } from '@/types/database'
+import { FavoriteButton } from '@/components/favorite-action'
+import { UseChatHelpers } from '@/types/ai'
+import toast from 'react-hot-toast'
 
-type MessageComponentProps = React.ComponentProps<'div'> & Message
+type MessageComponentProps = React.ComponentProps<'div'> &
+  Message &
+  Partial<Pick<UseChatHelpers, 'favor' | 'reload' | 'remove'>>
 
 export interface ChatMessageActionsProps
   extends Omit<MessageComponentProps, 'id'> {
   id?: string
-  onDelete?: (id: string) => void
-  onReload?: (id: string) => void
-  onFavourite?: (id: string) => void
 }
 
 export function ChatMessageActions({
   id,
   content,
   className,
-  onDelete,
   ...props
 }: ChatMessageActionsProps) {
   const [isReload, pickReload] = useDelayStatus({ timeout: 2000 })
@@ -39,14 +39,25 @@ export function ChatMessageActions({
     copyToClipboard(content)
   }
 
-  const onReload = (id: string) => {
+  const reload = () => {
+    if (!id) return
     if (isReload) return
     pickReload()
-    props.onReload?.(id)
+    props.reload?.(id)
   }
 
-  const onFavourite = (id: string) => {
-    props.onFavourite?.(id)
+  const remove = async () => {
+    if (!id) return
+    const res = await props.remove?.(id)
+    if (res) {
+      toast.success('Message removed.')
+    } else {
+      toast.error('Message remove failed.')
+    }
+  }
+
+  const favor = async (id: string) => {
+    return await props.favor?.(id, !props.isFavourite)
   }
 
   return (
@@ -57,13 +68,15 @@ export function ChatMessageActions({
       )}
     >
       {id && (
-        <Button variant="ghost" size="icon" onClick={() => onFavourite(id)}>
-          <IconStar />
-          <span className="sr-only">Favourite the message</span>
-        </Button>
+        <FavoriteButton
+          id={id}
+          desc="Favorite The Message"
+          isFavorite={props.isFavourite}
+          favorite={favor}
+        />
       )}
-      {id && props.role === Role.User && props.onReload && (
-        <Button variant="ghost" size="icon" onClick={() => onReload(id)}>
+      {id && props.role === Role.User && (
+        <Button variant="ghost" size="icon" onClick={reload}>
           {isReload ? <IconCheck /> : <IconRefresh />}
           <span className="sr-only">Reload the message</span>
         </Button>
@@ -72,9 +85,9 @@ export function ChatMessageActions({
         {isCopied ? <IconCheck /> : <IconCopy />}
         <span className="sr-only">Copy message</span>
       </Button>
-      {id && onDelete && (
+      {id && props.remove && (
         // TODO: Secondary confirmation
-        <Button variant="ghost" size="icon" onClick={() => onDelete(id)}>
+        <Button variant="ghost" size="icon" onClick={remove}>
           <IconTrash />
           <span className="sr-only">Delete the message</span>
         </Button>

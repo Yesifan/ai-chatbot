@@ -7,15 +7,15 @@ import { type Chat } from '@/types/database'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import {
-  FavoriteAction,
-  FavoriteActionProps
+  FavoriteButton,
+  FavoriteButtonProps
 } from '@/components/favorite-action'
 import { IconMessageaText } from '@/components/ui/icons'
 import { INBOX_PATH } from '@/lib/constants'
 
 interface ChatItemProps {
   chat: Chat
-  favorite?: FavoriteActionProps['favorite']
+  favorite?: FavoriteButtonProps['favorite']
   children?: React.ReactNode
 }
 
@@ -49,10 +49,11 @@ export function ChatItem({ chat, children, favorite }: ChatItemProps) {
             title={chat.title}
           >
             {chat.isSaved ? (
-              <FavoriteAction
+              <FavoriteButton
                 id={chat.id}
                 isFavorite={chat.isFavourite}
                 favorite={favorite}
+                className="hover:bg-transparent"
               />
             ) : (
               <div className="mr-1 flex h-6 w-6 items-center justify-center">

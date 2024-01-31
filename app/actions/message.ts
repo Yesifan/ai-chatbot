@@ -2,7 +2,7 @@
 import database from '@/lib/database'
 import { Message, ServerActionResult } from '@/types/database'
 import { auth } from './auth'
-import { ErrorCode } from '@/lib/constants'
+import { AssistantType, ErrorCode } from '@/lib/constants'
 import { isMessageOwner } from './helper'
 import { knowledgeManagementAssistant } from '../api/chat/assistants'
 
@@ -24,9 +24,9 @@ export async function getMessages(
 }
 
 export async function removeMessage(id: string): Promise<ServerActionResult> {
-  const isOwner = await isMessageOwner(id)
+  const userId = await isMessageOwner(id)
 
-  if (isOwner) {
+  if (typeof userId === 'string') {
     const message = await database
       .deleteFrom('message')
       .where('message.id', '=', id)
@@ -41,31 +41,49 @@ export async function removeMessage(id: string): Promise<ServerActionResult> {
       ok: true
     }
   } else {
-    return isOwner
+    return userId
   }
 }
 
-export async function favouriteMessage(
-  id: string
+export async function favoriteMessage(
+  id: string,
+  isFavourite?: boolean
 ): Promise<ServerActionResult> {
-  const isOwner = await isMessageOwner(id)
+  const userId = await isMessageOwner(id)
 
-  if (isOwner) {
+  if (typeof userId === 'string') {
     try {
       const result = await database
         .updateTable('message')
         .set({
-          isFavourite: true
+          isFavourite: isFavourite
         })
         .returning(['content'])
         .where('message.id', '=', id)
         .executeTakeFirstOrThrow()
-
-      knowledgeManagementAssistant(result.content).then(res => {
-        console.log('knowledgeManagementAssistant', res)
-      })
-
-      console.log('Favorite Success!')
+      console.log('favoriteMessage', result)
+      if (isFavourite) {
+        try {
+          // create openai thread
+          const run = await knowledgeManagementAssistant(result.content)
+          if (run) {
+            // save thread for corn task
+            await database
+              .insertInto('thread')
+              .values({
+                id: run.thread_id,
+                runId: run.id,
+                userId: userId,
+                type: AssistantType.KNOWLEDGE_MANAGEMENT,
+                status: run.status,
+                createdAt: new Date()
+              })
+              .executeTakeFirstOrThrow()
+          }
+        } catch (e) {
+          console.error('[favoriteMessage][knowledgeManagementAssistant]', e)
+        }
+      }
       return {
         ok: true
       }
@@ -77,6 +95,6 @@ export async function favouriteMessage(
       }
     }
   } else {
-    return isOwner
+    return userId
   }
 }
