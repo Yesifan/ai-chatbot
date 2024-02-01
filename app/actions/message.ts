@@ -4,7 +4,7 @@ import { Message, ServerActionResult } from '@/types/database'
 import { auth } from './auth'
 import { AssistantType, ErrorCode } from '@/lib/constants'
 import { isMessageOwner } from './helper'
-import { knowledgeManagementAssistant } from '../api/chat/assistants'
+import { createKnowledgeManagementThread } from '../api/chat/assistants'
 
 export async function getMessages(
   id: string
@@ -61,27 +61,16 @@ export async function favoriteMessage(
         .returning(['content'])
         .where('message.id', '=', id)
         .executeTakeFirstOrThrow()
-      console.log('favoriteMessage', result)
+
       if (isFavourite) {
-        try {
+        const historyThread = await database
+          .selectFrom('thread')
+          .select(['id', 'status'])
+          .where('messageId', '=', id)
+          .executeTakeFirst()
+        if (!historyThread) {
           // create openai thread
-          const run = await knowledgeManagementAssistant(result.content)
-          if (run) {
-            // save thread for corn task
-            await database
-              .insertInto('thread')
-              .values({
-                id: run.thread_id,
-                runId: run.id,
-                userId: userId,
-                type: AssistantType.KNOWLEDGE_MANAGEMENT,
-                status: run.status,
-                createdAt: new Date()
-              })
-              .executeTakeFirstOrThrow()
-          }
-        } catch (e) {
-          console.error('[favoriteMessage][knowledgeManagementAssistant]', e)
+          await createKnowledgeManagementThread(userId, id, result.content)
         }
       }
       return {
