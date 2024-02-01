@@ -25,7 +25,7 @@ const getStreamedResponse = async (
   onStream: (data: string) => void,
   onResponse?: (response: Response) => void | Promise<void>
 ) => {
-  const replyId = nanoid()
+  const replyId = nanoid(8)
   const questionId = chatRequest.messages[chatRequest.messages.length - 1].id
 
   const constructedMessagesPayload = chatRequest.messages.map(
@@ -228,7 +228,7 @@ export function useChat({
       { options, functions, function_call }: ChatRequestOptions = {}
     ) => {
       const message = {
-        id: nanoid(),
+        id: nanoid(8),
         content,
         role: Role.User,
         createdAt: new Date()

@@ -65,10 +65,12 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('chatId', 'varchar(8)', col => col.notNull())
     .addColumn('content', 'text', col => col.notNull())
     .addColumn('role', 'varchar(10)', col => col.notNull())
-    .addColumn('createdAt', 'timestamp')
+    .addColumn('title', 'varchar(120)')
+    .addColumn('tags', 'varchar(120)')
     .addColumn('model', 'varchar(20)')
     .addColumn('isPin', 'boolean', col => col.defaultTo(false))
     .addColumn('isFavourite', 'boolean', col => col.defaultTo(false))
+    .addColumn('createdAt', 'timestamp')
     .execute()
 
   await db.schema

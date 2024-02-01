@@ -37,6 +37,7 @@ export async function GET(request: NextRequest) {
 
       if (run.status === 'requires_action' && run.required_action) {
         const tool_outputs = functionCallAction(
+          thread.id,
           run.required_action.submit_tool_outputs.tool_calls
         )
         const actionRun = await openai.beta.threads.runs.submitToolOutputs(
@@ -57,6 +58,9 @@ export async function GET(request: NextRequest) {
           .set({ status: run.status, lastProcessAt: new Date() })
           .where('id', '=', thread.id)
           .execute()
+        console.log(
+          `[ASSISTANT] [THREAD] ${thread.id} update status ${run.status}`
+        )
       }
     }
 

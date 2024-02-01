@@ -26,12 +26,32 @@
 //   },
 //   "description": "Set title and tag for knowledge"
 // }
-export const set_tiltle_tags = ({
-  title,
-  tags
-}: {
-  title: string
-  tags: string[]
-}) => {
-  console.log('saveKnowledge', title, tags)
+
+import database from '@/lib/database'
+export const set_tiltle_tags = async (
+  threadId: string,
+  {
+    title,
+    tags
+  }: {
+    title: string
+    tags: string[]
+  }
+) => {
+  const thread = await database
+    .selectFrom('thread')
+    .selectAll()
+    .where('id', '=', threadId)
+    .executeTakeFirstOrThrow()
+  if (thread.messageId) {
+    const res = database
+      .updateTable('message')
+      .set({
+        title: title,
+        tags: JSON.stringify(tags)
+      })
+      .where('id', '=', thread.messageId)
+      .executeTakeFirstOrThrow()
+    console.log('[set_tiltle_tags] update database', res)
+  }
 }

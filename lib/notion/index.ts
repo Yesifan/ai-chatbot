@@ -30,3 +30,11 @@ export const getPromptMarkdown = async (id: string) => {
     return 'This page does not belong to Robot Template!'
   }
 }
+
+export const insertFavoriteMessage = async (id: string) => {
+  const res = await fetch(`/api/message/${id}/favorite`, {
+    method: 'POST'
+  })
+  const data = await res.json()
+  return data
+}

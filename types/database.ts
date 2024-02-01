@@ -60,6 +60,8 @@ export interface MessageTable extends AIMessage {
   chatId: string
   model?: GPT_Model
   role: Role
+  title?: string
+  tags?: string
   isPin?: Generated<boolean>
   isFavourite?: Generated<boolean>
   createdAt: Date

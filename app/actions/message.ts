@@ -53,24 +53,31 @@ export async function favoriteMessage(
 
   if (typeof userId === 'string') {
     try {
-      const result = await database
+      const message = await database
         .updateTable('message')
         .set({
           isFavourite: isFavourite
         })
-        .returning(['content'])
+        .returning(['content', 'title'])
         .where('message.id', '=', id)
         .executeTakeFirstOrThrow()
 
-      if (isFavourite) {
+      if (isFavourite && !message.title) {
         const historyThread = await database
           .selectFrom('thread')
           .select(['id', 'status'])
           .where('messageId', '=', id)
+          .where('type', '=', AssistantType.KNOWLEDGE_MANAGEMENT)
+          .where('status', 'in', [
+            'queued',
+            'in_progress',
+            'requires_action',
+            'completed'
+          ])
           .executeTakeFirst()
         if (!historyThread) {
           // create openai thread
-          await createKnowledgeManagementThread(userId, id, result.content)
+          await createKnowledgeManagementThread(userId, id, message.content)
         }
       }
       return {
