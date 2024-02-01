@@ -1,12 +1,13 @@
 import { type Message as AIMessage } from 'ai'
 import { Generated, Insertable, Selectable, Updateable } from 'kysely'
-import { GPT_Model, Role } from '../lib/constants'
+import { AssistantType, GPT_Model, Role } from '../lib/constants'
 
 export interface Database {
   user: UserTable
   robot: RobotTable
   chat: ChatTable
   message: MessageTable
+  thread: ThreadTable
 }
 
 export interface UserTable {
@@ -64,6 +65,25 @@ export interface MessageTable extends AIMessage {
   createdAt: Date
 }
 
+export interface ThreadTable {
+  id: string
+  runId: string
+  userId: string
+  messageId?: string
+  type: AssistantType
+  status:
+    | 'queued'
+    | 'in_progress'
+    | 'requires_action'
+    | 'cancelling'
+    | 'cancelled'
+    | 'failed'
+    | 'completed'
+    | 'expired'
+  createdAt: Date
+  lastProcessAt?: Date
+}
+
 export type User = Selectable<UserTable>
 
 export type Robot = Selectable<RobotTable>
@@ -81,6 +101,10 @@ export type Message = Partial<Selectable<MessageTable>> & {
 }
 export type NewMessage = Insertable<MessageTable>
 export type PutMessage = Updateable<MessageTable>
+
+export type Thread = Selectable<ThreadTable>
+export type NewThread = Insertable<ThreadTable>
+export type PutThread = Updateable<ThreadTable>
 
 export type ServerActionResult<
   R = {
