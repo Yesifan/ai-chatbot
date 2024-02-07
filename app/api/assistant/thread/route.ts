@@ -73,8 +73,9 @@ export async function GET(request: NextRequest) {
     return new Response('success', {
       status: 200
     })
-  } catch (e) {
-    return new Response('error', {
+  } catch (e: any) {
+    console.error('[ASSISTANT] [THREAD] error', e)
+    return new Response(e.message ?? 'error', {
       status: 500
     })
   }
