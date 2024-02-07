@@ -5,6 +5,12 @@ import { NextRequest } from 'next/server'
 
 export const runtime = 'edge'
 
+/**
+ * process thread.
+ * Trigger with corn job every 10 minutes.
+ *
+ * Corn job server is running on [upstash](https://console.upstash.com/)
+ */
 const getQueueThreads = () => {
   return database
     .selectFrom('thread')

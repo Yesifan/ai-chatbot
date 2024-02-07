@@ -1,8 +1,0 @@
-{
-  "crons": [
-    {
-      "path": "/api/assistant/thread",
-      "schedule": "0 0 * * *"
-    }
-  ]
-}
