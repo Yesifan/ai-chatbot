@@ -15,6 +15,7 @@ import {
   UseChatHelpers
 } from '@/types/ai'
 import { useChatStore } from '../store/chat'
+import { favoriteMessage, removeMessage } from '@/app/actions/message'
 
 const CHAT_URL = '/api/chat'
 
@@ -24,7 +25,7 @@ const getStreamedResponse = async (
   onStream: (data: string) => void,
   onResponse?: (response: Response) => void | Promise<void>
 ) => {
-  const replyId = nanoid()
+  const replyId = nanoid(8)
   const questionId = chatRequest.messages[chatRequest.messages.length - 1].id
 
   const constructedMessagesPayload = chatRequest.messages.map(
@@ -219,7 +220,7 @@ export function useChat({
   )
 
   const append = useCallback(
-    async (
+    (
       content: string,
       messagesCount = chatStore.attachedMessagesCount ??
         ATTACHED_MESSAGES_COUNT,
@@ -227,7 +228,7 @@ export function useChat({
       { options, functions, function_call }: ChatRequestOptions = {}
     ) => {
       const message = {
-        id: nanoid(),
+        id: nanoid(8),
         content,
         role: Role.User,
         createdAt: new Date()
@@ -249,20 +250,6 @@ export function useChat({
       return triggerRequest(chatRequest)
     },
     [chatStore.attachedMessagesCount, mutateMessages, triggerRequest]
-  )
-
-  const pin = useCallback(
-    async (id: string) => {
-      mutateMessages(messages =>
-        messages.map(message => {
-          if (message.id === id) {
-            message.isPin = true
-          }
-          return message
-        })
-      )
-    },
-    [mutateMessages]
   )
 
   const reload = useCallback(
@@ -304,11 +291,46 @@ export function useChat({
     [chatStore.attachedMessagesCount, messages, triggerRequest]
   )
 
+  const pin = useCallback(
+    async (id: string) => {
+      mutateMessages(messages =>
+        messages.map(message => {
+          if (message.id === id) {
+            message.isPin = true
+          }
+          return message
+        })
+      )
+    },
+    [mutateMessages]
+  )
+
+  const favor = useCallback(
+    async (id: string, isFavourite?: boolean) => {
+      const isFavoriteTarget =
+        isFavourite ?? !messages.find(message => message.id === id)?.isFavourite
+      await favoriteMessage(id, isFavoriteTarget)
+      mutateMessages(messages => {
+        return messages.map(message => {
+          if (message.id === id) {
+            message.isFavourite = isFavoriteTarget
+          }
+          return message
+        })
+      })
+      return true
+    },
+    [messages, mutateMessages]
+  )
+
   const remove = useCallback(
-    (id: string) => {
-      const messages = messagesRef.current
+    async (id: string) => {
+      const res = await removeMessage(id)
+      if (res.ok !== true) {
+        return false
+      }
       mutateMessages(messages => messages.filter(message => message.id !== id))
-      return messages
+      return true
     },
     [mutateMessages]
   )
@@ -328,6 +350,7 @@ export function useChat({
     streamData,
     error,
     pin,
+    favor,
     append,
     reload,
     remove,

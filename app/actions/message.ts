@@ -2,7 +2,9 @@
 import database from '@/lib/database'
 import { Message, ServerActionResult } from '@/types/database'
 import { auth } from './auth'
-import { ErrorCode } from '@/lib/constants'
+import { AssistantType, ErrorCode } from '@/lib/constants'
+import { isMessageOwner } from './helper'
+import { createKnowledgeManagementThread } from '../api/chat/assistants'
 
 export async function getMessages(
   id: string
@@ -22,25 +24,9 @@ export async function getMessages(
 }
 
 export async function removeMessage(id: string): Promise<ServerActionResult> {
-  const session = await auth()
+  const userId = await isMessageOwner(id)
 
-  if (!session) {
-    return {
-      ok: false,
-      error: 'Unauthorized'
-    }
-  }
-
-  const chat = await database
-    .selectFrom('chat')
-    .where('chat.userId', '=', session.id)
-    .leftJoin('message', join =>
-      join.onRef('chat.id', '=', 'message.chatId').on('message.id', '=', id)
-    )
-    .select(['chat.id', 'chat.title'])
-    .executeTakeFirstOrThrow()
-
-  if (chat.id) {
+  if (typeof userId === 'string') {
     const message = await database
       .deleteFrom('message')
       .where('message.id', '=', id)
@@ -55,9 +41,56 @@ export async function removeMessage(id: string): Promise<ServerActionResult> {
       ok: true
     }
   } else {
-    return {
-      ok: false,
-      error: ErrorCode.NotFound
+    return userId
+  }
+}
+
+export async function favoriteMessage(
+  id: string,
+  isFavourite?: boolean
+): Promise<ServerActionResult> {
+  const userId = await isMessageOwner(id)
+
+  if (typeof userId === 'string') {
+    try {
+      const message = await database
+        .updateTable('message')
+        .set({
+          isFavourite: isFavourite
+        })
+        .returning(['content', 'title'])
+        .where('message.id', '=', id)
+        .executeTakeFirstOrThrow()
+
+      if (isFavourite && !message.title) {
+        const historyThread = await database
+          .selectFrom('thread')
+          .select(['id', 'status'])
+          .where('messageId', '=', id)
+          .where('type', '=', AssistantType.KNOWLEDGE_MANAGEMENT)
+          .where('status', 'in', [
+            'queued',
+            'in_progress',
+            'requires_action',
+            'completed'
+          ])
+          .executeTakeFirst()
+        if (!historyThread) {
+          // create openai thread
+          await createKnowledgeManagementThread(userId, id, message.content)
+        }
+      }
+      return {
+        ok: true
+      }
+    } catch (e) {
+      console.error('[favoriteMessage][error]', e)
+      return {
+        ok: false,
+        error: ErrorCode.InternalServerError
+      }
     }
+  } else {
+    return userId
   }
 }

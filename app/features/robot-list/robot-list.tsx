@@ -76,15 +76,25 @@ export function RobotList({ initalRobots, className }: RobotListProps) {
       <div className="flex-1 space-y-2 overflow-auto px-2 pt-2">
         {robots ? (
           <>
-            {robots.map(robot => (
-              <RobotItem key={robot?.id} robot={robot}>
-                <RemoveActions
-                  id={robot.id}
-                  desc={removeDesc}
-                  remove={removeRobotHandler}
-                />
-              </RobotItem>
-            ))}
+            {robots.length > 0 ? (
+              robots.map(robot => (
+                <RobotItem key={robot?.id} robot={robot}>
+                  <RemoveActions
+                    id={robot.id}
+                    desc={removeDesc}
+                    remove={removeRobotHandler}
+                  />
+                </RobotItem>
+              ))
+            ) : (
+              <div className="px-2 py-6">
+                You don&apos;t have a Robot yet. Try to
+                <Button variant="outline" size="sm" className="m-1" asChild>
+                  <Link href="/robot">Create</Link>
+                </Button>
+                one 🤖.
+              </div>
+            )}
             <ButtonReload size="full" className="mt-12">
               Reload Robots
             </ButtonReload>

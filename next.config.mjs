@@ -17,7 +17,6 @@ const withPWA = nextPWA({
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
-    urlImports: ['https://cdn.skypack.dev'],
     swcPlugins: isProd ? undefined : [['@swc-jotai/react-refresh', {}]],
   }
 }

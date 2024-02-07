@@ -15,6 +15,7 @@
 ## Features
 - [Next.js](https://nextjs.org) App Router
 - React Server Components (RSCs), Suspense, and Server Actions
+- [Kysely](https://kysely.dev/) for ORM
 - [Vercel AI SDK](https://sdk.vercel.ai/docs) for streaming chat UI
 - Support for OpenAI (default), Anthropic, Hugging Face, or custom AI chat models and/or LangChain
 - Edge runtime-ready
@@ -24,6 +25,7 @@
   - Icons from [Phosphor Icons](https://phosphoricons.com)
 - Chat History, rate limiting, and session storage with [Vercel KV](https://vercel.com/storage/kv)
 - [NextAuth.js](https://github.com/nextauthjs/next-auth) for authentication
+- [upstash](https://upstash.com/) for corn job
 
 ## Running locally
 

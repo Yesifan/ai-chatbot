@@ -28,30 +28,5 @@ export const createOpenai = (userApiKey?: string, endpoint?: string) => {
 
   console.debug('[OPENAI BASEPATH]', openai.baseURL)
 
-  openai.completions.create
-  openai.createChatCompletion = (
-    messages: MessageParam[],
-    payload: OpenAIChatStreamPayload
-  ) => createChatCompletion(openai, messages, payload)
-
   return openai
-}
-
-export const createChatCompletion = async (
-  openai: OpenAI,
-  messages: MessageParam[],
-  payload: OpenAIChatStreamPayload
-) => {
-  const { ...params } = payload
-
-  // ============  2. send api   ============ //
-
-  return await openai.chat.completions.create(
-    {
-      messages,
-      ...params,
-      stream: true
-    },
-    { headers: { Accept: '*/*' } }
-  )
 }

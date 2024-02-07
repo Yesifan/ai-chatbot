@@ -65,7 +65,7 @@ export type UseChatHelpers = {
    * manually to regenerate the AI response.
    */
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>
-  pin: (id: string) => void
+
   /**
    * Append a user message to the chat list. This triggers the API call to fetch
    * the assistant's response.
@@ -88,7 +88,10 @@ export type UseChatHelpers = {
     historyCount?: number,
     chatRequestOptions?: ChatRequestOptions
   ) => Promise<Message | null | undefined>
-  remove: (id: string) => Message[] | null | undefined
+
+  pin: (id: string) => void
+  favor: (id: string, isFavourite?: boolean) => Promise<boolean>
+  remove: (id: string) => Promise<boolean>
   /**
    * Abort the current request immediately, keep the generated tokens if any.
    */

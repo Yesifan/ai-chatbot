@@ -65,10 +65,27 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('chatId', 'varchar(8)', col => col.notNull())
     .addColumn('content', 'text', col => col.notNull())
     .addColumn('role', 'varchar(10)', col => col.notNull())
-    .addColumn('createdAt', 'timestamp')
+    .addColumn('title', 'varchar(120)')
+    .addColumn('tags', 'varchar(120)')
     .addColumn('model', 'varchar(20)')
     .addColumn('isPin', 'boolean', col => col.defaultTo(false))
     .addColumn('isFavourite', 'boolean', col => col.defaultTo(false))
+    .addColumn('createdAt', 'timestamp')
+    .execute()
+
+  await db.schema
+    .createTable('thread')
+    .ifNotExists()
+    .addColumn('id', 'varchar(64)', col => col.primaryKey())
+    .addColumn('runId', 'varchar(64)', col => col.notNull())
+    .addColumn('userId', 'char(21)', col => col.notNull())
+    .addColumn('messageId', 'varchar(8)')
+    .addColumn('type', 'varchar(21)', col => col.notNull())
+    // The status of the run, which can be either
+    // queued, in_progress, requires_action, cancelling, cancelled, failed, completed, or expired.
+    .addColumn('status', 'varchar(21)', col => col.defaultTo('queued'))
+    .addColumn('createdAt', 'timestamp')
+    .addColumn('lastProcessAt', 'timestamp')
     .execute()
 }
 

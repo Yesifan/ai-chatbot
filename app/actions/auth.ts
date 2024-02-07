@@ -9,11 +9,9 @@ export async function getLoginUser(token: string) {
     .selectFrom('user')
     .selectAll()
     .where('accessToken', '=', token)
-    .execute()
-  if (user.length === 0) {
-    return undefined
-  }
-  return user[0]
+    .executeTakeFirstOrThrow()
+
+  return user
 }
 
 export async function auth() {
@@ -22,13 +20,9 @@ export async function auth() {
     return undefined
   }
   try {
-    const user = await getLoginUser(token.value)
-    if (user) {
-      return user
-    } else {
-      return undefined
-    }
-  } catch {
+    return await getLoginUser(token.value)
+  } catch(e) {
+    console.error('[AUTH]ERROR', e)
     return undefined
   }
 }

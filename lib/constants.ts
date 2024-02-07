@@ -51,6 +51,10 @@ export const enum ErrorCode {
   InternalServerError = 'InternalServerError'
 }
 
+export const enum AssistantType {
+  KNOWLEDGE_MANAGEMENT = 'KNOWLEDGE_MANAGEMENT'
+}
+
 // COMMAND:SYSTEM_MESSAGE_KEY:BODY
 export const SYSTEM_MESSAGE_COMMAND = 'SYSTEM_MESSAGE_COMMAND'
 export const enum SystemMessageKey {

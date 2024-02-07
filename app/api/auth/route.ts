@@ -4,7 +4,7 @@ import { serialize } from 'cookie'
 import database from '@/lib/database'
 import { up } from '@/lib/database/migrations'
 import { getLoginUser } from '@/app/actions/auth'
-import { TOKEN_COOKIE_KEY } from '@/lib/constants'
+import { ErrorCode, TOKEN_COOKIE_KEY } from '@/lib/constants'
 
 export const runtime = 'edge'
 
@@ -43,21 +43,32 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    return await getUserResponse(token)
+    const res = await getUserResponse(token)
+    return res
   } catch (e: any) {
-    console.error('[SIGNIN]ERROR', e)
-    if (e instanceof Error) {
-      if (e.message.includes('does not exist')) {
+    // if (e instanceof DatabaseError) {
+    if ('table' in e) {
+      if (e.code === '42P01') {
         console.debug(
           '[DATABASE] Table does not exist, creating and seeding it with dummy data now...'
         )
         // Table is not created yet
-        await up(database)
-        console.debug('[DATABASE] success create database')
-        return getUserResponse(token)
-      } else {
-        throw e
+        try {
+          await up(database)
+          console.debug('[DATABASE] success create database')
+          return new Response('credentials error', {
+            status: 400
+          })
+        } catch (e: any) {
+          if ('table' in e) {
+            console.error('[DATABASE] create database ERROR', e.message)
+          }
+        }
       }
     }
+    console.error('[API] ERROR', e?.message ?? 'UNCATCH ERROR')
+    return new Response(ErrorCode.InternalServerError, {
+      status: 500
+    })
   }
 }
